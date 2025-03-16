@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - DashDrive</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/modern-style.css">
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            ;
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .main-logo {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 3rem;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            z-index: 1000;
+        }
+
+        .main-logo span {
+            color: #007bff;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            background-color: #f5da9a;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .signup-left {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signup-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/images/car-porsche-classic-porsche-911-str-wallpaper-preview.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+            z-index: 0;
+        }
+
+        .signup-left:hover::before {
+            transform: scale(1.1);
+        }
+
+        .signup-content {
+            position: relative;
+            z-index: 1;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: #fff;
+            max-width: 650px;
+            padding: 3rem;
+
+        }
+
+        .signup-right {
+            padding: 3rem;
+            background-color: #f5da9a;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #f5da9a;
+        }
+
+        .form-control {
+            border: 1px solid #e1e1e1;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+            background-color: #fff;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 1rem;
+            background-color: #333333;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-signup:hover {
+            background-color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 51, 51, 0.2);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #007bff;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .brand-logo span {
+            color: #007bff;
+        }
+
+        .h3 {
+            font-weight: 700;
+            color: #2d3436;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .text-muted {
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #6c757d;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e1e1e1;
+            margin: 0 1rem;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            background-color: #fff;
+            color: #2d3436;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            border-color: #d1d1d1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .signup-container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .signup-left {
+                min-height: 300px;
+                padding: 2rem;
+            }
+
+            .signup-right {
+                padding: 2rem;
+            }
+
+            .form-container {
+                padding: 0;
+            }
+
+
+            .error-message {
+                color: red;
+                font-size: 0.8rem;
+                margin-top: 5px;
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
+    <div class="signup-container">
+        <div class="row g-0">
+            <!-- Left Side - Image & Content -->
+            <div class="col-lg-6 signup-left">
+                <div class="signup-content">
+                    <h1 class="display-4 fw-bold mb-4">Unlock the Ultimate Driving Experience</h1>
+                    <p class="lead mb-4">Join DashDrive and gain exclusive access to premium car test drives. We make it
+                        seamless for you to book and drive your dream car.</p>
+                </div>
+            </div>
+
+            <!-- Right Side - Form -->
+            <div class="col-lg-6 signup-right">
+                <div class="form-container">
+                    <div class="text-center mb-5">
+                        <h2 class="h3 mb-2">Create an Account</h2>
+                        <p class="text-muted">LET'S GET YOU STARTED</p>
+                    </div>
+
+                    <button class="btn btn-google">
+                        <img src="/public/images/Google_Icons-09-512.webp" alt="Google Icon">
+                        Sign up with Google
+                    </button>
+
+                    <div class="divider">
+                        <span>or sign up with email</span>
+                    </div>
+
+                    <form id="signform" action="/signup" method="POST" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">Please enter your name.</div>
+
+                            <div id="error1" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                            <div id="error2" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="password-field">
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <span class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="far fa-eye"></i>
+                                </span>
+                            </div>
+                            <div class="invalid-feedback">Please enter a password.</div>
+                            <div id="error3" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="confirm_password" class="form-label">Confirm password</label>
+                            <div class="password-field">
+                                <input type="password" class="form-control" id="confirm_password"
+                                    name="confirm_password" required>
+                                <span class="password-toggle" onclick="togglePassword('confirm_password')">
+                                    <i class="far fa-eye"></i>
+                                </span>
+                            </div>
+                            <div class="invalid-feedback">Please confirm your password.</div>
+                            <div id="error4" class="error-message"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-signup mb-4">Get Started</button>
+
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? <a href="/login"
+                                    class="text-primary fw-bold">Login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+
+
+        const nameid = document.getElementById('name');
+        const emailid = document.getElementById('email');
+        const passwordid = document.getElementById('password');
+        const confirmPasswordid = document.getElementById('confirm_password');
+        const error1 = document.getElementById('error1');
+        const error2 = document.getElementById('error2');
+        const error3 = document.getElementById('error3');
+        const error4 = document.getElementById('error4');
+        const signform = document.getElementById('signform');
+
+
+
+
+        // Name Validation Checking
+
+
+        function nameValidateChecking(e) {
+            const nameVal = nameid.value
+            const namePattern = /^[A-Za-z\s]+$/;
+
+            if (nameVal.trim() === "") {
+                error1.style.display = "block"
+                error1.innerHTML = "Name is required";
+
+            } else if (!namePattern.test(nameVal)) {
+                error1.style.display = "block"
+                error1.innerHTML = "Name is invalid";
+
+            } else {
+                error1.style.display = "none"
+                error1.innerHTML = ""
+            }
+        }
+
+        // Email Validation Checking
+
+        function emailValidateChecking(e) {
+            const emailVal = emailid.value
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+            if (emailVal.trim() === "") {
+                error2.style.display = "block"
+                error2.innerHTML = "Email is required";
+
+            } else if (!emailPattern.test(emailVal)) {
+                error2.style.display = "block"
+                error2.innerHTML = "Email is invalid";
+
+            } else {
+                error2.style.display = "none"
+                error2.innerHTML = ""
+            }
+        }
+
+        // Password and Confirm Password Validation Checking
+
+        function passwordValidateChecking(e) {
+            const passVal = passwordid.value
+            const cPassVal = confirmPasswordid.value
+            const passwordPattern  = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{8,}$/;
+
+
+
+
+
+
+            if (passVal.trim() === "") {
+                error3.style.display = "block";
+                error3.innerHTML = "Password is required";
+            } else if (passVal.length < 8) {
+                error3.style.display = "block";
+                error3.innerHTML = "Password must be at least 8 characters";
+            } else if (!passwordPattern.test(passVal)) {
+                error3.style.display = "block";
+                error3.innerHTML = "Password must include lowercase, uppercase ,digit and special character";
+            } else {
+                error3.style.display = "none";
+                error3.innerHTML = "";
+            }
+
+        // Confirm Password Validation Checking
+
+            if (cPassVal.trim() === "") {
+                error4.style.display = "block";
+                error4.innerHTML = "Confirm password is required";
+            } else if (passVal !== cPassVal) {
+                error4.style.display = "block";
+                error4.innerHTML = "Passwords do not match";
+            } else {
+                error4.style.display = "none";
+                error4.innerHTML = "";
+            }
+
+        }
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            signform.addEventListener("submit", function (e) {
+               let  isValid = true;
+
+
+                nameValidateChecking()
+                emailValidateChecking()
+                passwordValidateChecking()
+
+
+
+               
+                if (error1.innerHTML !== "" || error2.innerHTML !== "" || error3.innerHTML !== "" || error4.innerHTML !== "") {
+                    isValid = false;
+
+                }
+                if (!isValid) {
+                    e.preventDefault()
+                }
+
+            })
+        })
+
+
+        // Password toggle functionality
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const icon = event.currentTarget.querySelector('i');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+
+
+    </script>
+</body>
+
+</html>
