@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dash Drive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #333333;
+            --hover: #1a1a1a;
+            --bg-light: #faf9f6;
+            --text-dark: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            padding: 1.2rem 5%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link.active:after,
+        .nav-link:hover:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary) !important;
+            transform: translateY(-1px);
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-toggler:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .user-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar {
+                padding: 1rem 5%;
+            }
+
+            .navbar-collapse {
+                background: rgba(255, 255, 255, 0.98);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 1rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-link {
+                margin: 0.8rem 0;
+                padding: 0.5rem 1rem;
+                border-radius: 4px;
+            }
+
+            .nav-link:hover {
+                background: rgba(0, 0, 0, 0.05);
+            }
+
+            .nav-link.active:after,
+            .nav-link:hover:after {
+                display: none;
+            }
+
+            .user-icon {
+                margin: 0.8rem auto;
+            }
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            padding: 8rem 5rem 2rem;
+            max-width: 650px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .diagonal-cut {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            clip-path: polygon(25% 0, 100% 0, 100% 100%, 0% 100%);
+            background: var(--bg-light);
+        }
+
+        .diagonal-cut img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover);
+            transform: translateY(-2px);
+        }
+
+        /* Premium Brands Section */
+        .premium-brands {
+            padding: 5rem 0;
+            background-color: var(--bg-light);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .premium-brands .container {
+            max-width: 1200px;
+            padding: 0 1rem;
+        }
+
+        .premium-brands h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        .premium-brands a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .premium-brands a:hover {
+            opacity: 0.8;
+            transform: translateX(2px);
+        }
+
+        .brand-item {
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .brand-item img {
+            max-width: 100px;
+            height: auto;
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+            margin-bottom: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .brand-item:hover img {
+            filter: grayscale(0%);
+            transform: translateY(-2px);
+            opacity: 1;
+        }
+
+        .brand-name {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            transition: all 0.3s ease;
+        }
+
+        .brand-item:hover .brand-name {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .premium-brands {
+                padding: 3rem 0;
+            }
+
+            .premium-brands h2 {
+                font-size: 1.75rem;
+            }
+
+            .brand-item img {
+                max-width: 80px;
+            }
+
+            .brand-name {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Search Section */
+        .search-section {
+            background-color: var(--primary);
+            color: white;
+            padding: 5rem 0;
+        }
+
+        .search-section h3 {
+            font-weight: 600;
+        }
+
+        .search-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .search-section .btn-light {
+            background-color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .search-section .btn-light:hover {
+            background-color: var(--hover);
+            transform: translateY(-2px);
+        }
+
+        /* Browse by Type Section */
+        .browse-type {
+            padding: 5rem 0;
+        }
+
+        .browse-type h2 {
+            font-weight: 600;
+        }
+
+        .browse-type .card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .browse-type .card-background {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .browse-type .card-img-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 1rem;
+        }
+
+        .browse-type .card-img-overlay h5 {
+            font-weight: 600;
+        }
+
+        /* Better Way to Test Your Perfect Cars Section */
+        .test-drive-process {
+            padding: 5rem 0;
+            background-color: var(--bg-light);
+        }
+
+        .test-drive-process h2 {
+            font-weight: 600;
+        }
+
+        .test-drive-process .fas {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .test-drive-process h5 {
+            font-weight: 600;
+        }
+
+        /* Featured Cars Section */
+        .featured-cars {
+            padding: 5rem 0;
+        }
+
+        .featured-cars h2 {
+            font-weight: 600;
+        }
+
+        .featured-cars .card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .featured-cars .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .featured-cars .card-body {
+            padding: 1rem;
+        }
+
+        .featured-cars .card-title {
+            font-weight: 600;
+        }
+
+        .featured-cars .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .featured-cars .btn-primary:hover {
+            background-color: var(--hover);
+            transform: translateY(-2px);
+        }
+
+        /* Why Choose Us Section */
+        .why-choose-us {
+            padding: 5rem 0;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .feature-card h5 {
+            color: var(--text-dark);
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 5rem 0;
+            background-color: var(--bg-light);
+        }
+
+        .service-card {
+            padding: 2rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-circle i {
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .service-card h5 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .service-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Statistics Section */
+        .statistics {
+            padding: 5rem 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/stats-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 5rem 0;
+            background: var(--text-dark);
+            color: #fff;
+        }
+
+        .footer h5 {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer ul li a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer ul li a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        .social-links a {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-left: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+
+            .feature-card,
+            .service-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .stat-item h3 {
+                font-size: 2rem;
+            }
+
+            .footer {
+                text-align: center;
+            }
+
+            .social-links {
+                margin-top: 1.5rem;
+                text-align: center;
+            }
+
+            .social-links a {
+                margin: 0 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Dash Drive</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/listings">Listings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item ml-lg-3">
+                        <a class="nav-link p-0" href="/profile">
+                            <div class="user-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container-fluid px-0">
+            <div class="row no-gutters">
+                <div class="col-md-6">
+                    <div class="hero-content">
+                        <h1>Online Test Drive<br>Booking</h1>
+                        <p>Discover our diverse range of brands and models. Here you'll find your personal dream
+                            vehicle.</p>
+                        <button class="btn btn-primary">Get Started</button>
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative">
+                    <div class="diagonal-cut">
+                        <img src="/images/homeCar.png" class="img-fluid" alt="Luxury Car">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explore Our Premium Brands Section -->
+    <section class="premium-brands py-5 text-center">
+        <div class="container">
+            <h2 class="mb-4">Explore Our Premium Brands</h2>
+            <div class="row">
+                <div class="col-6 col-md-2 mb-3">
+                    <div class="brand-item">
+                        <img src="/images/Carlogos/audi_logo.webp" alt="Audi">
+                        <p class="brand-name">Audi</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-3">
+                    <div class="brand-item">
+                        <img src="/images/Carlogos/bmw_logo.webp" alt="BMW">
+                        <p class="brand-name">BMW</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-3">
+                    <div class="brand-item">
+                        <img src="/images/Carlogos/ford_logo.webp" alt="Ford">
+                        <p class="brand-name">Ford</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-3">
+                    <div class="brand-item">
+                        <img src="/images/Carlogos/mercedes_logo.jpeg" alt="Mercedes-Benz">
+                        <p class="brand-name">Mercedes-Benz</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-3">
+                    <div class="brand-item">
+                        <img src="/images/Carlogos/bently_log.png" alt="Bentley">
+                        <p class="brand-name">Bentley</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-2 mb-3">
+                    <div class="brand-item">
+                        <img src="/images/Carlogos/volkswagon_logo.png" alt="Volkswagen">
+                        <p class="brand-name">Volkswagen</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section bg-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-check-circle fa-3x"></i>
+                </div>
+                <div class="col-md-8">
+                    <h3>Search over 150,000 vehicles</h3>
+                    <p>Find your dream car from thousands of dealers and private sellers</p>
+                </div>
+                <div class="col-md-2 text-center">
+                    <button class="btn btn-light">Search Now <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Browse by Type Section -->
+    <section class="browse-type py-5 text-center">
+        <div class="container">
+            <h2 class="mb-4">Browse by Type</h2>
+            <div class="row">
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card">
+                        <div class="card-background" style="background-image: url('/images/SUV.png');"></div>
+                        <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                            <h5 class="text-white">SUV</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card">
+                        <div class="card-background" style="background-image: url('/images/sedan.jpeg');"></div>
+                        <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                            <h5 class="text-white">Sedan</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card">
+                        <div class="card-background" style="background-image: url('/images/hatchback.webp');"></div>
+                        <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                            <h5 class="text-white">Hatchback</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card">
+                        <div class="card-background" style="background-image: url('/images/convertible.png');"></div>
+                        <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                            <h5 class="text-white">Convertible</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card">
+                        <div class="card-background" style="background-image: url('/images/Coupe.webp');"></div>
+                        <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                            <h5 class="text-white">Coupe</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Better Way to Test Your Perfect Cars Section -->
+    <section class="test-drive-process py-5 bg-light text-center">
+        <div class="container">
+            <h2 class="mb-4">Better Way to Test Your Perfect Cars</h2>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <i class="fas fa-car fa-3x mb-3 text-dark"></i>
+                    <h5>Choose Your Model</h5>
+                    <p>Select the car you want to test drive.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <i class="fas fa-calendar-alt fa-3x mb-3 text-dark"></i>
+                    <h5>Select the Slot</h5>
+                    <p>Pick a convenient time for your test drive.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <i class="fas fa-check fa-3x mb-3 text-dark"></i>
+                    <h5>Reserve Your Test Car</h5>
+                    <p>Confirm your booking and get ready to drive.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Cars Section -->
+    <section class="featured-cars py-5">
+        <div class="container">
+            <h2 class="mb-4">Featured Cars</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="/images/m5.png" class="card-img-top" alt="BMW M5">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">BMW M5</h5>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="/images/maybach.jpg" class="card-img-top" alt="Maybach S Class">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Maybach S Class</h5>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="/images/mercedes.jpeg" class="card-img-top" alt="Mercedes AMG GLS">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Mercedes AMG GLS</h5>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-us py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Why Choose Us?</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <img src="/images/best-price.svg" alt="Best Price" class="mb-3">
+                        <h5>Best of Financing Offers</h5>
+                        <p>Discover the best financing options and promotions to suit your budget.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <img src="/images/certified.svg" alt="Certified" class="mb-3">
+                        <h5>Certified Car Ownership</h5>
+                        <p>All our cars are certified and verified for your peace of mind.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <img src="/images/secure.svg" alt="Secure" class="mb-3">
+                        <h5>Secure Booking</h5>
+                        <p>Safe and secure booking process with instant confirmation.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <img src="/images/support.svg" alt="Support" class="mb-3">
+                        <h5>Premium Support</h5>
+                        <p>24/7 customer support to assist you with any queries or concerns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Explore Our Services</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-circle">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h5>Consultation</h5>
+                        <p>Get personalized advice from our car experts to find your perfect match.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-circle">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h5>Support</h5>
+                        <p>Our customer support is always ready to assist you with any inquiries or issues.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-circle">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h5>Maintenance</h5>
+                        <p>Regular maintenance services to keep your test drive vehicle in top condition.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-circle">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h5>Delivery</h5>
+                        <p>On-demand test drive delivery service to your preferred location.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-circle">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h5>Financing</h5>
+                        <p>Flexible financing solutions to suit your budget and needs.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-circle">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5>Insurance</h5>
+                        <p>Comprehensive insurance options for a worry-free test drive experience.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics py-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 mb-4">
+                    <div class="stat-item">
+                        <h3>60</h3>
+                        <p>Total Partnerships</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-item">
+                        <h3>1,090</h3>
+                        <p>Total Cars</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-item">
+                        <h3>2,590</h3>
+                        <p>Happy Customers</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-item">
+                        <h3>67</h3>
+                        <p>Total Branches</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Live Chat</a></li>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Site Map</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Our Brands</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Mercedes</a></li>
+                        <li><a href="#">BMW</a></li>
+                        <li><a href="#">Audi</a></li>
+                        <li><a href="#">Ford</a></li>
+                        <li><a href="#">Volkswagen</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Vehicle Type</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">SUV</a></li>
+                        <li><a href="#">Sedan</a></li>
+                        <li><a href="#">Coupe</a></li>
+                        <li><a href="#">Truck</a></li>
+                        <li><a href="#">Van</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 DashDrive. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Enhanced Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
