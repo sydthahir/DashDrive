@@ -1,0 +1,290 @@
+<%- include("../partials/admin/header.ejs") %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-dark sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#userSection">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#vendorSection">
+                            <i class="fas fa-store"></i> Vendors
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <!-- Stats Cards -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Users</h5>
+                            <h2 class="card-text"><%= totalUsers %></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Active Users</h5>
+                            <h2 class="card-text"><%= activeUsers %></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">New Users (This Month)</h5>
+                            <h2 class="card-text"><%= newUsers %></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <section id="userSection" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Users Management</h2>
+                    <div class="form-group d-flex">
+                        <input type="text" class="form-control mr-2" id="userSearch" placeholder="Search users...">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Join Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% users.forEach(user => { %>
+                            <tr>
+                                <td><%= user.id %></td>
+                                <td><%= user.name %></td>
+                                <td><%= user.email %></td>
+                                <td><%= new Date(user.joinDate).toLocaleDateString() %></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info view-btn" data-id="<%= user.id %>">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <% if(user.isBlocked) { %>
+                                    <button class="btn btn-sm btn-success unblock-btn" data-id="<%= user.id %>">
+                                        <i class="fas fa-unlock"></i> Unblock
+                                    </button>
+                                    <% } else { %>
+                                    <button class="btn btn-sm btn-danger block-btn" data-id="<%= user.id %>">
+                                        <i class="fas fa-ban"></i> Block
+                                    </button>
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Vendors Section -->
+            <section id="vendorSection" class="mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Vendors Management</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary active">All Vendors</button>
+                        <button class="btn btn-outline-warning">Pending Approval</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive mt-3">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Vendor ID</th>
+                                <th>Business Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% vendors.forEach(vendor => { %>
+                            <tr>
+                                <td><%= vendor.id %></td>
+                                <td><%= vendor.businessName %></td>
+                                <td><%= vendor.email %></td>
+                                <td>
+                                    <span class="badge badge-<%= vendor.status === 'pending' ? 'warning' : 
+                                                               vendor.status === 'approved' ? 'success' : 
+                                                               'danger' %>">
+                                        <%= vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1) %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info view-vendor-btn" data-id="<%= vendor.id %>">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <% if(vendor.status === 'pending') { %>
+                                    <button class="btn btn-sm btn-success approve-btn" data-id="<%= vendor.id %>">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger reject-btn" data-id="<%= vendor.id %>">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                    <% } else if(!vendor.isBlocked) { %>
+                                    <button class="btn btn-sm btn-danger block-vendor-btn" data-id="<%= vendor.id %>">
+                                        <i class="fas fa-ban"></i> Block
+                                    </button>
+                                    <% } else { %>
+                                    <button class="btn btn-sm btn-success unblock-vendor-btn" data-id="<%= vendor.id %>">
+                                        <i class="fas fa-unlock"></i> Unblock
+                                    </button>
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- Modal for User Details -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Details</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Vendor Details -->
+<div class="modal fade" id="vendorDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vendor Details</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Vendor details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // User Management
+    $('.block-btn').click(function() {
+        const userId = $(this).data('id');
+        if(confirm('Are you sure you want to block this user?')) {
+            $.post(`/admin/users/${userId}/block`)
+                .done(function() {
+                    location.reload();
+                })
+                .fail(function(err) {
+                    alert('Failed to block user');
+                });
+        }
+    });
+
+    $('.unblock-btn').click(function() {
+        const userId = $(this).data('id');
+        if(confirm('Are you sure you want to unblock this user?')) {
+            $.post(`/admin/users/${userId}/unblock`)
+                .done(function() {
+                    location.reload();
+                })
+                .fail(function(err) {
+                    alert('Failed to unblock user');
+                });
+        }
+    });
+
+    // Vendor Management
+    $('.approve-btn').click(function() {
+        const vendorId = $(this).data('id');
+        if(confirm('Are you sure you want to approve this vendor?')) {
+            $.post(`/admin/vendors/${vendorId}/approve`)
+                .done(function() {
+                    location.reload();
+                })
+                .fail(function(err) {
+                    alert('Failed to approve vendor');
+                });
+        }
+    });
+
+    $('.reject-btn').click(function() {
+        const vendorId = $(this).data('id');
+        if(confirm('Are you sure you want to reject this vendor?')) {
+            $.post(`/admin/vendors/${vendorId}/reject`)
+                .done(function() {
+                    location.reload();
+                })
+                .fail(function(err) {
+                    alert('Failed to reject vendor');
+                });
+        }
+    });
+
+    // View Details
+    $('.view-btn').click(function() {
+        const userId = $(this).data('id');
+        $.get(`/admin/users/${userId}`)
+            .done(function(data) {
+                $('#userDetailsModal .modal-body').html(data);
+                $('#userDetailsModal').modal('show');
+            });
+    });
+
+    $('.view-vendor-btn').click(function() {
+        const vendorId = $(this).data('id');
+        $.get(`/admin/vendors/${vendorId}`)
+            .done(function(data) {
+                $('#vendorDetailsModal .modal-body').html(data);
+                $('#vendorDetailsModal').modal('show');
+            });
+    });
+
+    // Search functionality
+    $('#userSearch').on('keyup', function() {
+        const value = $(this).val().toLowerCase();
+        $("#userSection tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+</script>
+
+<%- include("../partials/admin/footer.ejs") %>

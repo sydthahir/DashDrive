@@ -30,13 +30,12 @@
         /* Navbar Styles */
         .navbar {
             padding: 1.2rem 5%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
+
             position: fixed;
             width: 100%;
             z-index: 1000;
             transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
         }
 
         .navbar.scrolled {
@@ -46,11 +45,19 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            letter-spacing: -0.5px;
+        .main-logo {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            z-index: 1000;
+        }
+
+        .main-logo span {
+            color: #8bbd76;
         }
 
         .nav-link {
@@ -104,9 +111,9 @@
 
         .user-icon:hover {
             background: var(--primary);
-            color: white;
+            color: hwb(0 3% 97%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(31, 29, 29, 0.938);
         }
 
         @media (max-width: 991.98px) {
@@ -144,23 +151,26 @@
 
         /* Hero Section */
         .hero-section {
-            min-height: 100vh;
+            min-height: 78vh;
             background-color: white;
             position: relative;
             overflow: hidden;
+
         }
 
         .hero-content {
             padding: 8rem 5rem 2rem;
-            max-width: 650px;
+            max-width: 840px;
+
         }
 
         .hero-content h1 {
-            font-size: 3.5rem;
+            font-size: 4rem;
             font-weight: 600;
             color: var(--text-dark);
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
+            margin-top: 7rem;
+            margin-bottom: 5.5rem;
+            line-height: 1.3;
         }
 
         .hero-content p {
@@ -177,8 +187,10 @@
             right: 0;
             bottom: 0;
             left: 0;
-            clip-path: polygon(25% 0, 100% 0, 100% 100%, 0% 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 25% 100%);
             background: var(--bg-light);
+
+
         }
 
         .diagonal-cut img {
@@ -186,10 +198,12 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
+
         }
 
         .btn-primary {
-            background-color: var(--primary);
+            background-color: var(--hover);
+            color: rgb(0, 221, 221);
             border: none;
             padding: 0.8rem 2rem;
             font-weight: 500;
@@ -221,6 +235,7 @@
             margin: 0;
             font-family: 'Poppins', sans-serif;
             letter-spacing: -0.5px;
+            padding-bottom: 6rem;
         }
 
         .premium-brands a {
@@ -235,6 +250,7 @@
             gap: 0.5rem;
         }
 
+
         .premium-brands a:hover {
             opacity: 0.8;
             transform: translateX(2px);
@@ -248,16 +264,17 @@
         }
 
         .brand-item img {
-            max-width: 100px;
-            height: auto;
-            filter: grayscale(100%);
+            max-width: 80px;
+            height: 80px;
+            object-fit: contain;
             transition: all 0.3s ease;
-            margin-bottom: 0.75rem;
-            opacity: 0.7;
+            margin-bottom: 1.75rem;
+            opacity: 2.5;
         }
 
+
         .brand-item:hover img {
-            filter: grayscale(0%);
+
             transform: translateY(-2px);
             opacity: 1;
         }
@@ -293,167 +310,316 @@
             }
         }
 
-        /* Search Section */
+        /* Search Section Styles */
         .search-section {
-            background-color: var(--primary);
-            color: white;
-            padding: 5rem 0;
+            background-color: #0a0f1c;
+            padding: 3rem 3rem;
+            border-radius: 22px;
+            margin: 2rem auto;
+            max-width: 70%;
+            line-height: 3.2rem;
+
         }
 
-        .search-section h3 {
+        .search-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .search-header i {
+            color: #4263eb;
+            font-size: 1.5rem;
+        }
+
+        .search-section h2 {
+            color: white;
+            font-size: 1.75rem;
             font-weight: 600;
+            margin: 0;
         }
 
         .search-section p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            opacity: 0.8;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
         }
 
-        .search-section .btn-light {
-            background-color: white;
+        .search-btn {
+            background-color: #4263eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
             border: none;
-            padding: 0.8rem 2rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .search-section .btn-light:hover {
-            background-color: var(--hover);
-            transform: translateY(-2px);
+        .search-btn:hover {
+            background-color: #364fc7;
+            color: white;
+            text-decoration: none;
+        }
+
+        .browse-text {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        .car-types {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .car-type {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .car-type:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         /* Browse by Type Section */
         .browse-type {
             padding: 5rem 0;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 8rem;
+            margin-top: 12rem;
         }
 
         .browse-type h2 {
             font-weight: 600;
+            padding-bottom: 3rem;
+            padding-top: 2rem;
+            text-align: center;
         }
 
         .browse-type .card {
+            position: relative;
+            height: 200px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .browse-type .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .browse-type .card:hover .card-background {
+            transform: scale(1.1);
         }
 
         .browse-type .card-background {
-            height: 150px;
+            height: 230px;
             background-size: cover;
             background-position: center;
+            transition: transform 0.3s ease;
         }
 
         .browse-type .card-img-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7));
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
             padding: 1rem;
         }
 
         .browse-type .card-img-overlay h5 {
-            font-weight: 600;
+            font-weight: 500;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .browse-type .row {
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .browse-type .col-md-2 {
+            flex: 0 0 auto;
+            width: 220px;
+            margin: 0 0.5rem;
         }
 
         /* Better Way to Test Your Perfect Cars Section */
         .test-drive-process {
-            padding: 5rem 0;
+            padding: 7rem 0;
             background-color: var(--bg-light);
         }
 
         .test-drive-process h2 {
             font-weight: 600;
+            padding-bottom: 5rem;
         }
 
         .test-drive-process .fas {
             font-size: 2rem;
-            margin-bottom: 1rem;
+            margin-bottom: 3rem;
         }
 
         .test-drive-process h5 {
             font-weight: 600;
         }
 
-        /* Featured Cars Section */
-        .featured-cars {
-            padding: 5rem 0;
-        }
-
-        .featured-cars h2 {
-            font-weight: 600;
-        }
+        /* Featured Cars Section Buttons */
 
         .featured-cars .card {
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
+            height: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .featured-cars .card img {
-            height: 200px;
+        .featured-cars .card-img-top {
+            height: 250px;
+            width: 100%;
             object-fit: cover;
+            object-position: center;
         }
 
-        .featured-cars .card-body {
-            padding: 1rem;
+        .featured-cars .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        .featured-cars .card-title {
-            font-weight: 600;
-        }
 
-        .featured-cars .btn-primary {
-            background-color: var(--primary);
+
+        .featured-cars .btn-book {
+            background-color: #0095ff;
+            color: white;
+            padding: 8px 24px;
             border: none;
-            padding: 0.8rem 2rem;
+            border-radius: 8px;
             font-weight: 500;
             transition: all 0.3s ease;
-            border-radius: 4px;
+            margin: 0 5px;
+            text-transform: capitalize;
         }
 
-        .featured-cars .btn-primary:hover {
-            background-color: var(--hover);
-            transform: translateY(-2px);
+        .featured-cars .btn-details {
+            background-color: #00e676;
+            color: white;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            text-transform: capitalize;
+        }
+
+
+
+        .featured-cars .btn-book:hover,
+        .featured-cars .btn-details:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         /* Why Choose Us Section */
         .why-choose-us {
             padding: 5rem 0;
+            background-color: var(--bg-light);
+        }
+
+        .why-choose-us .container {
+            max-width: 1600px;
+        }
+
+        .why-choose-us h2 {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-top: 5rem;
+            padding-bottom: 3rem;
+        }
+
+        .why-choose-us .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        .why-choose-us .col-md-3 {
+            flex: 0 0 auto;
+            width: 260px;
+            padding: 0 10px;
+            margin-bottom: 8rem;
         }
 
         .feature-card {
-            padding: 2rem;
-            background: #fff;
-            border-radius: 10px;
+            background: white;
+            padding: 2rem 1.5rem;
+            border-radius: 13px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
+            height: 100%;
         }
 
         .feature-card img {
             width: 60px;
             height: 60px;
+            margin-bottom: 1.5rem;
         }
 
         .feature-card h5 {
-            color: var(--text-dark);
-            margin: 1rem 0;
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
             font-weight: 600;
         }
 
         .feature-card p {
-            color: #666;
             font-size: 0.9rem;
-            margin: 0;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .why-choose-us .col-md-3 {
+                width: calc(33.333% - 1rem);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .why-choose-us .col-md-3 {
+                width: calc(50% - 1rem);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .why-choose-us .col-md-3 {
+                width: 100%;
+            }
         }
 
         /* Services Section */
         .services {
             padding: 5rem 0;
             background-color: var(--bg-light);
+            margin-bottom: 8rem;
         }
 
         .service-card {
@@ -478,10 +644,11 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 1.5rem;
+
         }
 
         .icon-circle i {
-            color: #fff;
+            color: #f7f2f2;
             font-size: 1.5rem;
         }
 
@@ -499,87 +666,72 @@
 
         /* Statistics Section */
         .statistics {
-            padding: 5rem 0;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/stats-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            color: #fff;
+            padding: 4rem 0;
+            background: #caddf0;
         }
 
-        .stat-item h3 {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .stat-item {
+            text-align: center;
+            padding: 3.5rem;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: #0d6efd;
             margin-bottom: 0.5rem;
+            line-height: 1;
         }
 
-        .stat-item p {
+        .stat-label {
+            color: #6c757d;
             font-size: 1rem;
-            opacity: 0.9;
             margin: 0;
         }
 
-        /* Footer */
-        .footer {
-            padding: 5rem 0;
-            background: var(--text-dark);
-            color: #fff;
+        /* Footer Styles */
+        footer {
+            background: #fff;
+            padding: 4rem 0 2rem;
+            border-top: 1px solid #eee;
         }
 
-        .footer h5 {
-            color: #fff;
+        footer h5 {
+            font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
+            color: #333;
         }
 
-        .footer ul li {
-            margin-bottom: 0.75rem;
+        footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
-        .footer ul li a {
-            color: rgba(255, 255, 255, 0.8);
+        footer ul li {
+            margin-bottom: 1rem;
+        }
+
+        footer ul li a {
+            color: #666;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
         }
 
-        .footer ul li a:hover {
-            color: #fff;
-            padding-left: 5px;
+        .sale-hours p {
+            margin-bottom: 0.9rem;
+            color: #666;
+            font-size: 0.95rem;
         }
 
-        .social-links a {
-            color: #fff;
-            font-size: 1.2rem;
-            margin-left: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-
-            .feature-card,
-            .service-card {
-                margin-bottom: 1.5rem;
-            }
-
-            .stat-item h3 {
-                font-size: 2rem;
-            }
-
-            .footer {
-                text-align: center;
-            }
-
-            .social-links {
-                margin-top: 1.5rem;
-                text-align: center;
-            }
-
-            .social-links a {
-                margin: 0 0.75rem;
-            }
+        .footer-bottom {
+            margin-top: 6rem;
+            padding-top: 3rem;
+            border-top: 1px solid #1f1c1c;
+            text-align: center;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -588,7 +740,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Dash Drive</a>
+            <a class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -607,7 +759,7 @@
                         <a class="nav-link" href="/contact">Contact</a>
                     </li>
                     <li class="nav-item ml-lg-3">
-                        <a class="nav-link p-0" href="/profile">
+                        <a class="nav-link p-0" href="/login">
                             <div class="user-icon">
                                 <i class="fas fa-user"></i>
                             </div>
@@ -627,7 +779,7 @@
                         <h1>Online Test Drive<br>Booking</h1>
                         <p>Discover our diverse range of brands and models. Here you'll find your personal dream
                             vehicle.</p>
-                        <button class="btn btn-primary">Get Started</button>
+                        <a class="btn btn-primary" href="/login">Get Started</a>
                     </div>
                 </div>
                 <div class="col-md-6 position-relative">
@@ -685,23 +837,29 @@
     </section>
 
     <!-- Search Section -->
-    <section class="search-section bg-primary text-white py-5">
+    <section class="search-section">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-2 text-center">
-                    <i class="fas fa-check-circle fa-3x"></i>
+            <div class="text-center">
+                <div class="search-header justify-content-center">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Search over 150,000 vehicles</h2>
                 </div>
-                <div class="col-md-8">
-                    <h3>Search over 150,000 vehicles</h3>
-                    <p>Find your dream car from thousands of dealers and private sellers</p>
-                </div>
-                <div class="col-md-2 text-center">
-                    <button class="btn btn-light">Search Now <i class="fas fa-arrow-right"></i></button>
+                <p>Explore thousands of trusted used cars and SUVs across India, sourced from our nationwide network of
+                    verified dealers.".</p>
+                <a href="#" class="search-btn">Search Cars <i class="fas fa-arrow-right ms-2"></i></a>
+
+                <div class="browse-text">Or browse by type:</div>
+                <div class="car-types">
+                    <div class="car-type">Automatics Cars</div>
+                    <div class="car-type">SUVs</div>
+                    <div class="car-type">Electrics Cars</div>
+                    <div class="car-type">New in Stock</div>
+                    <div class="car-type">Petrol</div>
+                    <div class="car-type">Diesel</div>
                 </div>
             </div>
         </div>
     </section>
-
     <!-- Browse by Type Section -->
     <section class="browse-type py-5 text-center">
         <div class="container">
@@ -782,10 +940,13 @@
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        <img src="/images/m5.png" class="card-img-top" alt="BMW M5">
+                        <img src="/images/m5 bmw.webp" class="card-img-top" alt="BMW M5">
                         <div class="card-body text-center">
                             <h5 class="card-title">BMW M5</h5>
-                            <button class="btn btn-primary">Book Now</button>
+                            <div class="button-group">
+                                <button class="btn btn-book">Book now</button>
+                                <button class="btn btn-details">Details</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -794,7 +955,10 @@
                         <img src="/images/maybach.jpg" class="card-img-top" alt="Maybach S Class">
                         <div class="card-body text-center">
                             <h5 class="card-title">Maybach S Class</h5>
-                            <button class="btn btn-primary">Book Now</button>
+                            <div class="button-group">
+                                <button class="btn btn-book">Book now</button>
+                                <button class="btn btn-details">Details</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -803,7 +967,10 @@
                         <img src="/images/mercedes.jpeg" class="card-img-top" alt="Mercedes AMG GLS">
                         <div class="card-body text-center">
                             <h5 class="card-title">Mercedes AMG GLS</h5>
-                            <button class="btn btn-primary">Book Now</button>
+                            <div class="button-group">
+                                <button class="btn btn-book">Book now</button>
+                                <button class="btn btn-details">Details</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -818,28 +985,38 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="feature-card text-center">
-                        <img src="/images/best-price.svg" alt="Best Price" class="mb-3">
-                        <h5>Best of Financing Offers</h5>
-                        <p>Discover the best financing options and promotions to suit your budget.</p>
+                        <img src="/images/prmium-test.png" alt="Best Price" class="mb-3">
+                        <h5>Exclusive Premium Test Drives</h5>
+                        <p>Experience luxury firsthand with top-tier vehicles from verified vendors across India.</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="feature-card text-center">
-                        <img src="/images/certified.svg" alt="Certified" class="mb-3">
-                        <h5>Certified Car Ownership</h5>
-                        <p>All our cars are certified and verified for your peace of mind.</p>
+                        <img src="/images/rental-car.png" alt="Certified" class="mb-3">
+                        <h5> Vetted & Trusted Dealers</h5>
+                        <p>We partner only with certified dealers to ensure authenticity and reliability.</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="feature-card text-center">
-                        <img src="/images/secure.svg" alt="Secure" class="mb-3">
-                        <h5>Secure Booking</h5>
-                        <p>Safe and secure booking process with instant confirmation.</p>
+                        <img src="/images/Car Application.png" alt="Secure" class="mb-3">
+                        <h5>Seamless Booking & Payments</h5>
+                        <p>Effortless reservations with secure online payments, including wallet options for added
+                            convenience.</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="feature-card text-center">
-                        <img src="/images/support.svg" alt="Support" class="mb-3">
+                        <img src="/images/checklist.png" alt="Support" class="mb-3">
+                        <h5> Flexible Test Drive Scheduling</h5>
+                        <p>Choose your preferred time and location for a hassle-free test drive experience.</p>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="feature-card text-center">
+                        <img src="/images/mechanic.png" alt="Support" class="mb-3">
                         <h5>Premium Support</h5>
                         <p>24/7 customer support to assist you with any queries or concerns.</p>
                     </div>
@@ -912,31 +1089,31 @@
     </section>
 
     <!-- Statistics Section -->
-    <section class="statistics py-5">
+    <section class="statistics">
         <div class="container">
-            <div class="row text-center">
-                <div class="col-md-3 mb-4">
+            <div class="row">
+                <div class="col-md-3">
                     <div class="stat-item">
-                        <h3>60</h3>
-                        <p>Total Partnerships</p>
+                        <div class="stat-number">28</div>
+                        <p class="stat-label">Year Experienced</p>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3">
                     <div class="stat-item">
-                        <h3>1,090</h3>
-                        <p>Total Cars</p>
+                        <div class="stat-number">1,090</div>
+                        <p class="stat-label">Total Cars</p>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3">
                     <div class="stat-item">
-                        <h3>2,590</h3>
-                        <p>Happy Customers</p>
+                        <div class="stat-number">2,590</div>
+                        <p class="stat-label">Happy Customers</p>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3">
                     <div class="stat-item">
-                        <h3>67</h3>
-                        <p>Total Branches</p>
+                        <div class="stat-number">11</div>
+                        <p class="stat-label">Total Branches</p>
                     </div>
                 </div>
             </div>
@@ -944,63 +1121,72 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer py-5">
+    <footer>
         <div class="container">
             <div class="row">
-                <div class="col-md-3 mb-4">
+                <div class="col-md-2">
                     <h5>Company</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/services">Services</a></li>
+                        <li><a href="/faqs">FAQs</a></li>
+                        <li><a href="/terms">Terms</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-2">
                     <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">Live Chat</a></li>
-                        <li><a href="#">Privacy</a></li>
-                        <li><a href="#">Terms</a></li>
-                        <li><a href="#">Site Map</a></li>
+                    <ul>
+                        <li><a href="/contact">Get in Touch</a></li>
+                        <li><a href="/help">Help center</a></li>
+                        <li><a href="/live-chat">Live chat</a></li>
+                        <li><a href="/how-it-works">How it works</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-2">
                     <h5>Our Brands</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Mercedes</a></li>
-                        <li><a href="#">BMW</a></li>
-                        <li><a href="#">Audi</a></li>
+                    <ul>
+                        <li><a href="#">Mercedes-Benz</a></li>
                         <li><a href="#">Ford</a></li>
+                        <li><a href="#">Audi</a></li>
+                        <li><a href="#">BMW</a></li>
+                        <li><a href="#">Volvo</a></li>
+                        <li><a href="#">Nissan</a></li>
+                        <li><a href="#">Land Rover</a></li>
                         <li><a href="#">Volkswagen</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3 mb-4">
-                    <h5>Vehicle Type</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#">SUV</a></li>
+                <div class="col-md-2">
+                    <h5>Vehicles Type</h5>
+                    <ul>
                         <li><a href="#">Sedan</a></li>
+                        <li><a href="#">Hatchback</a></li>
+                        <li><a href="#">SUV</a></li>
+                        <li><a href="#">Hybrid</a></li>
+                        <li><a href="#">Electric</a></li>
                         <li><a href="#">Coupe</a></li>
-                        <li><a href="#">Truck</a></li>
-                        <li><a href="#">Van</a></li>
+                        <li><a href="#">Convertible</a></li>
                     </ul>
                 </div>
-            </div>
-            <hr class="my-4">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="mb-0">&copy; 2025 DashDrive. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                <div class="col-md-2">
+                    <h5>Sale Hours</h5>
+                    <div class="sale-hours">
+                        <p>Monday – Friday: 09:00AM – 09:00 PM</p>
+                        <p>Saturday: 09:00AM – 07:00PM</p>
+                        <p>Sunday: Closed</p>
                     </div>
                 </div>
+                <div class="col-md-2">
+                    <h5>Connect With Us</h5>
+                    <p>support@dashdrive.com</p>
+                    <p>+91 8921515057</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 dashdrive.in All rights reserved.</p>
+                <a href="/terms">Terms & Conditions</a>
+                <a href="/privacy">Privacy Notice</a>
             </div>
         </div>
     </footer>

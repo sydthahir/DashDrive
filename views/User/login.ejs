@@ -42,7 +42,7 @@
         }
 
         .main-logo span {
-            color: #007bff;
+            color: #8bbd76;
         }
 
         .login-container {
@@ -222,6 +222,20 @@
             margin: 0 1rem;
         }
 
+        .forgot-password-link {
+            font-size: 0.875rem;
+            color: #007bff;
+            text-decoration: none;
+
+
+        }
+
+        .forgot-password-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+
+        }
+
         @media (max-width: 992px) {
             .login-container {
                 margin: 0;
@@ -297,22 +311,23 @@
                                 <input type="checkbox" class="form-check-input" id="remember">
                                 <label class="form-check-label" for="remember">Remember me</label>
                             </div>
-                            <a href="/forgot-password" class="text-primary text-decoration-none">Forgot
+                            <a href="/forgot-password" class="forgot-password-link ms-auto">Forgot
                                 Password?</a>
                         </div>
 
                         <% if (typeof message !=='undefined' ) { %>
                             <p style="color: red">
-                              <%= message %>
+                                <%= message %>
                             </p>
                             <% } %>
 
-                        <button type="submit" class="btn btn-login mb-4">Login</button>
+                                <button type="submit" class="btn btn-login mb-4">Login</button>
 
-                        <div class="text-center">
-                            <p class="mb-0">Don't have an account? <a href="/signup" class="text-primary fw-bold">Sign
-                                    Up</a></p>
-                        </div>
+                                <div class="text-center">
+                                    <p class="mb-0">Don't have an account? <a href="/signup"
+                                            class="text-primary fw-bold">Sign
+                                            Up</a></p>
+                                </div>
                     </form>
                 </div>
             </div>

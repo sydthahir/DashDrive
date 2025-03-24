@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: {
         type: String,
-        requied: true
+        required: true
     },
     email: {
         type: String,
@@ -25,10 +25,8 @@ const userSchema = new Schema({
     },
     phone: {
         type: String,
-        requied: false,
         unique: true,
-        default: null
-
+        sparse: true
     },
     isBlocked: {
         type: Boolean,

@@ -7,6 +7,7 @@ const session = require("express-session")
 const passport = require("./config/passport")
 const db = require("./config/db")
 const userRouter = require("./routes/userRouter")
+const adminRouter = require("./routes/adminRouter")
 
 db()
 
@@ -29,10 +30,11 @@ app.use(session({
 app.use(cookieParser())
 
 app.use(passport.initialize())
-app.use(passport.session())
+
 
 
 app.use("/", require("./routes/userRouter"))
+app.use("/admin", require("./routes/adminRouter"))
 
 
 app.use((req, res, next) => {
@@ -41,13 +43,14 @@ app.use((req, res, next) => {
 })
 
 app.set("view engine", "ejs")
-app.set("views", path.join(__dirname, "views/user"), path.join(__dirname, "views/Admin"), path.join(__dirname, "views/Vendor"))
+app.set("views", [path.join(__dirname, "views/User"), path.join(__dirname, "views/Admin"), path.join(__dirname, "views/Vendor")])
 app.use(express.static("public"))
 
 app.use("/", userRouter)
+app.use("/admin", adminRouter)
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log("Server Running on Port 3001")
+app.listen(process.env.PORT || 3001, () => {
+    console.log("Server Running on Port 3000")
 })
 
 module.exports = app;
