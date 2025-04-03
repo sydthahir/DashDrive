@@ -256,37 +256,38 @@ const resendOTP = async (req, res) => {
 
 //Password resetting
 const postNewPassword = async (req, res) => {
+
+    console.log("Password from request:", req.body.newPassword);
     try {
 
-        const { newPass1, newPass2 } = req.body
-        const email = req.session.email
+        const { newPassword, confirmPassword } = req.body;
+        const userId = req.session.userId;
 
-        if (newPass1 === newPass2) {
-            const passwordHash = await securePassword(newPass1)
+        if (newPassword === confirmPassword) {
+            const passwordHash = await securePassword(newPassword)
 
 
             await User.updateOne(
+                { _id: userId },
                 {
-                    email: email
-                }, {
-                $set: { password: passwordHash }
-            }
+                    $set: { password: passwordHash }
+                }
 
 
             )
             console.log("Password Reset Success");
 
-
-            res.redirect("/login")
-        } else {
-            res.resnder("reset-password", { message: "Password does not match" })
+            const user = await User.findById(userId);
+            if (user && user.isAdmin) {
+                return res.redirect("/admin/login");
+            } else {
+                return res.redirect("/login");
+            }
         }
-
     } catch (error) {
-        res.redirect("/pageNotFound")
-
+        console.error("Error in postNewPassword:", error);
+        return res.redirect("/pageNotFound");
     }
-
 }
 
 

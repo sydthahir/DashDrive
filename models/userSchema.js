@@ -28,6 +28,13 @@ const userSchema = new Schema({
         unique: true,
         sparse: true
     },
+    address: {
+        street: { type: String, default: '' },
+        city: { type: String, default: '' },
+        state: { type: String, default: '' },
+        pincode: { type: String, default: '' },
+        country: { type: String, default: '' }
+    },
     isBlocked: {
         type: Boolean,
         default: false
@@ -35,6 +42,10 @@ const userSchema = new Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    walletBalance: {
+        type: Number,
+        default: 0
     },
     wallet: {
         type: Schema.Types.ObjectId,

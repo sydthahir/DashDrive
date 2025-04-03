@@ -53,6 +53,18 @@ async function sendverifyEmail(email, otp) {
 }
 
 
+//Loading of landing page
+
+const loadLandingPage = async (req, res) => {
+  try {
+    return res.render("landingPage");
+  } catch (error) {
+    console.log("page not found");
+    res.status(500).send("Server error");
+  }
+
+}
+
 //Load Signup page
 const loadSignup = async (req, res) => {
   try {
@@ -79,16 +91,7 @@ const signup = async (req, res) => {
     } else {
       var otp = generateOTP();
     }
-
-
-
-    const emailSend = await sendverifyEmail(email, otp);
-    if (!emailSend) {
-      return res.json("Error while sending email");
-    }
     const hashedPassword = await securePassword(password);
-
-
     const payload = {
       name,
       email,
@@ -98,6 +101,17 @@ const signup = async (req, res) => {
 
     // Sign the JWT
     const token = jwt.sign(payload, process.env.JWT_SECRET);
+
+
+
+    const emailSend = await sendverifyEmail(email, otp);
+    if (!emailSend) {
+      return res.json("Error while sending email");
+    }
+
+
+
+
 
     // Render OTP verification page with the token
     res.render("verify-otp", { token });
@@ -229,9 +243,28 @@ const resendOTP = async (req, res) => {
 //loading of Login page 
 const loadLogin = async (req, res) => {
   try {
+    const token = req.cookies.auth_token;
+
+    if (token) {
+      try {
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        return res.redirect("/home");
+
+      } catch (err) {
+        // If token is invalid, clear the cookie
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict"
+        });
+      }
+    }
+
     return res.render("login");
   } catch (error) {
-    console.log("login page is not found");
+    console.log("Login page error:", error);
     res.status(500).send("Server Error");
   }
 };
@@ -255,7 +288,7 @@ const login = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, findUser.password)
 
     if (!passwordMatch) {
-      return res.render("login", { message: "Incorrect Password" })
+      return res.render("login", { message: "Incorrect Username or  Password" })
     }
 
 
@@ -264,15 +297,25 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+  
 
+    res.clearCookie("auth_token", { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/"
+    });
 
     res.cookie("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 3600000,
+      sameSite: "strict"
     })
 
-    res.redirect("/")
+    res.redirect("/home")
+    console.log("login success");
+
 
   } catch (error) {
 
@@ -287,7 +330,7 @@ const login = async (req, res) => {
 //Load homepage
 const loadHomepage = async (req, res) => {
   try {
-    return res.render("landingPage");
+    return res.render("home");
 
   } catch (error) {
     console.log("page not found");
@@ -299,13 +342,47 @@ const loadHomepage = async (req, res) => {
 //Loading of profile page
 const profile = async (req, res) => {
   try {
+    // User object is already attached by auth middleware
+    const user = req.user;
 
-    return res.render("profile")
+    if (!user) {
+      console.log("User not found in database");
+      return res.status(404).send("User not found");
+    }
+
+    return res.render("profile", {
+      user,
+      wallet: { balance: user.walletBalance || 0 },
+      transactions: []
+    });
 
   } catch (error) {
-    console.log("Profile page not found");
-    res.status(500).send("server error")
+    console.error("Error loading profile:", error);
+    res.status(500).send("Server error")
+  }
+}
 
+
+//Logout 
+const logout = async (req, res) => {
+
+  try {
+
+    // Clear the auth_token cookie
+    res.clearCookie("auth_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/"
+    })
+    res.redirect("/login");
+    console.log("logout successful");
+
+
+  } catch (error) {
+
+    console.error("Logout error:", error);
+    res.status(500).send("Server error");
   }
 
 }
@@ -322,15 +399,17 @@ const loadCarsPage = async (req, res) => {
 };
 
 module.exports = {
+  loadLandingPage,
   loadHomepage,
   loadSignup,
   signup,
-  loadLogin,
   verifyOTP,
   resendOTP,
   pageNotFound,
+  loadLogin,
   login,
   loadCarsPage,
-  profile
+  profile,
+  logout
 
 };

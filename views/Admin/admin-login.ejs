@@ -4,31 +4,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DashDrive Admin Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Admin Login - DashDrive</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/modern-style.css">
+
   <style>
-    :root {
-      --primary-color: #333333;
-      --hover-color: #1a1a1a;
-      --bg-light: #faf9f6;
-      --text-dark: #2d2d2d;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Nunito Sans', sans-serif'
-
-    }
-
     body {
-      background-color: var(--bg-light);
+      font-family: 'Montserrat', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding-top: 2rem;
+      background-color: #ffffff;
+      position: relative;
+      padding-top: 80px;
     }
 
     .main-logo {
@@ -47,82 +45,135 @@
     }
 
     .login-container {
-      background: #f5da9a;
-      padding: 2.5rem;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 550px;
-      margin: 13rem;
+      max-width: 1400px;
+      margin: 2rem auto;
+      background-color: #f5da9a;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .login-header {
+    .login-left {
+      position: relative;
+      overflow: hidden;
+      min-height: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-left::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/images/car-porsche-classic-porsche-911-str-wallpaper-preview.jpg');
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.5s ease;
+      z-index: 0;
+    }
+
+    .login-left:hover::before {
+      transform: scale(1.1);
+    }
+
+    .login-content {
+      position: relative;
+      z-index: 1;
+      color: #ffffff;
+      max-width: 80%;
+      padding: 3rem;
       text-align: center;
+    }
+
+    .login-content h1 {
+      font-size: 3.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .login-content p {
+      font-size: 1.2rem;
+      line-height: 1.8;
       margin-bottom: 2rem;
     }
 
-    .login-header h1 {
-      color: var(--text-dark);
-      font-size: 2rem;
+    .login-right {
+      padding: 3rem;
+      background-color: #f5da9a;
+    }
+
+    .form-container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #f5da9a;
+    }
+
+    .form-control {
+      border: 1px solid #e1e1e1;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+      font-family: Zen Kaku Gothic Antique;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+      background-color: #fff;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #2d3436;
       margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      font-family: Zen Kaku Gothic Antique;
+      letter-spacing: 0.5px;
     }
 
-    .form-group {
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    .form-group input {
+    .btn-login {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
+      padding: 1rem;
+      background-color: #333333;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      font-family: 'Montserrat', sans-serif;
     }
 
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--primary-color);
+    .btn-login:hover {
+      background-color: #1a1a1a;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(51, 51, 51, 0.2);
+    }
+
+    .password-field {
+      position: relative;
     }
 
     .password-toggle {
       position: absolute;
-      right: 12px;
-      top: 65%;
+      right: 1rem;
+      top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: var(--text-dark);
-      opacity: 0.7;
-      transition: opacity 0.3s;
+      color: #6c757d;
+      transition: color 0.3s ease;
     }
 
     .password-toggle:hover {
-      opacity: 1;
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .login-btn:hover {
-      background-color: var(--hover-color);
+      color: #007bff;
     }
 
     .error-message {
@@ -132,62 +183,119 @@
       text-align: center;
     }
 
-    @media (max-width: 480px) {
-      .brand-text {
+    @media (max-width: 768px) {
+      .login-left {
+        min-height: 300px;
+      }
+
+      .login-content h1 {
         font-size: 2.5rem;
-        margin-bottom: 1.5rem;
       }
 
-      .login-container {
-        padding: 1.5rem;
-      }
-
-      .login-header h1 {
-        font-size: 1.75rem;
+      .login-content p {
+        font-size: 1rem;
       }
     }
   </style>
 </head>
 
 <body>
-  <a class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
+  <a href="/" class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
   <div class="login-container">
-    <div class="login-header">
-      <h1>Admin Login</h1>
-      <p class="text-muted">Welcome back to DashDrive</p>
+    <div class="row g-0">
+      <div class="col-lg-6">
+        <div class="login-left">
+          <div class="login-content">
+            <h1>Welcome Back</h1>
+            <p>Access your admin dashboard to manage DashDrive's operations and user experiences.</p>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-lg-6">
+        <div class="login-right">
+          <div class="form-container">
+            <div class="text-center mb-4">
+              <h2 class="mb-2">Admin Login</h2>
+              <p class="text-muted">Enter your credentials to continue</p>
+            </div>
+            <form action="/admin/login" method="POST" class="needs-validation" novalidate>
+              <div class="mb-4">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+              </div>
+
+              <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <div class="password-field">
+                  <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                  <span class="password-toggle" onclick="togglePassword('password')">
+                    <i class="far fa-eye"></i>
+                  </span>
+                </div>
+                <div class="invalid-feedback">Password must be at least 6 characters long.</div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="remember">
+                  <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+                <a href="/forgot-password" class="text-decoration-none">Forgot Password?</a>
+              </div>
+
+              <% if (typeof message !=='undefined' ) { %>
+                <div class="error-message mb-3">
+                  <%= message %>
+                </div>
+                <% } %>
+
+                  <button type="submit" class="btn btn-login">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <form action="/admin/login" method="POST">
-      <div class="form-group">
-        <label for="email">EMAIL</label>
-        <input type="email" id="email" name="email" required placeholder="Enter your email">
-      </div>
-      <div class="form-group">
-        <label for="password">PASSWORD</label>
-        <input type="password" id="password" name="password" required placeholder="Enter your password">
-      </div>
-      <% if (message) { %>
-        <p style="color: red;"><%= message %></p>
-    <% } %>
-          <button type="submit" class="login-btn">Login</button>
-    </form>
   </div>
 
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
+  <!-- Form Validation Script -->
   <script>
-    const togglePassword = document.getElementById('togglePassword');
-    const password = document.getElementById('password');
+    // Password toggle functionality
+    function togglePassword(fieldId) {
+      const passwordField = document.getElementById(fieldId);
+      const icon = event.currentTarget.querySelector('i');
 
-    togglePassword.addEventListener('click', function () {
-      // Toggle the password visibility
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
 
-      // Toggle the eye icon
-      this.classList.toggle('fa-eye');
-      this.classList.toggle('fa-eye-slash');
-    });
+    // Form validation
+    (function () {
+      'use strict'
+      const forms = document.querySelectorAll('.needs-validation')
+
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
   </script>
 </body>
 

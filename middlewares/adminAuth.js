@@ -1,23 +1,31 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const adminAuth = (req, res, next) => {
+const authenticateAdmin = (req, res, next) => {
+    const token = req.cookies.auth_token;
+
+    if (!token) {
+        console.log("No token found");
+        return res.redirect("/admin/login?error=Please login to access this page");
+    }
+
     try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const token = req.cookies.token;
-
-        if (!token) {
+        // Verify if user is admin
+        if (!decoded.isAdmin) {
+            console.log("User is not an admin");
+            res.clearCookie("auth_token");
             return res.redirect("/admin/login");
         }
 
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        req.userId = decoded.id;
-
+        req.user = decoded;
         next();
     } catch (error) {
-        return res.redirect('/admin/login');
+        console.log("Token verification failed:", error.message);
+        res.clearCookie("auth_token");
+        return res.redirect("/admin/login");
     }
 };
 
-module.exports = adminAuth
+module.exports = authenticateAdmin;
