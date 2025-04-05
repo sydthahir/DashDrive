@@ -139,10 +139,9 @@ const securePassword = async (password) => {
 //Verification of OTP
 const verifyOTP = async (req, res) => {
 
-  const token = req.body?.token;
-  const otp = req.body?.otp;
-  try {
 
+  try {
+    const { token, otp } = req.body;
 
     if (!token) {
       return res.status(400).json({
@@ -166,6 +165,8 @@ const verifyOTP = async (req, res) => {
 
     const { name, email, hashedPassword } = decoded;
 
+
+    //Create new user on DB
     const newUser = new User({
       name: name,
       email: email,
@@ -297,9 +298,9 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-  
 
-    res.clearCookie("auth_token", { 
+
+    res.clearCookie("auth_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

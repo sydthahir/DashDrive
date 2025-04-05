@@ -54,15 +54,17 @@ const userSchema = new Schema({
     bookingsDetails: {
         type: Schema.Types.ObjectId,
         ref: "bookings"
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
+},
+    {
+        timestamps: true,
 
 
-})
+    })
 
 
+
+
+    
 const User = mongoose.model("User", userSchema)
 module.exports = User

@@ -3,9 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
-
-
-
+const Vendor = require("../../models/vendorSchema");
 
 //Page error
 const pageError = async (req, res) => {
@@ -208,24 +206,27 @@ const loadBookings = async (req, res) => {
 
 //Load Vendors
 const loadVendors = async (req, res) => {
-
     try {
-
         const adminId = req.user.id;
         const admin = await User.findById(adminId);
-
 
         if (!admin || !admin.isAdmin) {
             return res.redirect("/admin/login");
         }
 
-        res.render('vendors');
+        const vendors = await Vendor.find({})
+            .select('name email phone isVerified isBlocked createdAt')
+            .sort({ createdAt: -1 });
 
+        res.render('vendors', {
+            admin,
+            vendors,
+            currentPage: 'vendors'
+        });
 
     } catch (error) {
         console.error('Vendor page error:', error);
         return res.redirect("/page-error");
-
     }
 }
 

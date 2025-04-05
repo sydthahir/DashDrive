@@ -10,9 +10,10 @@ const adminRouter = require("./routes/adminRouter")
 const vendorRouter = require("./routes/vendorRouter")
 
 
+
 db()
 
-// Middleware to prevent page caching
+// Middleware to prevent  caching
 app.use((req, res, next) => {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
     res.setHeader("Pragma", "no-cache");
