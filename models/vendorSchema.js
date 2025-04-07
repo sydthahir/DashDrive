@@ -64,6 +64,8 @@ const vendorSchema = new Schema({
         type: String,
         required: false
     },
+    resetOTP: String,          
+    resetOTPExpiry: Date,
 
     expiresAt: {
         type: Date,

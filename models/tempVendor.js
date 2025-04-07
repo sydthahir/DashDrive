@@ -12,6 +12,8 @@ const tempVendorSchema = new Schema({
     businessLicense: String,
     taxId: String,
     otp: String,
+    resetOTP: String,          
+    resetOTPExpiry: Date,
     expiresAt: Date
 },
     {

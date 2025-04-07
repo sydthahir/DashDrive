@@ -267,7 +267,7 @@ const login = async (req, res) => {
 
         // Check if account is approved
         if (findVendor.isApproved) {
-            res.render("vendor-login", { message: "Account is not yet approved  " })
+            res.render("vendor-login", { message: "Account is not yet approved" })
         }
 
         const passwordMatch = await bcrypt.compare(password, findVendor.password)
@@ -297,8 +297,10 @@ const login = async (req, res) => {
             maxAge: 3600000,
             sameSite: "strict"
         })
-        console.log("Login success for:", email);
+
         res.redirect("/vendor/dashboard")
+
+
 
 
 
@@ -319,7 +321,9 @@ const getDashboard = async (req, res) => {
         if (!req.vendor.isApproved) {
             return res.redirect("/vendor/login?message=Account is not yet approved by admin");
         }
+        console.log("Login success");
         return res.render("vendorDashboard");
+
 
     } catch (error) {
         console.log("Dashboard error");
@@ -345,7 +349,7 @@ const forgotValidation = async (req, res) => {
         const { email } = req.body;
         console.log(req.body);
         const findVendor = await Vendor.findOne({ email: email });
-        console.log(findVendor);
+
 
         if (!email) {
             return res.render("forgotPass", { message: "Please provide an email address." });
@@ -372,10 +376,12 @@ const forgotValidation = async (req, res) => {
         await findVendor.save();
 
         // Send the OTP to the user's email
-        const emailSent = await sendVerifyEmail(trimmedEmail, otp);
+
+        const emailSent = await sendOtpMail(email, otp);
         if (!emailSent) {
             return res.render("forgotPass", { message: "Failed to send OTP" });
         }
+
 
         res.render("forgotPasswordOTP", { email: trimmedEmail, message: "OTP sent to your email" });
     } catch (error) {
@@ -408,6 +414,7 @@ const verifyForgotOTP = async (req, res) => {
         }
 
 
+
         // Check if OTP exists and is not expired
         if (!vendor.resetOTP || !vendor.resetOTPExpiry) {
             return res.status(400).json({
@@ -415,7 +422,7 @@ const verifyForgotOTP = async (req, res) => {
                 message: "No OTP request found",
             });
         }
-        console.log("Reached verifyForgotOTP");
+
 
         if (new Date() > vendor.resetOTPExpiry) {
             return res.status(400).json({
@@ -437,21 +444,22 @@ const verifyForgotOTP = async (req, res) => {
 
 
 
-        // Clear OTP fields after successful verification
+        // Clear OTP fields after verification
         vendor.resetOTP = undefined;
         vendor.resetOTPExpiry = undefined;
         await vendor.save();
 
 
-        // Generate a JWT token for password reset
+        // Generate a JWT token 
         const resetToken = jwt.sign(
             { email: vendor.email, purpose: "reset-password" },
             process.env.JWT_SECRET,
-            { expiresIn: "15m" } // Short expiration for security
+            { expiresIn: "15m" }
         );
         return res.status(200).json({
             success: true,
             message: "OTP verified successfully",
+            resetToken
         });
 
 
@@ -491,11 +499,11 @@ const resendForgetOTP = async (req, res) => {
         vendor.resetOTPExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiry
         await vendor.save();
 
-        const emailSent = await sendVerifyEmail(email, newOTP);
+        const emailSent = await sendOtpMail(email, newOTP);
         if (!emailSent) {
             return res.status(500).json({
                 success: false,
-                message: "Failed to resend OTP."
+                message: "Failed to send OTP."
             });
         }
 
@@ -503,6 +511,7 @@ const resendForgetOTP = async (req, res) => {
             success: true,
             message: "OTP resent successfully."
         });
+
     } catch (error) {
         console.error("Error resending OTP:", error);
         return res.status(500).json({
@@ -515,10 +524,28 @@ const resendForgetOTP = async (req, res) => {
 // Load Reset Password Page
 const loadResetPassword = async (req, res) => {
     try {
-        if (!req.session.canResetPassword || !req.session.resetEmail) {
-            return res.redirect("/vendor/forgot-password");
+        const { token } = req.query;
+
+        if (!token) {
+            return res.redirect("/vendor/forgot-password?error=No reset token provided");
         }
-        res.render("resetPassword", { email: req.session.resetEmail, message: null });
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.redirect("/vendor/forgot-password?error=Invalid or expired reset token");
+        }
+
+
+
+        const vendor = await Vendor.findOne({ email: decoded.email });
+        if (!vendor) {
+            return res.redirect("/vendor/forgot-password?error=Vendor not found");
+        }
+
+        res.render("resetPassword", { email: decoded.email, message: null, token });
+
     } catch (error) {
         console.error("Error loading reset password page:", error);
         res.redirect("/page-error");
@@ -528,34 +555,45 @@ const loadResetPassword = async (req, res) => {
 // Handle Password Reset
 const resetPassword = async (req, res) => {
     try {
-        const { password, confirmPassword } = req.body;
-        const email = req.session.resetEmail;
+        const { password, confirmPassword, token } = req.body;
 
-        if (!req.session.canResetPassword || !email) {
-            return res.render("resetPassword", { email: null, message: "Session expired. Please try again." });
+
+        if (!token) {
+
+
+            return res.render("resetPassword", { email: null, message: "No reset token provided", token: null });
         }
+
+
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.render("resetPassword", { email: null, message: "Invalid or expired reset token", token: null });
+        }
+
+
+
+        const vendor = await Vendor.findOne({ email: decoded.email });
+        if (!vendor) {
+            return res.render("resetPassword", { email: null, message: "Vendor not found", token: null });
+        }
+
+
 
         if (password !== confirmPassword) {
-            return res.render("resetPassword", { email, message: "Passwords do not match." });
-        }
-
-        const vendor = await Vendor.findOne({ email });
-        if (!vendor) {
-            return res.render("resetPassword", { email, message: "Vendor not found." });
+            return res.render("resetPassword", { email: decoded.email, message: "Passwords do not match", token });
         }
 
         const hashedPassword = await securePassword(password);
         vendor.password = hashedPassword;
         await vendor.save();
 
-        // Clear session
-        req.session.canResetPassword = false;
-        req.session.resetEmail = null;
-
         res.redirect("/vendor/login?message=Password reset successful");
     } catch (error) {
         console.error("Error resetting password:", error);
-        res.render("resetPassword", { email: req.session.resetEmail, message: "An error occurred." });
+        res.render("resetPassword", { email: null, message: "An error occurred", token: req.body.token || null });
     }
 };
 

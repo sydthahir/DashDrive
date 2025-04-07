@@ -11,11 +11,11 @@ const requireAuth = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const vendor = await Vendor.findById(decoded.id);
+        const vendor = await Vendor.findById(decoded.vendorId);
 
         if (!vendor) {
             res.clearCookie('auth_token');
-            console.log("no token found");
+            console.log("no vendor found");
 
             return res.redirect('/vendor/login?error=Invalid session');
         }
@@ -30,7 +30,7 @@ const requireAuth = async (req, res, next) => {
         if (!vendor.isApproved) {
             res.clearCookie("auth_token");
             console.log("not approved");
-            return res.redirect("/vendor/login?message=Account is not yet approved by admin");
+            return res.redirect("/vendor/login?message=Account is not yet approved by admin, Please try after sometime");
 
         }
 
