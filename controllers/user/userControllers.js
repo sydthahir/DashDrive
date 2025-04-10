@@ -1,8 +1,12 @@
 const User = require("../../models/userSchema");
+const TempUser = require('../../models/tempUserSchema')
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
-const nodemailer = require("nodemailer");
+const generateOTP = require('../../utils/otpGenerator');
+const sendOtpMail = require('../../utils/mailer');
+const { securePassword } = require('../../utils/hashPassword');
+const { name } = require("ejs");
 
 
 //Load Page-not-found page
@@ -16,42 +20,6 @@ const pageNotFound = async (req, res) => {
   }
 
 }
-
-
-//Generation of otp email verification
-function generateOTP() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
-//Sending of verication email with nodemailer
-async function sendverifyEmail(email, otp) {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      port: 587,
-      secure: false,
-      requireTLS: true,
-      auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
-      },
-    });
-
-    const info = await transporter.sendMail({
-      from: process.env.NODEMAILER_EMAIL,
-      to: email,
-      subject: "Email Verification for Your Account",
-      text: `Your OTP is ${otp}`,
-      html: `<b>Your OTP : ${otp}</b>`,
-    });
-
-    return info.accepted.length > 0;
-  } catch (error) {
-    console.error("Error while sending email", error);
-    return false;
-  }
-}
-
 
 //Loading of landing page
 
@@ -68,6 +36,8 @@ const loadLandingPage = async (req, res) => {
 //Load Signup page
 const loadSignup = async (req, res) => {
   try {
+
+
     return res.render("signup");
   } catch (error) {
     console.log("Signup page is not found");
@@ -88,51 +58,53 @@ const signup = async (req, res) => {
     if (findUser) {
       console.log("user exists");
       return res.render("signup", { message: "User with these email already exists" });
-    } else {
-      var otp = generateOTP();
     }
-    const hashedPassword = await securePassword(password);
-    const payload = {
+    var otp = generateOTP();
+
+
+
+
+
+    const emailSent = await sendOtpMail(email, otp);
+    if (!emailSent) {
+      return res.render("signup", { message: "Error sending verification email" });
+    }
+
+
+
+
+
+    // Temporarily store registration data and OTP 
+    const tempData = {
       name,
       email,
-      hashedPassword,
+      password,
       otp,
+      expiresAt: Date.now() + 10 * 60 * 1000 // 10-minute expiration
     };
 
-    // Sign the JWT
-    const token = jwt.sign(payload, process.env.JWT_SECRET);
 
 
 
-    const emailSend = await sendverifyEmail(email, otp);
-    if (!emailSend) {
-      return res.json("Error while sending email");
+    //Checks duplicate TempUser
+    const existingTempData = await TempUser.findOne({ email });
+    if (existingTempData) {
+      await TempUser.deleteOne({ email }); // 
     }
+    await TempUser.create(tempData);
 
 
 
 
-
-    // Render OTP verification page with the token
-    res.render("verify-otp", { token });
+    res.render("verify-otp", { email: tempData.email, message: null });
     console.log("OTP sent successfully", otp);
+
+
   } catch (error) {
-    console.error("Error while creating user", error);
+    console.error("Error while creating vendor account", error);
     res.redirect("/pageNotFound");
   }
-};
-
-
-//Password hashing
-const securePassword = async (password) => {
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    return passwordHash;
-  } catch (error) {
-    console.error("Error hashing password:", error);
-    throw error;
-  }
-};
+}
 
 
 
@@ -141,58 +113,81 @@ const verifyOTP = async (req, res) => {
 
 
   try {
-    const { token, otp } = req.body;
 
-    if (!token) {
+    const { otp, email } = req.body;
+
+    console.log("entered otp", otp);
+
+    if (!email || !otp) {
       return res.status(400).json({
         success: false,
-        message: "Token is missing",
-      });
-    }
-    console.log("Entered OTP:", otp);
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-
-
-
-    if (decoded.otp !== String(otp)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid OTP",
+        message: "Email and OTP are required",
       });
     }
 
-    const { name, email, hashedPassword } = decoded;
+    // Find temporary data by email
+    const tempData = await TempUser.findOne({ email });
+    if (!tempData) {
+      console.log("TempData not found for email:", email);
+      return res.render("enter-OTP", {
+        email,
+        message: "Invalid or expired OTP"
+      });
+    }
+
+
+
+
+
+    // OTP comparison
+    if (String(tempData.otp) !== String(otp) || Date.now() > tempData.expiresAt) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP",
+      });
+    }
+
+
+
+    //Hash password
+    const hashedPassword = await securePassword(tempData.password);
+
+
 
 
     //Create new user on DB
     const newUser = new User({
-      name: name,
-      email: email,
+      name: tempData.name,
+      email: tempData.email,
       password: hashedPassword,
     });
-
-
-    if (req.body.phone && req.body.phone.trim() !== "") {
-      newUser.phone = req.body.phone;
-    }
-
 
     await newUser.save();
     console.log("New User created");
 
 
+    // Delete temporary data
+    await TempUser.deleteOne({ email });
 
-    res.status(200).json({
+    //Generating JWT token
+    const token = jwt.sign(
+      { id: newUser._id, email: newUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    console.log("token is :", token);
+
+
+    return res.status(200).json({
       success: true,
-      message: "OTP verified successfully",
+      message: "Account created successfully"
     });
+
   } catch (error) {
-    console.error("Error verifying OTP", error);
-    res.status(400).json({
+    console.error("Error verifying OTP:", error.message);
+    return res.status(500).json({
       success: false,
-      message: "Invalid or expired token",
+      message: "An error occurred while verifying OTP. Please try again."
     });
   }
 };
@@ -203,139 +198,120 @@ const resendOTP = async (req, res) => {
   try {
 
 
-    const { token } = req.body;
-    if (!token) {
+    const { email } = req.body;
+    if (!email) {
       return res.status(400).json({
         success: false,
-        message: "Token is missing",
+        message: "Email is required to resend OTP"
       });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { name, email, hashedPassword } = decoded;
-    const otp = generateOTP()
 
-    const newPayload = {
-      name,
-      email,
-      hashedPassword,
-      otp,
+    const tempData = await TempUser.findOne({ email });
+    if (!tempData) {
+      return res.status(400).json({
+        success: false,
+        message: "No pending registration found for this email",
+      });
     }
 
-    const newToken = jwt.sign(newPayload, process.env.JWT_SECRET);
+    const newOTP = generateOTP();
 
-
-    const emailSend = await sendverifyEmail(email, otp)
-
-    if (emailSend) {
-      console.log("Resend otp:", otp);
-      res.status(200).json({ success: true, message: "OTP Resend Successfully", token: newToken, })
-
-    } else {
-      res.status(500).json({ success: false, message: "Failed to resend OTP, Please Try Again" })
+    const emailSent = await sendOtpMail(email, newOTP);
+    if (!emailSent) {
+      return res.render("signup", { message: "Error sending verification email" });
     }
+
+    tempData.otp = newOTP;
+    tempData.expiresAt = Date.now() + 10 * 60 * 1000; // Reset expiration
+    await tempData.save();
+
+
+
+
+
+    console.log("OTP resent successfully:", newOTP);
+    return res.status(200).json({
+      success: true,
+      message: "OTP resent successfully",
+
+    });
 
   } catch (error) {
-
-    console.error("Error while resending OTP", error)
-    res.status(500).json({ success: false, message: "Internal Server Error. Please try again.." })
+    console.error("Error resending OTP:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while resending OTP."
+    });
   }
-}
+};
 
 //loading of Login page 
-const loadLogin = async (req, res) => {
+const loadLogin = (req, res) => {
   try {
-    const token = req.cookies.auth_token;
 
-    if (token) {
-      try {
-        // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const message = req.query.message || null;
+    res.render("login", { message });
 
-        return res.redirect("/home");
 
-      } catch (err) {
-        // If token is invalid, clear the cookie
-        res.clearCookie("auth_token", {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict"
-        });
-      }
-    }
-
-    return res.render("login");
   } catch (error) {
+
     console.log("Login page error:", error);
     res.status(500).send("Server Error");
   }
-};
+}
+  ;
 
 
 //Login 
 const login = async (req, res) => {
-
   try {
-    const { email, password } = req.body
+      const { email, password } = req.body;
 
-    const findUser = await User.findOne({ isAdmin: 0, email: email })
+      if (!email || !password) {
+          return res.status(400).render("login", { message: "Email and password are required" });
+      }
 
-    if (!findUser) {
-      return res.render("login", { message: "User not found" })
-    }
-    if (findUser.isBlocked) {
-      res.render("login", { message: "User is blocked by admin" })
-    }
+      const findUser = await User.findOne({ isAdmin: 0, email: email });
+      if (!findUser) {
+          return res.status(404).render("login", { message: "User not found" });
+      }
 
-    const passwordMatch = await bcrypt.compare(password, findUser.password)
+      if (findUser.isBlocked) {
+          return res.status(403).render("login", { message: "Your account is blocked" });
+      }
 
-    if (!passwordMatch) {
-      return res.render("login", { message: "Incorrect Username or  Password" })
-    }
+      const passwordMatch = await bcrypt.compare(password, findUser.password);
+      if (!passwordMatch) {
+          return res.status(401).render("login", { message: "Incorrect Email or Password" });
+      }
 
+      const token = jwt.sign(
+          { userId: findUser._id, email: findUser.email },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+      );
 
-    const token = jwt.sign(
-      { userId: findUser._id, email: findUser.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+      res.cookie("auth_token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 3600000,
+          sameSite: "strict"
+      });
 
-
-    res.clearCookie("auth_token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/"
-    });
-
-    res.cookie("auth_token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000,
-      sameSite: "strict"
-    })
-
-    res.redirect("/home")
-    console.log("login success");
-
-
+      return res.redirect("/home");
   } catch (error) {
-
-    console.error("login error", error);
-    res.render("login", { message: "Login failed , Please try again" })
-
+      console.error("Login error:", error);
+      return res.status(500).render("login", { message: "An error occurred. Please try again." });
   }
+};
 
-}
-
-
-//Load homepage
+// Load homepage
 const loadHomepage = async (req, res) => {
   try {
-    return res.render("home");
-
+      return res.render("home");
   } catch (error) {
-    console.log("page not found");
-    res.status(500).send("Server error");
+      console.log("page not found");
+      return res.status(500).send("Server error");
   }
 };
 

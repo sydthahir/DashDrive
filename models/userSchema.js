@@ -54,7 +54,9 @@ const userSchema = new Schema({
     bookingsDetails: {
         type: Schema.Types.ObjectId,
         ref: "bookings"
-    }
+    },
+    resetOTP: String,
+    resetOTPExpiry: Date
 },
     {
         timestamps: true,
@@ -65,6 +67,6 @@ const userSchema = new Schema({
 
 
 
-    
+
 const User = mongoose.model("User", userSchema)
 module.exports = User

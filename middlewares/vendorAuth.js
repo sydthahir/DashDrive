@@ -7,7 +7,10 @@ const requireAuth = async (req, res, next) => {
         const token = req.cookies.auth_token;
 
         if (!token) {
+            console.log("no token  for login");
+
             return res.redirect('/vendor/login?error=Please login to continue');
+
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);

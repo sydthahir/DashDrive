@@ -137,7 +137,7 @@
 
                     <form id="otpForm" action="/verify-passForgot-otp" method="POST" class="needs-validation"
                         novalidate>
-
+                        <input type="hidden" name="email" id="email" value="<%= email %>">
 
                         <div class="otp-input-group">
                             <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required />
@@ -154,13 +154,16 @@
 
                         <div class="resend-timer text-center">
                             Didn't receive the code? <br />
-                            <span id="timer">Resend in <span id="countdown">60</span>s</span>
+                            <span id="timer">Resend in <span id="countdown">15</span>s</span>
                             <a href="#" id="resendBtn" class="d-none text-primary" onclick="resendOTP()">Resend Code</a>
                         </div>
                         <% if (typeof message !=='undefined' ) { %>
-                            <p style="color: red">
-                                <%= message %>
-                            </p>
+                            <div
+                                style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
+                                <p style="color: red; text-align: center; max-width: 90%; word-wrap: break-word;">
+                                    <%= message %>
+                                </p>
+                            </div>
                             <% } %>
                     </form>
                 </div>
@@ -173,7 +176,6 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
         <script>
-
             document.addEventListener('DOMContentLoaded', function () {
                 const otpInputs = document.querySelectorAll('.otp-input');
                 const form = document.getElementById('otpForm');
@@ -181,14 +183,15 @@
                 const resendBtn = document.getElementById('resendBtn');
                 const timerSpan = document.getElementById('timer');
                 const countdownSpan = document.getElementById('countdown');
-                let countdown = 30;
+                const email = document.getElementById('email').value;
+                let countdown = 15;
                 let timerInterval;
-
+    
                 // OTP input handling
                 otpInputs.forEach((input, index) => {
                     input.addEventListener("keyup", (e) => {
                         const value = e.target.value;
-                        if (value.length === 1 && index < otpInputs.length - 1) {
+                        if (value.length === 1 && index < otpInputs.length - 1 && /[0-9]/.test(value)) {
                             otpInputs[index + 1].focus();
                         } else if (e.key === "Backspace" && index > 0) {
                             otpInputs[index - 1].focus();
@@ -201,131 +204,99 @@
                         errorDiv.style.display = "none";
                     });
                 });
-
+    
                 // Form submission with AJAX
                 form.addEventListener("submit", (e) => {
                     e.preventDefault();
                     const otp = Array.from(otpInputs)
                         .map((input) => input.value)
                         .join("");
-
-
-
+    
                     if (otp.length !== 4) {
                         errorDiv.style.display = "block";
                         errorDiv.textContent = "Please enter all 4 digits";
                         return;
                     }
-                    if (!/^\d{4}$/.test(otp)) {
-                        errorDiv.style.display = "block";
-                        errorDiv.textContent = "Please enter valid digits only";
-                        return;
-                    }
-
-                    errorDiv.style.display = "none";
-
-
+    
                     $.ajax({
                         type: "POST",
                         url: "/verify-passForgot-otp",
-                        data: { otp },
+                        data: { email: email, otp: otp },
                         success: function (response) {
                             if (response.success) {
-
                                 Swal.fire({
                                     icon: "success",
                                     title: "OTP Verified",
                                     showConfirmButton: false,
                                     timer: 1500,
                                 }).then(() => {
-                                    window.location.href = "/reset-password"
+                                    window.location.href = `/reset-password?token=${response.resetToken}`;
                                 });
                             } else {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Invalid OTP",
-                                    text: response.message,
-                                });
+                                errorDiv.style.display = "block";
+                                errorDiv.textContent = response.message;
                             }
                         },
-                        statusCode: {
-                            400: function (response) {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Invalid OTP",
-                                    text: response.responseJSON.message,
-                                });
-                            },
-                        },
-                        error: function () {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Error",
-                                text: "An error occurred. Please try again.",
-                            });
-                        },
+                        error: function (xhr) {
+                            errorDiv.style.display = "block";
+                            errorDiv.textContent = xhr.responseJSON?.message || "An error occurred";
+                        }
                     });
                 });
-
-
-
-
-                function updateTimer() {
-                    if (countdown > 0) {
-                        countdown--;
-                        countdownSpan.textContent = countdown;
-                    } else {
-                        clearInterval(timerInterval);
-                        timerSpan.classList.add("d-none");
-                        resendBtn.classList.remove("d-none");
-                    }
+    
+                // Timer function
+                function startTimer() {
+                    clearInterval(timerInterval);
+                    timerInterval = setInterval(() => {
+                        if (countdown > 0) {
+                            countdown--;
+                            countdownSpan.textContent = countdown;
+                        } else {
+                            clearInterval(timerInterval);
+                            timerSpan.classList.add("d-none");
+                            resendBtn.classList.remove("d-none");
+                        }
+                    }, 1000);
                 }
-
-
-                timerInterval = setInterval(updateTimer, 1000);
-
-
+    
+                // Start initial timer
+                startTimer();
+    
+                // Resend OTP
                 resendBtn.addEventListener("click", (e) => {
                     e.preventDefault();
-
-                    // Reset countdown 
-                    countdown = 30;
-                    countdownSpan.textContent = countdown;
-                    timerSpan.classList.remove("d-none");
-                    resendBtn.classList.add("d-none");
-
-
-                    clearInterval(timerInterval);
-                    timerInterval = setInterval(updateTimer, 1000);
-
-                    // Send AJAX request to resend OTP
-
+    
                     $.ajax({
                         type: "POST",
                         url: "/resend-forget-otp",
-                        dataType: "json",
+                        data: { email: email },
                         success: function (response) {
-                            Swal.fire({
-                                icon: "success",
-                                title: "OTP Resent",
-                                timer: 1500,
-                            });
-                          
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "OTP Resent",
+                                    timer: 1500,
+                                });
+                                // Reset timer
+                                countdown = 15;
+                                countdownSpan.textContent = countdown;
+                                timerSpan.classList.remove("d-none");
+                                resendBtn.classList.add("d-none");
+                                startTimer();
+                                // Clear inputs
+                                otpInputs.forEach(input => input.value = '');
+                            }
                         },
-                        error: function () {
+                        error: function (xhr) {
                             Swal.fire({
                                 icon: "error",
                                 title: "Resend Failed",
-                                text: "Please try again.",
+                                text: xhr.responseJSON?.message || "Please try again",
                             });
-                        },
+                        }
                     });
                 });
-
-
             });
-
-
         </script>
     </body>
 

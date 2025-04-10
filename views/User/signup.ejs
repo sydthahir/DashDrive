@@ -1,18 +1,31 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Signup - DashDrive</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - DashDrive</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/modern-style.css" />
+
     <style>
         body {
-            min-height: 100vh;
             font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             background-color: #ffffff;
+            position: relative;
             padding-top: 80px;
         }
 
@@ -23,7 +36,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Poppins', sans-serif;
             z-index: 1000;
         }
 
@@ -32,77 +45,186 @@
         }
 
         .signup-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 2rem;
+            width: 100%;
+            max-width: 1400px;
+            margin: 2rem auto;
+            background-color: #f5da9a;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .illustration-section {
-            background: url('/images/Freelancers.png') no-repeat center center;
-            background-size: contain;
-            min-height: 700px;
-            border-radius: 20px;
+        .signup-left {
             position: relative;
+            overflow: hidden;
+            min-height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        @media (max-width: 991px) {
-            .illustration-section {
-                display: none;
-            }
+        .signup-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('/images/car-porsche-classic-porsche-911-str-wallpaper-preview.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+            z-index: 0;
         }
 
-        .signup-section {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        .signup-left:hover::before {
+            transform: scale(1.1);
+        }
+
+        .signup-content {
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            max-width: 80%;
             padding: 3rem;
+            text-align: center;
         }
 
-        .btn-primary {
-            background-color: #333333;
-            border-color: #333333;
-            padding: 12px 20px;
-            font-weight: 500;
+        .signup-content h1 {
+            font-size: 3.2rem;
+            margin-bottom: 1.5rem;
         }
 
-        .btn-primary:hover {
-            background-color: #1a1a1a;
-            border-color: #1a1a1a;
-        }
-
-        .form-control {
-            padding: 12px 15px;
-            border-radius: 8px;
-        }
-
-        .form-control:focus {
-            border-color: #333333;
-            box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.1);
-        }
-
-        .signup-header {
+        .signup-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
             margin-bottom: 2rem;
         }
 
-        .signup-header h2 {
-            font-weight: 600;
-            color: #333333;
+        .signup-right {
+            padding: 3rem;
+            background-color: #f5da9a;
         }
 
-        .signup-header p {
-            color: #666;
-            margin-bottom: 0;
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #f5da9a;
+        }
+
+        .form-control {
+            border: 1px solid #e1e1e1;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+            background-color: #fff;
         }
 
         .form-label {
-            font-weight: 500;
-            color: #444;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
         }
 
-        .form-text {
-            color: #666;
-            font-size: 0.85rem;
+        .btn-signup {
+            width: 100%;
+            padding: 1rem;
+            background-color: #333333;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-signup:hover {
+            background-color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 51, 51, 0.2);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #007bff;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            background-color: #ffffff;
+            color: #2d3436;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .btn-google img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .btn-google:hover {
+            background-color: #f8f8f8;
+            border-color: #d1d1d1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .error-message {
@@ -110,330 +232,227 @@
             font-size: 0.875rem;
             margin-top: 0.25rem;
             display: none;
-        }
-
-        .input-group-text {
-            cursor: pointer;
-            background-color: #fff;
-        }
-
-        .input-group-text:hover {
-            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
         }
     </style>
 </head>
 
-
-
 <body>
-    <a href="#" class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
+    <a href="/" class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
     <div class="signup-container">
-        <div class="container">
-            <div class="row g-0 align-items-start justify-content-center">
-                <div class="col-lg-6 d-none d-lg-block">
-                    <div class="illustration-section sticky-top" style="top: 2rem;"></div>
+        <div class="row g-0">
+            <!-- Left Side - Image & Content -->
+            <div class="col-lg-6 signup-left">
+                <div class="signup-content">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Unlock the Ultimate Driving Experience
+                    </h1>
+                    <p class="lead mb-4">
+                        Join DashDrive and gain exclusive access to premium car test
+                        drives. We make it seamless for you to book and drive your dream
+                        car.
+                    </p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="signup-section">
-                        <div class="signup-header text-center">
-                            <h2>Join DashDrive</h2>
-                            <p>Register your business as a vendor</p>
-                        </div>
-                        <form id="signupForm" class="row g-3" action="/vendor/signup" method="POST">
-                            <div class="col-md-6">
-                                <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="firstName" name="firstName" required>
-                                <span id="firstNameError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="lastName" name="lastName" required>
-                                <span id="lastNameError" class="error-message"></span>
-                            </div>
+            </div>
 
-                            <div class="col-md-6">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" required>
-                                <span id="phoneError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="email" class="form-label">Email address</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                                <span id="emailError" class="error-message"></span>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="password" class="form-label">Password</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password" required>
-                                    <span class="input-group-text" onclick="togglePassword('password')">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                </div>
-                                <span id="passwordError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="confirmPassword"
-                                        name="confirmPassword" required>
-                                    <span class="input-group-text" onclick="togglePassword('confirmPassword')">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                </div>
-                                <span id="confirmPasswordError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <label for="companyName" class="form-label">Company Name</label>
-                                <input type="text" class="form-control" id="companyName" name="companyName" required>
-                                <span id="companyNameError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <label for="businessAddress" class="form-label">Business Address</label>
-                                <textarea class="form-control" rows="3" id="businessAddress" name="businessAddress"
-                                    required></textarea>
-                                <span id="businessAddressError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="businessLicense" class="form-label">Business License Number</label>
-                                <input type="text" class="form-control" id="businessLicense" name="businessLicense">
-                                <span id="businessLicenseError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="taxId" class="form-label">Tax ID</label>
-                                <input type="text" class="form-control" id="taxId" name="taxId" required>
-                                <span id="taxIdError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <label for="documents" class="form-label">Upload Business Documents</label>
-                                <input type="file" class="form-control" id="documents" name="documents" multiple>
-                                <span id="documentsError" class="error-message"></span>
-                                <div class="form-text">Please upload any of the below: business license, insurance
-                                    documents, and vehicle registration papers.</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
-                                    <label class="form-check-label" for="terms">
-                                        I agree to the Terms and Conditions and Privacy Policy
-                                    </label>
-                                </div>
-                                <span id="termsError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary w-100 mt-3">Register as Vendor</button>
-                                <p class="text-center mt-3 mb-0">
-                                    Already have an account?
-                                    <a href="/vendor/login" class="text-primary fw-bold">Login</a>
-                                </p>
-                            </div>
-                        </form>
+            <!-- Right Side - Form -->
+            <div class="col-lg-6 signup-right">
+                <div class="form-container">
+                    <div class="text-center mb-5">
+                        <h2 class="h3 mb-2">Create an Account</h2>
+                        <p class="text-muted">LET'S GET YOU STARTED</p>
                     </div>
+
+                    <a href="/auth/google" class="btn btn-google">
+                        <img src="/images/unnamed.png" alt="Google Logo" />
+                        Sign up with Google
+                    </a>
+
+                    <div class="divider">
+                        <span>or sign up with email</span>
+                    </div>
+
+                    <form id="signform" action="/signup" method="POST" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required />
+                            <div class="invalid-feedback">Please enter your name.</div>
+
+                            <div id="error1" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required />
+                            <div class="invalid-feedback">
+                                Please enter a valid email address.
+                            </div>
+                            <div id="error2" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="password-field">
+                                <input type="password" class="form-control" id="password" name="password" required />
+                                <span class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="far fa-eye"></i>
+                                </span>
+                            </div>
+                            <div class="invalid-feedback">Please enter a password.</div>
+                            <div id="error3" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="confirm_password" class="form-label">Confirm password</label>
+                            <div class="password-field">
+                                <input type="password" class="form-control" id="confirm_password"
+                                    name="confirm_password" required />
+                                <span class="password-toggle" onclick="togglePassword('confirm_password')">
+                                    <i class="far fa-eye"></i>
+                                </span>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please confirm your password.
+                            </div>
+                            <div id="error4" class="error-message"></div>
+
+                            <% if (typeof message !=='undefined' ) { %>
+                                <p style="color: red">
+                                    <%= message %>
+                                </p>
+                                <% } %>
+                        </div>
+
+                        <button type="submit" class="btn btn-signup mb-4">
+                            Get Started
+                        </button>
+
+                        <div class="text-center">
+                            <p class="mb-0">
+                                Already have an account?
+                                <a href="/login" class="text-primary fw-bold">Login</a>
+                            </p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Get all form elements
-        const formElements = {
-            firstName: document.getElementById("firstName"),
-            lastName: document.getElementById("lastName"),
-            email: document.getElementById("email"),
-            phone: document.getElementById("phone"),
-            password: document.getElementById("password"),
-            confirmPassword: document.getElementById("confirmPassword"),
-            companyName: document.getElementById("companyName"),
-            businessAddress: document.getElementById("businessAddress"),
-            businessLicense: document.getElementById("businessLicense"),
-            taxId: document.getElementById("taxId"),
-            documents: document.getElementById("documents"),
-            terms: document.getElementById("terms"),
-            signupForm: document.getElementById("signupForm")
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const nameid = document.getElementById('name');
+            const emailid = document.getElementById('email');
+            const passwordid = document.getElementById('password');
+            const confirmPasswordid = document.getElementById('confirm_password');
 
-        // Get all error elements
-        const errorElements = {
-            firstName: document.getElementById("firstNameError"),
-            lastName: document.getElementById("lastNameError"),
-            email: document.getElementById("emailError"),
-            phone: document.getElementById("phoneError"),
-            password: document.getElementById("passwordError"),
-            confirmPassword: document.getElementById("confirmPasswordError"),
-            companyName: document.getElementById("companyNameError"),
-            businessAddress: document.getElementById("businessAddressError"),
-            businessLicense: document.getElementById("businessLicenseError"),
-            taxId: document.getElementById("taxIdError"),
-            documents: document.getElementById("documentsError"),
-            terms: document.getElementById("termsError")
-        };
+            // Show error message
+            const showError = (element, message) => {
+                const formControl = element.parentElement;
+                const errorDisplay = formControl.querySelector('.error-message');
+                errorDisplay.style.display = 'block';
+                errorDisplay.innerText = message;
+                formControl.classList.add('error');
+            };
 
-        // Name Validation
-        function validateName(nameInput, errorElement) {
-            const nameVal = nameInput.value.trim();
-            const namePattern = /^[A-Za-z\s]+$/;
+            // Hide error message
+            const hideError = (element) => {
+                const formControl = element.parentElement;
+                const errorDisplay = formControl.querySelector('.error-message');
+                errorDisplay.style.display = 'none';
+                formControl.classList.remove('error');
+            };
 
-            if (!nameVal) {
-                errorElement.style.display = "block";
-                errorElement.innerHTML = "Name is required";
-                return false;
-            } else if (!namePattern.test(nameVal)) {
-                errorElement.style.display = "block";
-                errorElement.innerHTML = "Name must contain only letters";
-                return false;
-            }
-            errorElement.style.display = "none";
-            return true;
-        }
+            // Validate email format
+            const isValidEmail = (email) => {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(String(email).toLowerCase());
+            };
 
-        // Email Validation
-        function validateEmail() {
-            const emailVal = formElements.email.value.trim();
-            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
 
-            if (!emailVal) {
-                errorElements.email.style.display = "block";
-                errorElements.email.innerHTML = "Email is required";
-                return false;
-            } else if (!emailPattern.test(emailVal)) {
-                errorElements.email.style.display = "block";
-                errorElements.email.innerHTML = "Invalid email format";
-                return false;
-            }
-            errorElements.email.style.display = "none";
-            return true;
-        }
+                // Name validation
+                if (nameid.value.trim() === '') {
+                    showError(nameid, 'Name is required');
+                    isValid = false;
+                } else if (nameid.value.trim().length < 3) {
+                    showError(nameid, 'Name must be at least 3 characters');
+                    isValid = false;
+                } else {
+                    hideError(nameid);
+                }
 
-        // Phone Validation
-        function validatePhone() {
-            const phoneVal = formElements.phone.value.trim();
-            const phonePattern = /^\d{10}$/;
+                // Email validation
+                if (emailid.value.trim() === '') {
+                    showError(emailid, 'Email is required');
+                    isValid = false;
+                } else if (!isValidEmail(emailid.value.trim())) {
+                    showError(emailid, 'Please enter a valid email');
+                    isValid = false;
+                } else {
+                    hideError(emailid);
+                }
 
-            if (!phoneVal) {
-                errorElements.phone.style.display = "block";
-                errorElements.phone.innerHTML = "Phone number is required";
-                return false;
-            } else if (!phonePattern.test(phoneVal)) {
-                errorElements.phone.style.display = "block";
-                errorElements.phone.innerHTML = "Phone must be 10 digits";
-                return false;
-            }
-            errorElements.phone.style.display = "none";
-            return true;
-        }
+                // Password validation
+                if (passwordid.value === '') {
+                    showError(passwordid, 'Password is required');
+                    isValid = false;
+                } else if (passwordid.value.length < 6) {
+                    showError(passwordid, 'Password must be at least 6 characters');
+                    isValid = false;
+                } else {
+                    hideError(passwordid);
+                }
 
-        // Password Validation
-        function validatePassword() {
-            const passVal = formElements.password.value;
-            const cPassVal = formElements.confirmPassword.value;
-            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{8,}$/;
-            let isValid = true;
+                // Confirm password validation
+                if (confirmPasswordid.value === '') {
+                    showError(confirmPasswordid, 'Please confirm your password');
+                    isValid = false;
+                } else if (confirmPasswordid.value !== passwordid.value) {
+                    showError(confirmPasswordid, 'Passwords do not match');
+                    isValid = false;
+                } else {
+                    hideError(confirmPasswordid);
+                }
 
-            if (!passVal) {
-                errorElements.password.style.display = "block";
-                errorElements.password.innerHTML = "Password is required";
-                isValid = false;
-            } else if (!passwordPattern.test(passVal)) {
-                errorElements.password.style.display = "block";
-                errorElements.password.innerHTML = "Password must include lowercase, uppercase, digit, and special character (min 8)";
-                isValid = false;
-            } else {
-                errorElements.password.style.display = "none";
-            }
-
-            if (!cPassVal) {
-                errorElements.confirmPassword.style.display = "block";
-                errorElements.confirmPassword.innerHTML = "Confirm password is required";
-                isValid = false;
-            } else if (passVal !== cPassVal) {
-                errorElements.confirmPassword.style.display = "block";
-                errorElements.confirmPassword.innerHTML = "Passwords do not match";
-                isValid = false;
-            } else {
-                errorElements.confirmPassword.style.display = "none";
-            }
-
-            return isValid;
-        }
-
-        // Additional Validations
-        function validateCompanyName() {
-            const value = formElements.companyName.value.trim();
-            if (!value) {
-                errorElements.companyName.style.display = "block";
-                errorElements.companyName.innerHTML = "Company name is required";
-                return false;
-            }
-            errorElements.companyName.style.display = "none";
-            return true;
-        }
-
-        function validateBusinessAddress() {
-            const value = formElements.businessAddress.value.trim();
-            if (!value) {
-                errorElements.businessAddress.style.display = "block";
-                errorElements.businessAddress.innerHTML = "Business address is required";
-                return false;
-            }
-            errorElements.businessAddress.style.display = "none";
-            return true;
-        }
-
-        function validateTaxId() {
-            const value = formElements.taxId.value.trim();
-            if (!value) {
-                errorElements.taxId.style.display = "block";
-                errorElements.taxId.innerHTML = "Tax ID is required";
-                return false;
-            }
-            errorElements.taxId.style.display = "none";
-            return true;
-        }
-
-        function validateTerms() {
-            if (!formElements.terms.checked) {
-                errorElements.terms.style.display = "block";
-                errorElements.terms.innerHTML = "You must agree to the terms";
-                return false;
-            }
-            errorElements.terms.style.display = "none";
-            return true;
-        }
-
-        // Form Submission Validation
-        document.addEventListener("DOMContentLoaded", function () {
-            formElements.signupForm.addEventListener("submit", function (e) {
-                const validations = [
-                    validateName(formElements.firstName, errorElements.firstName),
-                    validateName(formElements.lastName, errorElements.lastName),
-                    validateEmail(),
-                    validatePhone(),
-                    validatePassword(),
-                    validateCompanyName(),
-                    validateBusinessAddress(),
-                    validateTaxId(),
-                    validateTerms()
-                ];
-
-                if (!validations.every(valid => valid)) {
+                if (!isValid) {
                     e.preventDefault();
                 }
             });
-        });
 
+            // Real-time validation
+            const inputs = [nameid, emailid, passwordid, confirmPasswordid];
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim() === '') {
+                        showError(this, `${this.name} is required`);
+                    } else {
+                        hideError(this);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
         // Password Toggle Functionality
         function togglePassword(fieldId) {
             const passwordField = document.getElementById(fieldId);
-            const icon = event.currentTarget.querySelector("i");
+            const icon = event.currentTarget.querySelector('i');
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                passwordField.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
     </script>

@@ -51,6 +51,7 @@ const registeration = async (req, res) => {
             taxId,
             terms
         } = req.body;
+        const fullName = `${firstName} ${lastName}`
 
         if (password !== confirmPassword) {
             return res.render("vendor-signup", { message: "Passwords does not match" });
@@ -80,8 +81,7 @@ const registeration = async (req, res) => {
 
         // Temporarily store registration data and OTP 
         const tempData = {
-            firstName,
-            lastName,
+            fullName,
             phone,
             email,
             password,
@@ -115,10 +115,6 @@ const registeration = async (req, res) => {
 };
 
 
-
-
-
-
 //OTP verifying
 const verifyOTP = async (req, res) => {
     try {
@@ -149,9 +145,9 @@ const verifyOTP = async (req, res) => {
 
 
 
+
         const newVendor = new Vendor({
-            firstName: tempData.firstName,
-            lastName: tempData.lastName,
+            fullName: tempData.fullName,
             email: tempData.email,
             phone: tempData.phone,
             password: hashedPassword,
@@ -160,7 +156,8 @@ const verifyOTP = async (req, res) => {
             businessLicense: tempData.businessLicense,
             taxId: tempData.taxId,
             isVerified: true,
-            isApproved: false
+            isApproved: false,
+            status: "pending"
         });
 
         await newVendor.save();
@@ -176,13 +173,13 @@ const verifyOTP = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
-        console.log("token is :", token);
+
 
 
         // Send JSON response 
         return res.status(200).json({
             success: true,
-            message: "Registration successful, Account is under verification.Please wait for approval"
+            message: "Registration successful, Account is under verification.Please wait for admin approval"
         });
 
     } catch (error) {
@@ -246,7 +243,6 @@ const resendOTP = async (req, res) => {
 
 
 
-
 // Load login page 
 const loadLogin = (req, res) => {
     const message = req.query.message || null;
@@ -259,21 +255,32 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body
 
+        //Checks email and password entered
+        if (!email || !password) {
+            return res.status(400).render("vendor-login", { message: "Email and password are required" });
+        }
+
+
+        //finding account 
         const findVendor = await Vendor.findOne({ email: email })
 
         if (!findVendor) {
             return res.render("vendor-login", { message: "Account not found" })
         }
 
-        // Check if account is approved
-        if (findVendor.isApproved) {
-            res.render("vendor-login", { message: "Account is not yet approved" })
-        }
-
+        //Checks password
         const passwordMatch = await bcrypt.compare(password, findVendor.password)
 
         if (!passwordMatch) {
             return res.render("vendor-login", { message: "Incorrect Email or  Password" })
+        }
+
+
+        // Check if account is approved
+        if (!findVendor.isApproved) {
+            console.log("Account not approved");
+
+            return res.status(403).render("vendor-login", { message: "Account is not yet approved by admin" });
         }
 
 
@@ -295,7 +302,8 @@ const login = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 3600000,
-            sameSite: "strict"
+            sameSite: "strict",
+            path: "/"
         })
 
         res.redirect("/vendor/dashboard")
@@ -309,7 +317,7 @@ const login = async (req, res) => {
 
     } catch (error) {
         console.error("Login error:", error);
-        res.render("vendor-login", { message: "An error occurred. Please try again." });
+        return res.status(500).render("vendor-login", { message: "An error occurred. Please try again." });
     }
 
 }

@@ -8,8 +8,8 @@ const vendorAuth = require("../middlewares/vendorAuth")
 router.get("/page-error", vendorController.pageError)
 
 //Signup management
-router.get("/signup", vendorAuth.checkAuth, vendorController.loadSignup)
-router.post("/signup", vendorController.registeration)
+router.get("/register", vendorAuth.checkAuth, vendorController.loadSignup)
+router.post("/register", vendorController.registeration)
 router.post("/verify-otp", vendorController.verifyOTP)
 router.post("/resend-otp", vendorController.resendOTP);
 

@@ -4,12 +4,8 @@ const { Schema } = mongoose;
 
 const vendorSchema = new Schema({
 
-    firstName: {
-        type: String,
-        required: true
-    },
 
-    lastName: {
+    fullName: {
         type: String,
         required: true
     },
@@ -59,12 +55,12 @@ const vendorSchema = new Schema({
         type: Boolean,
         default: false
     },
-    status: { type: String, enum: ['active', 'inactive', 'suspended'], default: 'inactive' },
+    status: { type: String, enum: ['approved', 'pending', 'rejected'], default: 'pending' },
     otp: {
         type: String,
         required: false
     },
-    resetOTP: String,          
+    resetOTP: String,
     resetOTPExpiry: Date,
 
     expiresAt: {

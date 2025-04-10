@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const tempVendorSchema = new Schema({
-    firstName: String,
-    lastName: String,
+    fullName: String,
     phone: String,
     email: { type: String, unique: true },
     password: String,
@@ -12,7 +11,7 @@ const tempVendorSchema = new Schema({
     businessLicense: String,
     taxId: String,
     otp: String,
-    resetOTP: String,          
+    resetOTP: String,
     resetOTPExpiry: Date,
     expiresAt: Date
 },

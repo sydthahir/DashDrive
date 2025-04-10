@@ -1,0 +1,168 @@
+<%- include("../partials/admin/header.ejs") %>
+
+    <div class="main-content">
+        <div class="page-content">
+            <div class="container-fluid">
+                <!-- Page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-flex align-items-center justify-content-between">
+                            <h4 class="mb-0">Pending Vendors</h4>
+                            <div class="page-title-right">
+                                <a href="/admin/vendors" class="btn btn-primary">
+                                    <i class="fas fa-list me-1"></i> View Approved Vendors
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Vendors table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Email</th>
+                                                <th scope="col">Phone</th>
+                                                <th scope="col">Applied Date</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (pendingVendors && pendingVendors.length> 0) { %>
+                                                <% pendingVendors.forEach((vendor, index)=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= index + 1 %>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="avatar-xs me-2">
+                                                                    <span
+                                                                        class="avatar-title rounded-circle bg-warning-subtle text-warning">
+                                                                        <%= vendor.fullNmae ?
+                                                                            vendor.fullName.charAt(0).toUpperCase()
+                                                                            : 'V' %>
+                                                                    </span>
+                                                                </div>
+                                                                <%= vendor.fullName || 'Unknown Vendor' %>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <%= vendor.email || 'N/A' %>
+                                                        </td>
+                                                        <td>
+                                                            <%= vendor.phone || 'N/A' %>
+                                                        </td>
+                                                        <td>
+                                                            <%= vendor.createdAt ? new
+                                                                Date(vendor.createdAt).toLocaleDateString('en-US', {
+                                                                day: 'numeric' , month: 'short' , year: 'numeric' })
+                                                                : 'N/A' %>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex gap-2">
+                                                                <button class="btn btn-sm btn-success"
+                                                                    onclick="approveVendor('<%= vendor._id %>')">
+                                                                    <i class="fas fa-check"></i> Approve
+                                                                </button>
+                                                                <button class="btn btn-sm btn-danger"
+                                                                    onclick="rejectVendor('<%= vendor._id %>')">
+                                                                    <i class="fas fa-times"></i> Reject
+                                                                </button>
+                                                                <button class="btn btn-sm btn-info"
+                                                                    onclick="viewVendorDetails('<%= vendor._id %>')">
+                                                                    <i class="fas fa-eye"></i> View
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <% }); %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="6" class="text-center">No pending vendor
+                                                                    applications</td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmationMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmAction">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedVendorId = null;
+        let actionType = null;
+
+        function approveVendor(vendorId) {
+            selectedVendorId = vendorId;
+            actionType = 'approve';
+            document.getElementById('confirmationMessage').textContent = 'Are you sure you want to approve this vendor?';
+            new bootstrap.Modal(document.getElementById('confirmationModal')).show();
+        }
+
+        function rejectVendor(vendorId) {
+            selectedVendorId = vendorId;
+            actionType = 'reject';
+            document.getElementById('confirmationMessage').textContent = 'Are you sure you want to reject this vendor?';
+            new bootstrap.Modal(document.getElementById('confirmationModal')).show();
+        }
+
+        function viewVendorDetails(vendorId) {
+            window.location.href = `/admin/vendors/${vendorId}`;
+        }
+
+        document.getElementById('confirmAction').addEventListener('click', async function () {
+            if (!selectedVendorId || !actionType) return;
+
+            try {
+                const response = await fetch(`/admin/vendors/${actionType}/${selectedVendorId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to perform action. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    </script>
+
+    <%- include("../partials/admin/footer.ejs") %>

@@ -4,6 +4,7 @@ const adminController = require("../controllers/admin/adminController")
 const adminAuth = require("../middlewares/adminAuth")
 
 
+
 //Error page
 router.get("/page-error", adminController.pageError)
 
@@ -15,16 +16,25 @@ router.get("/", adminAuth, adminController.loadDashboard)
 //Logout Managment
 router.get('/logout', adminController.logout);
 
+
+//Forget Management
+
+
 //Users management
 router.get("/users", adminAuth, adminController.loadUsers)
-router.get("/blockCustomer", adminAuth, adminController.customerBlocked)
-router.get("/unblockCustomer", adminAuth, adminController.customerUnblocked)
+router.post("/users/block", adminAuth, adminController.customerBlocked)
+router.post("/users/unblock", adminAuth, adminController.customerUnblocked)
 
 //Bookings management
 router.get("/bookings", adminAuth, adminController.loadBookings)
 
 //Vendors management
 router.get("/vendors", adminAuth, adminController.loadVendors)
+router.get("/pending-vendors", adminController.getPendingVendors)
+router.post('/vendors/approve/:id', adminController.approveVendor);
+router.post('/vendors/reject/:id', adminController.rejectVendor);
+
+
 
 
 

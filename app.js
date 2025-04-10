@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const path = require("path")
+// const csrf = require('csurf');
+// const csrfProtection = csrf({ cookie: true });
 const env = require("dotenv").config()
 const cookieParser = require("cookie-parser")
 const passport = require("./config/passport")
@@ -26,6 +28,9 @@ app.use((req, res, next) => {
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
+
+
+
 
 // Initialize passport without session
 app.use(passport.initialize())

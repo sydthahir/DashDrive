@@ -156,7 +156,7 @@
         <form id="otpForm" action="/verify-otp" method="POST" class="needs-validation" novalidate
           onsubmit="return validateOTPForm()">
 
-          <input type="hidden" name="token" id="token" value="<%= token %>">
+
           <div class="otp-input-group">
             <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required />
             <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" required />
@@ -176,6 +176,7 @@
             <a href="#" id="resendBtn" class="d-none text-primary" onclick="resendOTP()">Resend Code</a>
           </div>
         </form>
+        <input type="hidden" id="email" value="<%= email %>" />
       </div>
     </div>
   </div>
@@ -193,13 +194,13 @@
       const resendBtn = document.getElementById("resendBtn");
       const timerSpan = document.getElementById("timer");
       const countdownSpan = document.getElementById("countdown");
-      let countdown = 60;
+      const email = document.getElementById("email").value;
 
       // OTP input handling
       otpInputs.forEach((input, index) => {
         input.addEventListener("keyup", (e) => {
           const value = e.target.value;
-          if (value.length === 1 && index < otpInputs.length - 1) {
+          if (value.length === 1 && index < otpInputs.length - 1 && /[0-9]/.test(value)) {
             otpInputs[index + 1].focus();
           } else if (e.key === "Backspace" && index > 0) {
             otpInputs[index - 1].focus();
@@ -219,40 +220,19 @@
         const otp = Array.from(otpInputs)
           .map((input) => input.value)
           .join("");
-        const token = document.getElementById("token")?.value;
-
-
-
-        if (!token) {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Token is missing. Please refresh and try again.",
-          });
-          return;
-        }
 
         if (otp.length !== 4) {
           errorDiv.style.display = "block";
           errorDiv.textContent = "Please enter all 4 digits";
           return;
         }
-        if (!/^\d{4}$/.test(otp)) {
-          errorDiv.style.display = "block";
-          errorDiv.textContent = "Please enter valid digits only";
-          return;
-        }
-
-        errorDiv.style.display = "none";
-
 
         $.ajax({
           type: "POST",
           url: "/verify-otp",
-          data: { token: token, otp: otp },
+          data: { email: email, otp: otp },
           success: function (response) {
             if (response.success) {
-
               Swal.fire({
                 icon: "success",
                 title: "OTP Verified",
@@ -262,98 +242,78 @@
                 window.location.href = "/login";
               });
             } else {
-              Swal.fire({
-                icon: "error",
-                title: "Invalid OTP",
-                text: response.message,
-              });
+              errorDiv.style.display = "block";
+              errorDiv.textContent = response.message;
             }
           },
-          statusCode: {
-            400: function (response) {
-              Swal.fire({
-                icon: "error",
-                title: "Invalid OTP",
-                text: response.responseJSON.message,
-              });
-            },
-          },
-          error: function () {
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "An error occurred. Please try again.",
-            });
-          },
+          error: function (xhr) {
+            errorDiv.style.display = "block";
+            errorDiv.textContent = xhr.responseJSON?.message || "An error occurred";
+          }
         });
       });
 
-      // Resend timer
-      $(document).ready(function () {
-        let countdown = 30;
-        const countdownSpan = document.getElementById("countdown");
-        const timerSpan = document.getElementById("timer");
-        const resendBtn = document.getElementById("resendBtn");
-        let timerInterval;
-
-        function updateTimer() {
-          if (countdown > 0) {
-            countdown--;
-            countdownSpan.textContent = countdown;
-          } else {
-            clearInterval(timerInterval);
-            timerSpan.classList.add("d-none");
-            resendBtn.classList.remove("d-none");
-          }
-        }
-
-
-        timerInterval = setInterval(updateTimer, 1000);
-
-
-        resendBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-
-          // Reset countdown 
-          countdown = 30;
+      // Resend timer and functionality
+      let countdown = 30;
+      const timerInterval = setInterval(() => {
+        if (countdown > 0) {
+          countdown--;
           countdownSpan.textContent = countdown;
-          timerSpan.classList.remove("d-none");
-          resendBtn.classList.add("d-none");
-
-
+        } else {
           clearInterval(timerInterval);
-          timerInterval = setInterval(updateTimer, 1000);
+          timerSpan.classList.add("d-none");
+          resendBtn.classList.remove("d-none");
+        }
+      }, 1000);
 
-          // Send AJAX request to resend OTP
-          const token = document.getElementById("token").value;
-          $.ajax({
-            type: "POST",
-            url: "/resend-otp",
-            data: { token: token },
-            dataType: "json",
-            success: function (response) {
+      resendBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        $.ajax({
+          type: "POST",
+          url: "/resend-otp",
+          data: { email: email },
+          success: function (response) {
+            if (response.success) {
               Swal.fire({
                 icon: "success",
                 title: "OTP Resent",
                 timer: 1500,
               });
-              document.getElementById("token").value = response.token;
-            },
-            error: function () {
-              Swal.fire({
-                icon: "error",
-                title: "Resend Failed",
-                text: "Please try again.",
-              });
-            },
-          });
+
+              // Reset timer
+              countdown = 30;
+              countdownSpan.textContent = countdown;
+              timerSpan.classList.remove("d-none");
+              resendBtn.classList.add("d-none");
+
+              const newTimer = setInterval(() => {
+                if (countdown > 0) {
+                  countdown--;
+                  countdownSpan.textContent = countdown;
+                } else {
+                  clearInterval(newTimer);
+                  timerSpan.classList.add("d-none");
+                  resendBtn.classList.remove("d-none");
+                }
+              }, 1000);
+
+              // Clear inputs
+              otpInputs.forEach(input => input.value = '');
+            }
+          },
+          error: function (xhr) {
+            Swal.fire({
+              icon: "error",
+              title: "Resend Failed",
+              text: xhr.responseJSON?.message || "Please try again",
+            });
+          }
         });
       });
-
     });
-
-
   </script>
+
 </body>
 
 </html>

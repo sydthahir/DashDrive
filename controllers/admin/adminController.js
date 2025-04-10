@@ -20,25 +20,26 @@ const pageError = async (req, res) => {
 //Loading of login page 
 const loadLogin = (req, res) => {
     const error = req.query.error || null;
-    res.render("admin-login", { message: error, error: error });
-};
+    res.render("admin-login", { message: error, error: error, csrfToken: req.csrfToken ? req.csrfToken() : '' });
 
-
+}
 //Login
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.render("admin-login", {
+            return res.status(400).render("admin-login", {
                 message: "Email and password are required",
                 error: "Email and password are required"
             });
         }
 
+
+
         const admin = await User.findOne({ email, isAdmin: true });
         if (!admin || !admin.isAdmin) {
-            return res.render("admin-login", {
+            return res.status(401).render("admin-login", {
                 message: "Admin account not found",
                 error: "Admin account not found"
             });
@@ -46,7 +47,7 @@ const login = async (req, res) => {
 
         const passwordMatch = await bcrypt.compare(password, admin.password);
         if (!passwordMatch) {
-            return res.render("admin-login", {
+            return res.status(401).render("admin-login", {
                 message: "Incorrect email or password",
                 error: "Incorrect email or password"
             });
@@ -65,10 +66,13 @@ const login = async (req, res) => {
 
         res.cookie('auth_token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 3600000 // 1 hour in milliseconds
+            secure: false,
+            sameSite: 'lax',
+            maxAge: 3600000, // 1 hour in milliseconds
+            path: '/'
         });
+
+
 
         return res.redirect("/admin/");
 
@@ -82,7 +86,7 @@ const login = async (req, res) => {
 //loading of Dashboard
 const loadDashboard = async (req, res) => {
     try {
-        const adminId = req.user.id; // Comes from authenticateAdmin middleware
+        const adminId = req.user.id;
         const admin = await User.findById(adminId)
 
         if (!admin || !admin.isAdmin) {
@@ -116,7 +120,7 @@ const loadUsers = async (req, res) => {
             }),
             User.find(
                 { isAdmin: false },
-                'id name email createdAt isBlocked'
+                '_id name email createdAt isBlocked'
             )
                 .sort({ createdAt: -1 })
                 .skip(skip)
@@ -153,33 +157,82 @@ const loadUsers = async (req, res) => {
 //Customer Block
 const customerBlocked = async (req, res) => {
     try {
-        let id = req.query.id
-        await User.updateOne({ _id: id }, { $set: { isBlocked: true } })
-        res.redirect("/admin/users")
-        console.log("User blocked");
+        const { id } = req.body;
+        console.log("Blocking user with ID:", id);
 
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid user ID" });
+        }
+
+        const user = await User.findById(id);
+        if (!user || user.isAdmin) {
+            return res.status(404).json({ success: false, message: "User not found or is an admin" });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { $set: { isBlocked: true } },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(500).json({ success: false, message: "Failed to block user" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "User blocked successfully",
+            user: {
+                id: updatedUser._id,
+                isBlocked: updatedUser.isBlocked
+            }
+        });
     } catch (error) {
-        res.redirect("/page-error")
-        console.log("An error occured while blocking user");
-
+        console.error("Error blocking user:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
-
 }
+
+
 
 //Customer Unblock
 const customerUnblocked = async (req, res) => {
     try {
-        let id = req.query.id
-        await User.updateOne({ _id: id }, { $set: { isBlocked: false } })
-        res.redirect("/admin/users")
-        console.log("User unblocked");
+        const { id } = req.body;
+        console.log("Unblocking user with ID:", id);
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid user ID" });
+        }
 
+        const user = await User.findById(id);
+        if (!user || user.isAdmin) {
+            return res.status(404).json({ success: false, message: "User not found or is an admin" });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { $set: { isBlocked: false } },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(500).json({ success: false, message: "Failed to unblock user" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "User unblocked successfully",
+            user: {
+                id: updatedUser._id,
+                isBlocked: updatedUser.isBlocked
+            }
+        });
     } catch (error) {
-        res.redirect("/page-error")
-        console.log("An error occured while unblocking user");
-
+        console.error("Error unblocking user:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
-}
+};
+
 
 
 //Loading of Bookings
@@ -214,9 +267,13 @@ const loadVendors = async (req, res) => {
             return res.redirect("/admin/login");
         }
 
-        const vendors = await Vendor.find({})
-            .select('name email phone isVerified isBlocked createdAt')
+        const vendors = await Vendor.find({
+            status: 'approved'
+        })
+            .select('fullName email phone isApproved createdAt')
             .sort({ createdAt: -1 });
+
+
 
         res.render('vendors', {
             admin,
@@ -231,6 +288,99 @@ const loadVendors = async (req, res) => {
 }
 
 
+//Pending Vendors
+const getPendingVendors = async (req, res) => {
+    try {
+
+
+        const pendingVendors = await Vendor.find({
+            status: 'pending'
+        })
+            .select('fullName email phone createdAt')
+            .sort({ createdAt: -1 });
+
+
+        res.render('pendingVendors', {
+            pendingVendors,
+            currentPage: 'pendingVendors'
+        })
+
+    } catch (error) {
+        console.error('Error fetching pending vendors:', error);
+        return res.redirect("/page-error");
+    }
+}
+
+//Approve vendor
+const approveVendor = async (req, res) => {
+    try {
+        const vendorId = req.params.id;
+
+        const updatedVendor = await Vendor.findByIdAndUpdate(
+            vendorId,
+            {
+                status: 'approved',
+                isApproved: true
+            },
+            { new: true }
+        )
+
+        if (!updatedVendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Vendor approved successfully'
+        })
+    } catch (error) {
+
+        console.error('Error approving vendor:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error approving vendor'
+        });
+    }
+}
+
+
+//Reject vendor
+const rejectVendor = async (req, res) => {
+    try {
+        const vendorId = req.params.id;
+
+        const updatedVendor = await Vendor.findByIdAndUpdate(
+            vendorId,
+            {
+                status: 'rejected',
+                isApproved: false,
+                isBlocked: true
+            },
+            { new: true }
+        );
+
+        if (!updatedVendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Vendor rejected successfully'
+        });
+    } catch (error) {
+        console.error('Error rejecting vendor:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error rejecting vendor'
+        });
+    }
+}
 
 
 //Logout
@@ -259,6 +409,9 @@ module.exports = {
     loadUsers,
     loadBookings,
     loadVendors,
+    getPendingVendors,
+    approveVendor,
+    rejectVendor,
     customerBlocked,
     customerUnblocked
 };
