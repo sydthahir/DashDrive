@@ -24,16 +24,23 @@ router.get('/logout', adminController.logout);
 router.get("/users", adminAuth, adminController.loadUsers)
 router.post("/users/block", adminAuth, adminController.customerBlocked)
 router.post("/users/unblock", adminAuth, adminController.customerUnblocked)
+router.get("/users/details/:id", adminAuth, adminController.getUserDetails)
 
 //Bookings management
 router.get("/bookings", adminAuth, adminController.loadBookings)
 
 //Vendors management
 router.get("/vendors", adminAuth, adminController.loadVendors)
-router.get("/pending-vendors", adminController.getPendingVendors)
-router.post('/vendors/approve/:id', adminController.approveVendor);
-router.post('/vendors/reject/:id', adminController.rejectVendor);
+router.get("/pending-vendors", adminAuth, adminController.getPendingVendors)
+router.post('/vendors/approve/:id', adminAuth, adminController.approveVendor);
+router.post('/vendors/reject/:id', adminAuth, adminController.rejectVendor);
+router.post('/vendors/block', adminAuth, adminController.blockVendor);
+router.post('/vendors/unblock', adminAuth, adminController.unblockVendor);
 
+
+
+
+router.use((req, res) => adminController.pageError(req, res));
 
 
 

@@ -13,11 +13,15 @@ const bcrypt = require("bcrypt")
 
 
 // Error Page
-const pageError = async (req, res) => {
+const pageError = (req, res) => {
     try {
-        res.render("pageError");
+        res.status(404).render("pageError", {
+            message: "Page not found",
+            error: null
+        });
     } catch (error) {
-        res.redirect("/page-error");
+        console.error("Error rendering 404 page:", error);
+        res.status(500).send("Internal Server Error"); // for Critical errors
     }
 };
 
@@ -25,6 +29,7 @@ const pageError = async (req, res) => {
 // Load Signup page
 const loadSignup = async (req, res) => {
     try {
+        
         res.render("vendor-signup", { message: null });
     } catch (error) {
         console.log("Signup page not found", error);
@@ -281,6 +286,13 @@ const login = async (req, res) => {
             console.log("Account not approved");
 
             return res.status(403).render("vendor-login", { message: "Account is not yet approved by admin" });
+        }
+
+        // Check if account is blocked
+        if (findVendor.isBlocked) {
+            console.log("Account is blocked");
+
+            return res.status(403).render("vendor-login", { message: "Your account is blocked by admin" });
         }
 
 

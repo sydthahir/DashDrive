@@ -9,14 +9,16 @@ const { securePassword } = require('../../utils/hashPassword');
 const { name } = require("ejs");
 
 
-//Load Page-not-found page
+//Load Page-not-found 
 const pageNotFound = async (req, res) => {
   try {
-
-    res.render("page-404")
+    res.status(404).render("page-404", {
+      message: "Page not found",
+      error: null
+    });
   } catch (error) {
-    res.redirect("/pageNotFound")
-
+    console.error("Error rendering 404 page:", error);
+    res.status(500).send("Internal Server Error"); // For critical errors
   }
 
 }
@@ -28,7 +30,7 @@ const loadLandingPage = async (req, res) => {
     return res.render("landingPage");
   } catch (error) {
     console.log("page not found");
-    res.status(500).send("Server error");
+    res.redirect("/pageNotFound");
   }
 
 }
@@ -41,7 +43,7 @@ const loadSignup = async (req, res) => {
     return res.render("signup");
   } catch (error) {
     console.log("Signup page is not found");
-    res.status(500).send("Server Error");
+    res.redirect("/pageNotFound");
   }
 };
 
@@ -175,7 +177,7 @@ const verifyOTP = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
-    console.log("token is :", token);
+    console.log("jwt Token Generated")
 
 
     return res.status(200).json({
@@ -265,53 +267,53 @@ const loadLogin = (req, res) => {
 //Login 
 const login = async (req, res) => {
   try {
-      const { email, password } = req.body;
+    const { email, password } = req.body;
 
-      if (!email || !password) {
-          return res.status(400).render("login", { message: "Email and password are required" });
-      }
+    if (!email || !password) {
+      return res.status(400).render("login", { message: "Email and password are required" });
+    }
 
-      const findUser = await User.findOne({ isAdmin: 0, email: email });
-      if (!findUser) {
-          return res.status(404).render("login", { message: "User not found" });
-      }
+    const findUser = await User.findOne({ isAdmin: 0, email: email });
+    if (!findUser) {
+      return res.status(404).render("login", { message: "User not found" });
+    }
 
-      if (findUser.isBlocked) {
-          return res.status(403).render("login", { message: "Your account is blocked" });
-      }
+    if (findUser.isBlocked) {
+      return res.status(403).render("login", { message: "Your account is blocked" });
+    }
 
-      const passwordMatch = await bcrypt.compare(password, findUser.password);
-      if (!passwordMatch) {
-          return res.status(401).render("login", { message: "Incorrect Email or Password" });
-      }
+    const passwordMatch = await bcrypt.compare(password, findUser.password);
+    if (!passwordMatch) {
+      return res.status(401).render("login", { message: "Incorrect Email or Password" });
+    }
 
-      const token = jwt.sign(
-          { userId: findUser._id, email: findUser.email },
-          process.env.JWT_SECRET,
-          { expiresIn: "1h" }
-      );
+    const token = jwt.sign(
+      { userId: findUser._id, email: findUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-      res.cookie("auth_token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 3600000,
-          sameSite: "strict"
-      });
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000,
+      sameSite: "strict"
+    });
 
-      return res.redirect("/home");
+    return res.redirect("/home");
   } catch (error) {
-      console.error("Login error:", error);
-      return res.status(500).render("login", { message: "An error occurred. Please try again." });
+    console.error("Login error:", error);
+    return res.status(500).render("login", { message: "An error occurred. Please try again." });
   }
 };
 
 // Load homepage
 const loadHomepage = async (req, res) => {
   try {
-      return res.render("home");
+    return res.render("home");
   } catch (error) {
-      console.log("page not found");
-      return res.status(500).send("Server error");
+    console.log("page not found");
+    return res.status(500).send("Server error");
   }
 };
 
@@ -319,18 +321,36 @@ const loadHomepage = async (req, res) => {
 //Loading of profile page
 const profile = async (req, res) => {
   try {
-    // User object is already attached by auth middleware
+
     const user = req.user;
 
     if (!user) {
       console.log("User not found in database");
-      return res.status(404).send("User not found");
+      return res.status(401).redirect("/login?message=Please log in to view your profile");
     }
 
+
+    const wallet = { balance: user.walletBalance || 0 };
+    const transactions = [];
+    const totalBookings = 0;
+
     return res.render("profile", {
-      user,
-      wallet: { balance: user.walletBalance || 0 },
-      transactions: []
+      user: {
+        name: user.name || "Unknown",
+        email: user.email || "N/A",
+        phone: user.phone || "N/A",
+        address: user.address || {
+          street: "N/A",
+          city: "N/A",
+          state: "N/A",
+          pincode: "N/A",
+          country: "N/A"
+        },
+        memberSince: user.createdAt ? user.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"
+      },
+      wallet,
+      transactions,
+      totalBookings
     });
 
   } catch (error) {
@@ -340,6 +360,148 @@ const profile = async (req, res) => {
 }
 
 
+
+const editUserProfile = async (req, res) => {
+  try {
+    // Verify user authentication
+    if (!req.user || !req.user._id) {
+      console.log("No user found in req.user");
+      return res.status(401).redirect("/login?message=Please log in to edit your profile");
+    }
+
+    // Log request body for debugging
+    console.log("Request body:", req.body);
+
+    // Destructure and validate input
+    const { name, email, phone, address } = req.body;
+
+    if (!name || !email || !phone || !address || !address.street || !address.city || !address.state || !address.pincode || !address.country) {
+      return res.render("profile", {
+        user: {
+          name: req.user.name || "Unknown",
+          email: req.user.email || "N/A",
+          phone: req.user.phone || "N/A",
+          address: req.user.address || {
+            street: "N/A",
+            city: "N/A",
+            state: "N/A",
+            pincode: "N/A",
+            country: "N/A"
+          },
+          memberSince: req.user.createdAt ? req.user.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"
+        },
+        wallet: { balance: req.user.walletBalance || 0 },
+        transactions: [],
+        totalBookings: 0,
+        message: "All fields are required"
+      });
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        email,
+        phone,
+        address: {
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          pincode: address.pincode,
+          country: address.country
+        }
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      console.log("User not found in database:", req.user._id);
+      return res.render("profile", {
+        user: {
+          name: req.user.name || "Unknown",
+          email: req.user.email || "N/A",
+          phone: req.user.phone || "N/A",
+          address: req.user.address || {
+            street: "N/A",
+            city: "N/A",
+            state: "N/A",
+            pincode: "N/A",
+            country: "N/A"
+          },
+          memberSince: req.user.createdAt ? req.user.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"
+        },
+        wallet: { balance: req.user.walletBalance || 0 },
+        transactions: [],
+        totalBookings: 0,
+        message: "User not found"
+      });
+    }
+
+    // Render profile with updated data
+    return res.render("profile", {
+      user: {
+        name: updatedUser.name || "Unknown",
+        email: updatedUser.email || "N/A",
+        phone: updatedUser.phone || "N/A",
+        address: updatedUser.address || {
+          street: "N/A",
+          city: "N/A",
+          state: "N/A",
+          pincode: "N/A",
+          country: "N/A"
+        },
+        memberSince: updatedUser.createdAt ? updatedUser.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"
+      },
+      wallet: { balance: updatedUser.walletBalance || 0 },
+      transactions: [],
+      totalBookings: 0,
+      message: "Profile updated successfully"
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    if (error.code === 11000) { // Duplicate key error (e.g., email already exists)
+      return res.render("profile", {
+        user: {
+          name: req.user.name || "Unknown",
+          email: req.user.email || "N/A",
+          phone: req.user.phone || "N/A",
+          address: req.user.address || {
+            street: "N/A",
+            city: "N/A",
+            state: "N/A",
+            pincode: "N/A",
+            country: "N/A"
+          },
+          memberSince: req.user.createdAt ? req.user.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"
+        },
+        wallet: { balance: req.user.walletBalance || 0 },
+        transactions: [],
+        totalBookings: 0,
+        message: "Email is already in use"
+      });
+    }
+    return res.render("profile", {
+      user: {
+        name: req.user.name || "Unknown",
+        email: req.user.email || "N/A",
+        phone: req.user.phone || "N/A",
+        address: req.user.address || {
+          street: "N/A",
+          city: "N/A",
+          state: "N/A",
+          pincode: "N/A",
+          country: "N/A"
+        },
+        memberSince: req.user.createdAt ? req.user.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"
+      },
+      wallet: { balance: req.user.walletBalance || 0 },
+      transactions: [],
+      totalBookings: 0,
+      message: "Server error: Unable to update profile"
+    });
+  }
+}
 //Logout 
 const logout = async (req, res) => {
 
@@ -387,6 +549,7 @@ module.exports = {
   login,
   loadCarsPage,
   profile,
+  editUserProfile,
   logout
 
 };

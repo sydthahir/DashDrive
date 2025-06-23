@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css?family=DM+Sans:500,400|Poppins:500,400,600" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#051c34',
+                        accent: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary-color: #8bbd76;
+            --secondary-color: #f5da9a;
+            --text-dark: #333;
+            --text-light: #666;
+            --white: #ffffff;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #ecedf0;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: var(--white);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .brand-logo span {
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateX(5px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            display: none;
+            background: var(--white);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hamburger-menu i {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Form Styles */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3436;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #2d3436;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control {
+            border: 1px solid #e1e1e1;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+            background-color: #fff;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 1rem;
+            background-color: #333333;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-signup:hover {
+            background-color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 51, 51, 0.2);
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            opacity: 0;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        .custom-checkbox label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #2d3436;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .custom-checkbox label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6c757d;
+            /* Neutral gray for unchecked state */
+            border-radius: 4px;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked+label::before {
+            background-color: var(--primary-color);
+            /* #8bbd76 */
+            border-color: var(--primary-color);
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked+label::after {
+            content: '\f00c';
+            /* Font Awesome check icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .custom-checkbox input[type="checkbox"]:focus+label::before {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+
+            .main-content {
+                margin-left: 260px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .main-content {
+                padding: 80px 15px 20px;
+            }
+
+            .hamburger-menu {
+                top: 15px;
+                left: 15px;
+                padding: 10px;
+            }
+
+            .form-container {
+                margin: 0 10px;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+
+            .availability-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                padding: 15px;
+            }
+
+            .sidebar-header {
+                padding: 15px 0;
+            }
+
+            .brand-logo {
+                font-size: 1.5rem;
+            }
+
+            .nav-link {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .nav-link i {
+                margin-right: 12px;
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1rem;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #7aa968;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger-menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="brand-logo">Dash<span>Drive</span></a>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/vendor/dashboard" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/vendor/cars" class="nav-link active">
+                    <i class="fas fa-car"></i>
+                    My Cars
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/vendor/bookings" class="nav-link">
+                    <i class="fas fa-calendar-check"></i>
+                    Bookings
+                </a>
+            </li>
+            <li class="nav-item">
+            <li class="nav-item">
+                <a href="/vendor/earnings" class="nav-link">
+                    <i class="fas fa-wallet"></i>
+                    Earnings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/vendor/profile" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/vendor/settings" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/vendor/logout" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Success/Error Messages -->
+        <% if (typeof query !=='undefined' && query.success) { %>
+            <div class="alert alert-success alert-dismissible fade show mx-3 mt-3" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <%= query.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <% } %>
+
+                <% if (typeof query !=='undefined' && query.error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <%= query.error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
+
+                        <!-- Form Container -->
+                        <main class="py-4 px-3">
+                            <div class="container-fluid">
+                                <div class="row justify-content-center">
+                                    <div class="col-12 col-lg-10 col-xl-8">
+                                        <div class="bg-white shadow-lg rounded-lg form-container">
+                                            <h1 class="text-2xl font-semibold text-center mb-6 form-title">Register New
+                                                Car</h1>
+
+                                            <form action="/vendor/cars" method="POST" enctype="multipart/form-data"
+                                                class="needs-validation" novalidate>
+                                                <!-- Basic Details -->
+                                                <div class="mb-6">
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <div class="w-1 h-4 bg-red-500"></div>
+                                                        <h2 class="text-lg font-medium section-title">Basic Details</h2>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 form-grid">
+                                                        <div>
+                                                            <label class="form-label" for="brand">Brand</label>
+                                                            <select name="brand" id="brand" required
+                                                                class="form-control">
+                                                                <option value="">Select Brand</option>
+                                                                <% carBrands.forEach(brand=> { %>
+                                                                    <option value="<%= brand %>">
+                                                                        <%= brand %>
+                                                                    </option>
+                                                                    <% }); %>
+                                                            </select>
+                                                            <div class="invalid-feedback">Please select a brand.</div>
+                                                            <div id="error-brand" class="error-message"></div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="model">Model</label>
+                                                            <input type="text" name="model" id="model" required
+                                                                class="form-control">
+                                                            <div class="invalid-feedback">Please enter the car model.
+                                                            </div>
+                                                            <div id="error-model" class="error-message"></div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="year">Year</label>
+                                                            <input type="number" name="year" id="year" min="1900"
+                                                                max="2025" required class="form-control">
+                                                            <div class="invalid-feedback">Please enter a valid year
+                                                                (1900-2025).</div>
+                                                            <div id="error-year" class="error-message"></div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label"
+                                                                for="registerationNumber">Registration Number</label>
+                                                            <input type="text" name="registerationNumber"
+                                                                id="registerationNumber" required class="form-control">
+                                                            <div class="invalid-feedback">Please enter the registration
+                                                                number.</div>
+                                                            <div id="error-registerationNumber" class="error-message">
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="color">Color</label>
+                                                            <input type="text" name="color" id="color" required
+                                                                class="form-control">
+                                                            <div class="invalid-feedback">Please enter the car color.
+                                                            </div>
+                                                            <div id="error-color" class="error-message"></div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="mileage">Mileage
+                                                                (KMs)</label>
+                                                            <input type="number" name="mileage" id="mileage" min="0"
+                                                                required class="form-control">
+                                                            <div class="invalid-feedback">Please enter a valid mileage.
+                                                            </div>
+                                                            <div id="error-mileage" class="error-message"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Car Images -->
+                                                <div class="mb-6">
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <div class="w-1 h-4 bg-red-500"></div>
+                                                        <h2 class="text-lg font-medium section-title">Car Images</h2>
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="form-label" for="carImages">Upload Images (Max
+                                                            5)</label>
+                                                        <input type="file" name="carImages" id="carImages" multiple
+                                                            accept="image/*" class="form-control">
+                                                        <p class="text-xs text-gray-500 mt-1">Select up to 5 images
+                                                            (JPG, PNG, GIF)</p>
+                                                        <div id="error-carImages" class="error-message"></div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Features -->
+                                                <div class="mb-6">
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <div class="w-1 h-4 bg-red-500"></div>
+                                                        <h2 class="text-lg font-medium section-title">Features</h2>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 features-grid">
+                                                        <% features.forEach(feature=> { %>
+                                                            <div class="custom-checkbox">
+                                                                <input type="checkbox" id="<%= feature.id %>"
+                                                                    name="features" value="<%= feature.id %>">
+                                                                <label for="<%= feature.id %>"
+                                                                    class="text-sm font-medium leading-none">
+                                                                    <%= feature.label %>
+                                                                </label>
+                                                            </div>
+                                                            <% }); %>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Test Drive Details -->
+                                                <div class="mb-6">
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <div class="w-1 h-4 bg-red-500"></div>
+                                                        <h2 class="text-lg font-medium section-title">Test Drive Details
+                                                        </h2>
+                                                    </div>
+
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 form-grid">
+                                                        <div>
+                                                            <label class="form-label" for="chargePerSlot">Test Drive
+                                                                Charge (Per Hour)</label>
+                                                            <div class="relative">
+                                                                <span
+                                                                    class="absolute left-3 top-1/2 transform -translate-y-1/2">₹</span>
+                                                                <input type="number" name="chargePerSlot"
+                                                                    id="chargePerSlot" min="0" step="0.01" required
+                                                                    class="form-control pl-8">
+                                                                <div class="invalid-feedback">Please enter a valid test
+                                                                    drive charge.</div>
+                                                                <div id="error-chargePerSlot" class="error-message">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="securityDeposit">Security
+                                                                Deposit</label>
+                                                            <div class="relative">
+                                                                <span
+                                                                    class="absolute left-3 top-1/2 transform -translate-y-1/2">₹</span>
+                                                                <input type="number" name="securityDeposit"
+                                                                    id="securityDeposit" min="0" step="0.01" required
+                                                                    class="form-control pl-8">
+                                                                <div class="invalid-feedback">Please enter a valid
+                                                                    security deposit.</div>
+                                                                <div id="error-securityDeposit" class="error-message">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Test Drive Availability -->
+                                                <div class="mb-6">
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <div class="w-1 h-4 bg-red-500"></div>
+                                                        <h2 class="text-lg font-medium section-title">Test Drive
+                                                            Availability</h2>
+                                                    </div>
+
+                                                    <div
+                                                        class="grid grid-cols-1 md:grid-cols-2 gap-6 availability-grid">
+                                                        <div>
+                                                            <label class="form-label">Available Days</label>
+                                                            <% daysOfWeek.forEach(day=> { %>
+                                                                <div class="flex items-center space-x-2 mb-2">
+                                                                    <input type="checkbox" id="<%= day.toLowerCase() %>"
+                                                                        name="availableDays" value="<%= day %>"
+                                                                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                                                    <label for="<%= day.toLowerCase() %>"
+                                                                        class="text-sm font-medium leading-none">
+                                                                        <%= day %>
+                                                                    </label>
+                                                                </div>
+                                                                <% }); %>
+                                                        </div>
+
+                                                        <div>
+                                                            <label class="form-label">Time Slots</label>
+                                                            <div class="space-y-2">
+                                                                <% timeSlots.forEach(slot=> { %>
+                                                                    <div
+                                                                        class="border rounded-md p-2 text-center text-sm bg-gray-50">
+                                                                        <%= slot %>
+                                                                    </div>
+                                                                    <% }); %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Additional Notes -->
+                                                <div class="mb-6">
+                                                    <div class="flex items-center gap-2 mb-4">
+                                                        <div class="w-1 h-4 bg-red-500"></div>
+                                                        <h2 class="text-lg font-medium section-title">Additional Notes
+                                                        </h2>
+                                                    </div>
+
+                                                    <textarea name="description" id="description"
+                                                        placeholder="Any additional information about the car..."
+                                                        rows="4" class="form-control"></textarea>
+                                                    <div id="error-description" class="error-message"></div>
+                                                </div>
+
+                                                <!-- Register Button -->
+                                                <button type="submit" class="btn btn-signup">REGISTER CAR</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Functionality
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        hamburgerMenu.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleSidebar();
+        });
+
+        sidebarOverlay.addEventListener('click', function () {
+            closeSidebar();
+        });
+
+        document.addEventListener('click', function (event) {
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(event.target) && !hamburgerMenu.contains(event.target)) {
+                    closeSidebar();
+                }
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                if (window.innerWidth <= 992) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > 992) {
+                closeSidebar();
+            }
+        });
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            const icon = hamburgerMenu.querySelector('i');
+            if (sidebar.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            const icon = hamburgerMenu.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+
+        // Form Validation
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const inputs = {
+                brand: document.getElementById('brand'),
+                model: document.getElementById('model'),
+                year: document.getElementById('year'),
+                registerationNumber: document.getElementById('registerationNumber'),
+                color: document.getElementById('color'),
+                mileage: document.getElementById('mileage'),
+                carImages: document.getElementById('carImages'),
+                chargePerSlot: document.getElementById('chargePerSlot'),
+                securityDeposit: document.getElementById('securityDeposit'),
+                description: document.getElementById('description')
+            };
+
+            // Show error message
+            const showError = (element, message) => {
+                const formControl = element.parentElement;
+                const errorDisplay = formControl.querySelector('.error-message');
+                errorDisplay.style.display = 'block';
+                errorDisplay.innerText = message;
+                formControl.classList.add('error');
+            };
+
+            // Hide error message
+            const hideError = (element) => {
+                const formControl = element.parentElement;
+                const errorDisplay = formControl.querySelector('.error-message');
+                errorDisplay.style.display = 'none';
+                formControl.classList.remove('error');
+            };
+
+            // Form submission validation
+            form.addEventListener('submit', function (e) {
+                let isValid = true;
+
+                // Brand validation
+                if (inputs.brand.value.trim() === '') {
+                    showError(inputs.brand, 'Please select a brand');
+                    isValid = false;
+                } else {
+                    hideError(inputs.brand);
+                }
+
+                // Model validation
+                if (inputs.model.value.trim() === '') {
+                    showError(inputs.model, 'Please enter the car model');
+                    isValid = false;
+                } else if (inputs.model.value.trim().length < 2) {
+                    showError(inputs.model, 'Model must be at least 2 characters');
+                    isValid = false;
+                } else {
+                    hideError(inputs.model);
+                }
+
+                // Year validation
+                if (inputs.year.value.trim() === '') {
+                    showError(inputs.year, 'Please enter the car year');
+                    isValid = false;
+                } else if (inputs.year.value < 1900 || inputs.year.value > 2025) {
+                    showError(inputs.year, 'Year must be between 1900 and 2025');
+                    isValid = false;
+                } else {
+                    hideError(inputs.year);
+                }
+
+                // Registration Number validation
+                if (inputs.registerationNumber.value.trim() === '') {
+                    showError(inputs.registerationNumber, 'Please enter the registration number');
+                    isValid = false;
+                } else if (inputs.registerationNumber.value.trim().length < 6) {
+                    showError(inputs.registerationNumber, 'Registration number must be at least 6 characters');
+                    isValid = false;
+                } else {
+                    hideError(inputs.registerationNumber);
+                }
+
+                // Color validation
+                if (inputs.color.value.trim() === '') {
+                    showError(inputs.color, 'Please enter the car color');
+                    isValid = false;
+                } else if (inputs.color.value.trim().length < 3) {
+                    showError(inputs.color, 'Color must be at least 3 characters');
+                    isValid = false;
+                } else {
+                    hideError(inputs.color);
+                }
+
+                // Mileage validation
+                if (inputs.mileage.value.trim() === '') {
+                    showError(inputs.mileage, 'Please enter the mileage');
+                    isValid = false;
+                } else if (inputs.mileage.value < 0) {
+                    showError(inputs.mileage, 'Mileage cannot be negative');
+                    isValid = false;
+                } else {
+                    hideError(inputs.mileage);
+                }
+
+                // Car Images validation
+                if (inputs.carImages.files.length === 0) {
+                    showError(inputs.carImages, 'Please upload at least one image');
+                    isValid = false;
+                } else if (inputs.carImages.files.length > 5) {
+                    showError(inputs.carImages, 'You can upload a maximum of 5 images');
+                    isValid = false;
+                } else {
+                    hideError(inputs.carImages);
+                }
+
+                // Test Drive Charge validation
+                if (inputs.chargePerSlot.value.trim() === '') {
+                    showError(inputs.chargePerSlot, 'Please enter the test drive charge');
+                    isValid = false;
+                } else if (inputs.chargePerSlot.value < 0) {
+                    showError(inputs.chargePerSlot, 'Test drive charge cannot be negative');
+                    isValid = false;
+                } else {
+                    hideError(inputs.chargePerSlot);
+                }
+
+                // Security Deposit validation
+                if (inputs.securityDeposit.value.trim() === '') {
+                    showError(inputs.securityDeposit, 'Please enter the security deposit');
+                    isValid = false;
+                } else if (inputs.securityDeposit.value < 0) {
+                    showError(inputs.securityDeposit, 'Security deposit cannot be negative');
+                    isValid = false;
+                } else {
+                    hideError(inputs.securityDeposit);
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+
+            // Real-time validation on blur
+            Object.values(inputs).forEach(input => {
+                if (input) {
+                    input.addEventListener('blur', function () {
+                        if (this.id === 'brand' && this.value.trim() === '') {
+                            showError(this, 'Please select a brand');
+                        } else if (this.id === 'model' && this.value.trim() === '') {
+                            showError(this, 'Please enter the car model');
+                        } else if (this.id === 'model' && this.value.trim().length < 2) {
+                            showError(this, 'Model must be at least 2 characters');
+                        } else if (this.id === 'year' && this.value.trim() === '') {
+                            showError(this, 'Please enter the car year');
+                        } else if (this.id === 'year' && (this.value < 1900 || this.value > 2025)) {
+                            showError(this, 'Year must be between 1900 and 2025');
+                        } else if (this.id === 'registerationNumber' && this.value.trim() === '') {
+                            showError(this, 'Please enter the registration number');
+                        } else if (this.id === 'registerationNumber' && this.value.trim().length < 6) {
+                            showError(this, 'Registration number must be at least 6 characters');
+                        } else if (this.id === 'color' && this.value.trim() === '') {
+                            showError(this, 'Please enter the car color');
+                        } else if (this.id === 'color' && this.value.trim().length < 3) {
+                            showError(this, 'Color must be at least 3 characters');
+                        } else if (this.id === 'mileage' && this.value.trim() === '') {
+                            showError(this, 'Please enter the mileage');
+                        } else if (this.id === 'mileage' && this.value < 0) {
+                            showError(this, 'Mileage cannot be negative');
+                        } else if (this.id === 'carImages' && this.files.length === 0) {
+                            showError(this, 'Please upload at least one image');
+                        } else if (this.id === 'carImages' && this.files.length > 5) {
+                            showError(this, 'You can upload a maximum of 5 images');
+                        } else if (this.id === 'chargePerSlot' && this.value.trim() === '') {
+                            showError(this, 'Please enter the test drive charge');
+                        } else if (this.id === 'chargePerSlot' && this.value < 0) {
+                            showError(this, 'Test drive charge cannot be negative');
+                        } else if (this.id === 'securityDeposit' && this.value.trim() === '') {
+                            showError(this, 'Please enter the security deposit');
+                        } else if (this.id === 'securityDeposit' && this.value < 0) {
+                            showError(this, 'Security deposit cannot be negative');
+                        } else {
+                            hideError(this);
+                        }
+                    });
+                }
+            });
+
+            // File input preview
+            inputs.carImages.addEventListener('change', function (e) {
+                const files = e.target.files;
+                const fileCount = files.length;
+                const label = e.target.nextElementSibling.nextElementSibling;
+                if (fileCount > 0) {
+                    label.textContent = `${fileCount} file(s) selected`;
+                } else {
+                    label.textContent = 'Select up to 5 images (JPG, PNG, GIF)';
+                }
+            });
+        });
+
+        // Smooth scrolling for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+
+</html>

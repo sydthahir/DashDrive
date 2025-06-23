@@ -35,6 +35,7 @@ router.get("/home", userAuth, userController.loadHomepage)
 
 
 router.get("/profile", userAuth, userController.profile)
+router.post("/profile/edit", userAuth, userController.editUserProfile)
 router.get("/cars", userController.loadCarsPage)
 router.get("/logout", userController.logout)
 
@@ -52,7 +53,7 @@ router.post("/reset-password", profileControllers.postNewPassword)
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 
-router.get('/auth/google/callback', 
+router.get('/auth/google/callback',
     passport.authenticate("google", { session: false, failureRedirect: '/login' }),
     async (req, res) => {
         try {
@@ -64,7 +65,7 @@ router.get('/auth/google/callback',
 
             // Generate JWT token
             const token = jwt.sign(
-                { 
+                {
                     userId: user._id.toString(), // Ensure ID is a string
                     email: user.email,
                     name: user.name
@@ -91,8 +92,8 @@ router.get('/auth/google/callback',
             });
 
             console.log("Google auth successful for:", user.email);
-          
-            
+
+
             return res.redirect("/home");
         } catch (error) {
             console.error("Error in Google auth callback:", error);

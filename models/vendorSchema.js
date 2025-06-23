@@ -51,6 +51,11 @@ const vendorSchema = new Schema({
         required: false
 
     },
+    isBlocked: {
+        type: Boolean,
+        required:false
+    },
+
     isApproved: {
         type: Boolean,
         default: false

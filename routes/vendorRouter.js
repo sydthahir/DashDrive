@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router()
 const vendorController = require("../controllers/vendor/vendorController")
 const vendorAuth = require("../middlewares/vendorAuth")
+const carController = require("../controllers/vendor/carController")
+const upload = require("../middlewares/multer");
 
 
 //Error Page
@@ -31,6 +33,16 @@ router.post("/resend-forget-otp", vendorController.resendForgetOTP)
 router.get("/reset-password", vendorController.loadResetPassword)
 router.post("/reset-password", vendorController.resetPassword)
 
+
+
+//Car Management
+router.get("/cars/register-cars", vendorAuth.requireAuth, carController.loadCarForm)
+router.post("/cars/register-cars", vendorAuth.requireAuth, upload.single("carImage"), carController.registerCar)
+router.get("/cars", vendorAuth.requireAuth, carController.listCars)
+
+
+
+router.use((req, res) => vendorController.pageError(req, res));
 
 
 

@@ -20,11 +20,11 @@
 
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-color: #ffffff;
+            background-color: #eee9e9;
             position: relative;
             padding-top: 80px;
         }
@@ -46,9 +46,9 @@
 
         .signup-container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 2rem auto;
-            background-color: #f5da9a;
+            background-color: #ffffff;
             border-radius: 30px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -58,6 +58,7 @@
             position: relative;
             overflow: hidden;
             min-height: 600px;
+            width: 600px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -86,7 +87,7 @@
             z-index: 1;
             color: #ffffff;
             max-width: 80%;
-            padding: 3rem;
+            padding: 4rem;
             text-align: center;
         }
 
@@ -102,14 +103,15 @@
         }
 
         .signup-right {
-            padding: 3rem;
-            background-color: #f5da9a;
+            padding: 4rem;
+            background-color: #ffffff;
         }
 
         .form-container {
             max-width: 400px;
             margin: 0 auto;
-            background-color: #f5da9a;
+            background-color: #ffffff;
+            margin-left: 30px;
         }
 
         .form-control {
@@ -342,7 +344,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.querySelector('form');
             const nameid = document.getElementById('name');
             const emailid = document.getElementById('email');
@@ -373,7 +375,7 @@
             };
 
             // Form validation
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 let isValid = true;
 
                 // Name validation
@@ -428,7 +430,7 @@
             // Real-time validation
             const inputs = [nameid, emailid, passwordid, confirmPasswordid];
             inputs.forEach(input => {
-                input.addEventListener('blur', function() {
+                input.addEventListener('blur', function () {
                     if (this.value.trim() === '') {
                         showError(this, `${this.name} is required`);
                     } else {

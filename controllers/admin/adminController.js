@@ -6,16 +6,17 @@ require("dotenv").config();
 const Vendor = require("../../models/vendorSchema");
 
 //Page error
-const pageError = async (req, res) => {
+const pageError = (req, res) => {
     try {
-
-        res.render("page-error")
+        res.status(404).render("page-error", {
+            message: "Page not found",
+            error: null
+        });
     } catch (error) {
-        res.redirect("/pageNotFound")
-
+        console.error("Error rendering 404 page:", error);
+        res.status(500).send("Internal Server Error"); // for Critical errors
     }
-
-}
+};
 
 //Loading of login page 
 const loadLogin = (req, res) => {
@@ -23,6 +24,7 @@ const loadLogin = (req, res) => {
     res.render("admin-login", { message: error, error: error, csrfToken: req.csrfToken ? req.csrfToken() : '' });
 
 }
+
 //Login
 const login = async (req, res) => {
     try {
@@ -153,6 +155,52 @@ const loadUsers = async (req, res) => {
     }
 };
 
+const getUserDetails = async (req, res) => {
+    try {
+
+    
+        const userId = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ success: false, message: "Invalid user ID" });
+        }
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+
+        if (!req.user || !req.user.id) {
+            console.log('No authenticated admin found');
+            return res.status(401).json({ success: false, message: "Authentication required" });
+        }
+
+        const adminId = req.user.id;
+        const admin = await User.findById(adminId);
+        if (!admin || !admin.isAdmin) {
+            return res.status(403).json({ success: false, message: "Unauthorized access" });
+        }
+
+   
+        return res.status(200).json({
+            success: true,
+            message: "User details retrieved successfully",
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                createdAt: user.createdAt,
+                isBlocked: user.isBlocked,
+                walletBalance: user.walletBalance
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching user details:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+}
+
 
 //Customer Block
 const customerBlocked = async (req, res) => {
@@ -267,17 +315,38 @@ const loadVendors = async (req, res) => {
             return res.redirect("/admin/login");
         }
 
-        const vendors = await Vendor.find({
-            status: 'approved'
-        })
-            .select('fullName email phone isApproved createdAt')
-            .sort({ createdAt: -1 });
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;
+        const limit = 3; // Number of vendors per page (same as users)
+        const skip = (page - 1) * limit;
 
+        const [vendors, totalCount, totalVendors, activeVendors, newVendors] = await Promise.all([
+            Vendor.find({ status: 'approved' })
+                .select('fullName email phone isApproved isBlocked createdAt')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Vendor.countDocuments({ status: 'approved' }), // Total approved vendors
+            Vendor.countDocuments({ status: 'approved' }), // For stats card
+            Vendor.countDocuments({ status: 'approved', isBlocked: false }), // Active vendors
+            Vendor.countDocuments({
+                status: 'approved',
+                createdAt: { $gte: new Date(new Date().setDate(1)).setHours(0, 0, 0, 0) }
+            }) // New vendors this month
+        ]);
 
+        const totalPages = Math.ceil(totalCount / limit);
 
         res.render('vendors', {
             admin,
             vendors,
+            totalVendors,
+            activeVendors,
+            newVendors,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
             currentPage: 'vendors'
         });
 
@@ -285,7 +354,7 @@ const loadVendors = async (req, res) => {
         console.error('Vendor page error:', error);
         return res.redirect("/page-error");
     }
-}
+};
 
 
 //Pending Vendors
@@ -310,6 +379,7 @@ const getPendingVendors = async (req, res) => {
         return res.redirect("/page-error");
     }
 }
+
 
 //Approve vendor
 const approveVendor = async (req, res) => {
@@ -383,6 +453,72 @@ const rejectVendor = async (req, res) => {
 }
 
 
+// Block vendor
+const blockVendor = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid vendor ID" });
+        }
+
+        const vendor = await Vendor.findById(id);
+        if (!vendor) {
+            return res.status(404).json({ success: false, message: "Vendor not found" });
+        }
+
+        if (vendor.isBlocked) {
+            return res.status(400).json({ success: false, message: "Vendor is already blocked" });
+        }
+
+        vendor.isBlocked = true;
+        await vendor.save();
+
+        console.log("Vendor blocked:", id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Vendor blocked successfully"
+        });
+    } catch (error) {
+        console.error("Error blocking vendor:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+// Unblock vendor
+const unblockVendor = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid vendor ID" });
+        }
+
+        const vendor = await Vendor.findById(id);
+        if (!vendor) {
+            return res.status(404).json({ success: false, message: "Vendor not found" });
+        }
+
+        if (!vendor.isBlocked) {
+            return res.status(400).json({ success: false, message: "Vendor is already unblocked" });
+        }
+
+        vendor.isBlocked = false;
+        await vendor.save();
+
+        console.log("Vendor unblocked:", id);
+
+        return res.status(200).json({
+            success: true,
+            message: "Vendor unblocked successfully"
+        });
+    } catch (error) {
+        console.error("Error unblocking vendor:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
 //Logout
 const logout = async (req, res) => {
     try {
@@ -399,19 +535,21 @@ const logout = async (req, res) => {
 };
 
 
-
 module.exports = {
     loadLogin,
     pageError,
     login,
     loadDashboard,
-    logout,
     loadUsers,
+    getUserDetails,
+    customerBlocked,
+    customerUnblocked,
     loadBookings,
     loadVendors,
     getPendingVendors,
     approveVendor,
     rejectVendor,
-    customerBlocked,
-    customerUnblocked
+    blockVendor,
+    unblockVendor,
+    logout
 };

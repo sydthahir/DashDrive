@@ -14,7 +14,7 @@ const authenticateAdmin = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  
+
         if (!decoded.isAdmin) {
             console.log("User is not an admin");
             if (req.xhr || req.headers['content-type'] === 'application/json') {

@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 const path = require("path")
-// const csrf = require('csurf');
-// const csrfProtection = csrf({ cookie: true });
 const env = require("dotenv").config()
 const cookieParser = require("cookie-parser")
 const passport = require("./config/passport")
@@ -49,6 +47,26 @@ app.set("view engine", "ejs")
 app.use("/", userRouter)
 app.use("/admin", adminRouter)
 app.use("/vendor", vendorRouter)
+
+
+// Global catch-all route for undefined routes
+app.use((req, res) => {
+    res.status(404).render("page-404", {
+        message: "Page not found",
+        error: null
+    });
+});
+
+
+// Error-handling middleware for server errors
+app.use((err, req, res, next) => {
+    console.error("Server error:", err);
+    res.status(500).render("page-404", {
+        message: "Something went wrong",
+        error: err.message
+    });
+});
+
 
 const PORT = process.env.PORT || 3001;
 
