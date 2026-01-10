@@ -32,15 +32,13 @@ router.post("/login", userController.login)
 //Home page management
 router.get("/home", userAuth, userController.loadHomepage)
 
-
-
-router.get("/profile", userAuth, userController.profile)
-router.post("/profile/edit", userAuth, userController.editUserProfile)
 router.get("/cars", userController.loadCarsPage)
 router.get("/logout", userController.logout)
 
 
 //Profile management
+router.get("/profile", userAuth, userController.profile)
+router.post("/profile/edit", userAuth, userController.editUserProfile)
 router.get("/forgot-password", profileControllers.loadForgotPassPage)
 router.post("/forgot-email-valid", profileControllers.forgotEmailValid)
 router.post("/verify-passForgot-otp", profileControllers.verifyForgotPassOTP)
@@ -66,7 +64,7 @@ router.get('/auth/google/callback',
             // Generate JWT token
             const token = jwt.sign(
                 {
-                    userId: user._id.toString(), // Ensure ID is a string
+                    userId: user._id.toString(),
                     email: user.email,
                     name: user.name
                 },
@@ -85,9 +83,9 @@ router.get('/auth/google/callback',
             // Set the new auth token
             res.cookie('auth_token', token, {
                 httpOnly: true,
-                secure: false, // Set to false for development
+                secure: false,
                 maxAge: 3600000, // 1 hour
-                sameSite: "lax", // Changed to lax for Google Auth
+                sameSite: "lax",
                 path: "/"
             });
 

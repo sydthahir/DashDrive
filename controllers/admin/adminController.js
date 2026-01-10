@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const Vendor = require("../../models/vendorSchema");
+const { sendVendorApprovalMail } = require("../../utils/mailer")
 
 //Page error
 const pageError = (req, res) => {
@@ -21,7 +22,7 @@ const pageError = (req, res) => {
 //Loading of login page 
 const loadLogin = (req, res) => {
     const error = req.query.error || null;
-    res.render("admin-login", { message: error, error: error, csrfToken: req.csrfToken ? req.csrfToken() : '' });
+    res.render("admin-login", { message: error, error: error });
 
 }
 
@@ -40,7 +41,7 @@ const login = async (req, res) => {
 
 
         const admin = await User.findOne({ email, isAdmin: true });
-        if (!admin || !admin.isAdmin) {
+        if (!admin) {
             return res.status(401).render("admin-login", {
                 message: "Admin account not found",
                 error: "Admin account not found"
@@ -66,9 +67,9 @@ const login = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.cookie('auth_token', token, {
+        res.cookie('admin_token', token, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: 'lax',
             maxAge: 3600000, // 1 hour in milliseconds
             path: '/'
@@ -158,7 +159,7 @@ const loadUsers = async (req, res) => {
 const getUserDetails = async (req, res) => {
     try {
 
-    
+
         const userId = req.params.id;
 
         if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -182,7 +183,7 @@ const getUserDetails = async (req, res) => {
             return res.status(403).json({ success: false, message: "Unauthorized access" });
         }
 
-   
+
         return res.status(200).json({
             success: true,
             message: "User details retrieved successfully",
@@ -401,6 +402,11 @@ const approveVendor = async (req, res) => {
                 message: 'Vendor not found'
             });
         }
+        //Send mail after approval
+        await sendVendorApprovalMail(
+            updatedVendor.email,
+            updatedVendor.name
+        );
 
         return res.status(200).json({
             success: true,
@@ -415,6 +421,7 @@ const approveVendor = async (req, res) => {
         });
     }
 }
+
 
 
 //Reject vendor
@@ -522,7 +529,7 @@ const unblockVendor = async (req, res) => {
 //Logout
 const logout = async (req, res) => {
     try {
-        res.clearCookie("auth_token", {
+        res.clearCookie("admin_token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict"

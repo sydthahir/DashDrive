@@ -8,7 +8,8 @@ const { securePassword } = require('../../utils/hashPassword');
 const env = require("dotenv").config();
 const { CURSOR_FLAGS } = require("mongodb");
 const { loadDashboard } = require("../admin/adminController");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const uploadFile = require("../../utils/s3");
 
 
 
@@ -29,7 +30,7 @@ const pageError = (req, res) => {
 // Load Signup page
 const loadSignup = async (req, res) => {
     try {
-        
+
         res.render("vendor-signup", { message: null });
     } catch (error) {
         console.log("Signup page not found", error);
@@ -172,14 +173,6 @@ const verifyOTP = async (req, res) => {
         // Delete temporary data
         await TempData.deleteOne({ email });
 
-        //Generating JWT token
-        const token = jwt.sign(
-            { id: newVendor._id, email: newVendor.email },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-
 
         // Send JSON response 
         return res.status(200).json({
@@ -295,22 +288,22 @@ const login = async (req, res) => {
             return res.status(403).render("vendor-login", { message: "Your account is blocked by admin" });
         }
 
-
+        //Generating JWT Token
         const token = jwt.sign(
-            { vendorId: findVendor._id, email: findVendor.email },
+            { vendorId: findVendor._id, email: findVendor.email, role: "vendor" },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
 
 
-        res.clearCookie("auth_token", {
+        res.clearCookie("vendor_token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
             path: "/"
         });
 
-        res.cookie("auth_token", token, {
+        res.cookie("vendor_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 3600000,
@@ -318,13 +311,7 @@ const login = async (req, res) => {
             path: "/"
         })
 
-        res.redirect("/vendor/dashboard")
-
-
-
-
-
-
+        res.redirect("/vendor/")
 
 
     } catch (error) {
@@ -338,9 +325,6 @@ const getDashboard = async (req, res) => {
     try {
 
 
-        if (!req.vendor.isApproved) {
-            return res.redirect("/vendor/login?message=Account is not yet approved by admin");
-        }
         console.log("Login success");
         return res.render("vendorDashboard");
 
@@ -617,10 +601,130 @@ const resetPassword = async (req, res) => {
     }
 };
 
+
+//Loading of profile
+const profile = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+
+        if (!vendor) {
+            console.log("vendor not found in database");
+            return res.status(401).redirect("/vendor/login?message=Please log in to view your profile");
+        }
+
+        // Get success/error messages from query params
+        const success = req.query.success || null;
+        const error = req.query.error || null;
+
+        return res.render("../partials/vendor/layout", {
+            title: "Profile",
+            page: "../Vendor/profile",
+            activePage: "profile",
+            vendor: {
+                fullName: vendor.fullName || "",
+                companyName: vendor.companyName || "",
+                email: vendor.email || "",
+                phone: vendor.phone || "",
+                taxId: vendor.taxId || "",
+                businessAddress: vendor.businessAddress || "",
+                profileImage: vendor.profileImage || ""
+            },
+            success: success,
+            error: error
+        });
+
+    } catch (error) {
+        console.error("Error loading profile:", error);
+        res.status(500).send("Server error")
+    }
+}
+
+// Update vendor profile
+const updateProfile = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+
+        if (!vendor) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized. Please log in."
+            });
+        }
+
+        // Extract form data
+        const {
+            vendorName,
+            businessName,
+            phone,
+            gstNumber,
+            businessAddress
+        } = req.body;
+
+        // Validate required fields
+        if (!vendorName || !businessName || !phone || !gstNumber || !businessAddress) {
+            return res.status(400).json({
+                success: false,
+                message: "Please fill in all required fields"
+            });
+        }
+
+        // Validate phone format (10 digits)
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: "Phone number must be 10 digits"
+            });
+        }
+
+        // Check if phone number is already taken by another vendor
+        const existingVendor = await Vendor.findOne({
+            phone: phone,
+            _id: { $ne: vendor._id }
+        });
+        if (existingVendor) {
+            return res.status(400).json({
+                success: false,
+                message: "Phone number is already registered with another account"
+            });
+        }
+
+        // Sanitize inputs (basic sanitization)
+        const sanitizeInput = (input) => {
+            if (typeof input !== 'string') return input;
+            return input.trim().replace(/[<>]/g, '');
+        };
+
+        // Update vendor document
+        vendor.fullName = sanitizeInput(vendorName);
+        vendor.companyName = sanitizeInput(businessName);
+        vendor.phone = sanitizeInput(phone);
+        vendor.taxId = sanitizeInput(gstNumber);
+        vendor.businessAddress = sanitizeInput(businessAddress);
+
+
+        await vendor.save();
+
+        return res.json({
+            success: true,
+            message: "Profile updated successfully!"
+        });
+
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while updating profile. Please try again."
+        });
+    }
+}
+
+
+
 //logout
 const logout = async (req, res) => {
     try {
-        res.clearCookie("auth_token", {
+        res.clearCookie("vendor_token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict"
@@ -651,5 +755,7 @@ module.exports = {
     loadLogin,
     login,
     getDashboard,
+    profile,
+    updateProfile,
     logout
 };

@@ -4,12 +4,19 @@ const { Schema } = mongoose;
 
 const tempUserSchema = new mongoose.Schema({
     name: String,
-    email: String,
+    email: { type: String, unique: true },
     password: String,
+
     otp: String,
-    resetOTP: String,          
+    otpExpiresAt: Date,
+
+    resetOTP: String,
     resetOTPExpiry: Date,
-    createdAt: { type: Date, default: Date.now, expires: 300 } // expires after 5 mins
-})
+}, { timestamps: true });
+
+tempUserSchema.index(
+  { otpExpiresAt: 1 },
+  { expireAfterSeconds: 0 }
+);
 
 module.exports = mongoose.model('TempUser', tempUserSchema)

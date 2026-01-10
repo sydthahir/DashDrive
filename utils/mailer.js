@@ -1,8 +1,6 @@
 const nodemailer = require("nodemailer");
 
 
-
-
 const transporter = nodemailer.createTransport({
     service: "Gmail",
     port: 587,
@@ -14,6 +12,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+// 🔐 OTP MAIL
 const sendOtpMail = async (email, otp) => {
     try {
         const info = await transporter.sendMail({
@@ -31,7 +30,29 @@ const sendOtpMail = async (email, otp) => {
     }
 };
 
+// VENDOR APPROVAL MAIL
+const sendVendorApprovalMail = async (email, name) => {
+    await transporter.sendMail({
+        from: `"DashDrive" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "🎉 Vendor Account Approved - DashDrive",
+        html: `
+      <h2>Hello ${name},</h2>
+      <p>Congratulations! Your vendor account has been <b>approved</b> by our admin.</p>
+      <p>You can now log in and start listing cars on DashDrive.</p>
+      <a href="https://dashdrive.com/vendor/login">
+        Login to Dashboard
+      </a>
+      <br/><br/>
+      <p>— DashDrive Team</p>
+    `
+    });
+};
 
 
 
-module.exports = sendOtpMail;
+
+module.exports = {
+    sendOtpMail,
+    sendVendorApprovalMail
+};

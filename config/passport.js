@@ -6,9 +6,10 @@ const jwt = require("jsonwebtoken");
 const env = require("dotenv").config()
 
 const jwtOptions = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: (req) => req?.cookies?.auth_token,
     secretOrKey: process.env.JWT_SECRET,
-}
+};
+
 
 passport.use(
     new JwtStrategy(jwtOptions, async (jwt_payload, done) => {

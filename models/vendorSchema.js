@@ -51,6 +51,22 @@ const vendorSchema = new Schema({
         required: false
 
     },
+    profileImage: {
+        type: String,
+        required: false
+    },
+    bankName: {
+        type: String,
+        required: false
+    },
+    accountNumber: {
+        type: String,
+        required: false
+    },
+    ifscCode: {
+        type: String,
+        required: false
+    },
     isBlocked: {
         type: Boolean,
         required:false

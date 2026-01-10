@@ -293,7 +293,8 @@
                     <form action="/login" method="POST" class="needs-validation" novalidate>
                         <div class="mb-4">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="off"
+                                required>
                             <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
 
@@ -317,7 +318,8 @@
                                 Password?</a>
                         </div>
 
-                        <% if (typeof message !=='undefined' ) { %>
+                        <% if ( message) { %>
+                            <div class="alert alert-danger text-center"></div>
                             <p style="color: red">
                                 <%= message %>
                             </p>
@@ -371,6 +373,11 @@
                 }, false)
             })
         })()
+
+
+
+
+
     </script>
 </body>
 

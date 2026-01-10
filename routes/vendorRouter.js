@@ -17,15 +17,18 @@ router.post("/resend-otp", vendorController.resendOTP);
 
 
 //Login management
-router.get("/login", vendorController.loadLogin)
+router.get("/login", vendorAuth.checkAuth, vendorController.loadLogin)
 router.post("/login", vendorController.login)
-router.get("/dashboard", vendorAuth.requireAuth, vendorController.getDashboard)
+router.get("/", vendorAuth.requireAuth, vendorController.getDashboard)
 
 
 //logout
-router.get('/logout', vendorController.logout);
+router.get('/logout', vendorAuth.requireAuth, vendorController.logout);
 
 //Profile management
+router.get("/profile", vendorAuth.requireAuth, vendorController.profile)
+router.post("/profile/update", vendorAuth.requireAuth, upload.single("profileImage"), vendorController.updateProfile)
+
 router.get("/forgot-password", vendorController.loadForgotPass)
 router.post("/forgot-password", vendorController.forgotValidation)
 router.post("/verify-forgot-otp", vendorController.verifyForgotOTP)

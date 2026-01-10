@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const authenticateAdmin = (req, res, next) => {
-    const token = req.cookies.auth_token;
+    const token = req.cookies.admin_token;
 
     if (!token) {
         console.log("No token found for login");

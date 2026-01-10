@@ -4,8 +4,8 @@ const env = require("dotenv").config()
 
 const authenticateUser = async (req, res, next) => {
     try {
-        const token = req.cookies.auth_token;
-        
+        const token = req.cookies.user_token;
+
         if (!token) {
             console.log("No token found");
             return res.redirect("/login");
@@ -13,11 +13,11 @@ const authenticateUser = async (req, res, next) => {
 
         // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         // Check if token is expired
         if (Date.now() >= decoded.exp * 1000) {
             console.log("Token expired");
-            res.clearCookie("auth_token", {
+            res.clearCookie("user_token", {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
@@ -30,7 +30,7 @@ const authenticateUser = async (req, res, next) => {
         const user = await User.findById(decoded.userId);
         if (!user) {
             console.log("User not found in database for ID:", decoded.userId);
-            res.clearCookie("auth_token", {
+            res.clearCookie("user_token", {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
@@ -42,13 +42,13 @@ const authenticateUser = async (req, res, next) => {
         // Check if user is blocked
         if (user.isBlocked) {
             console.log("User is blocked");
-            res.clearCookie("auth_token", {
+            res.clearCookie("user_token", {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
                 path: "/"
             });
-            return res.redirect("/login");
+            return res.redirect("/login?message=Your account has been blocked !");
         }
 
         // Attach user to request
@@ -56,7 +56,7 @@ const authenticateUser = async (req, res, next) => {
         next();
     } catch (error) {
         console.error("Auth error:", error);
-        res.clearCookie("auth_token", {
+        res.clearCookie("user_token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",

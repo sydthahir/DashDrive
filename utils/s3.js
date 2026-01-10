@@ -11,8 +11,8 @@ const s3 = new S3Client({
     },
 });
 
-const uploadFile = async (file) => {
-    const fileName = `cars/${crypto.randomUUID()}${path.extname(file.originalname)}`;
+const uploadFile = async (file, folder = 'cars') => {
+    const fileName = `${folder}/${crypto.randomUUID()}${path.extname(file.originalname)}`;
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: fileName,

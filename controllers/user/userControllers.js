@@ -65,25 +65,19 @@ const signup = async (req, res) => {
 
 
 
-
-
-    const emailSent = await sendOtpMail(email, otp);
-    if (!emailSent) {
-      return res.render("signup", { message: "Error sending verification email" });
-    }
-
-
-
-
-
     // Temporarily store registration data and OTP 
     const tempData = {
       name,
       email,
       password,
       otp,
-      expiresAt: Date.now() + 10 * 60 * 1000 // 10-minute expiration
+      expiresAt: Date.now() + 5 * 60 * 1000 // 5-minute expiration
     };
+
+    const emailSent = await sendOtpMail(email, otp);
+    if (!emailSent) {
+      return res.render("signup", { message: "Error sending verification email" });
+    }
 
 
 
@@ -103,7 +97,7 @@ const signup = async (req, res) => {
 
 
   } catch (error) {
-    console.error("Error while creating vendor account", error);
+    console.error("Error while creating user account", error);
     res.redirect("/pageNotFound");
   }
 }
@@ -171,13 +165,7 @@ const verifyOTP = async (req, res) => {
     // Delete temporary data
     await TempUser.deleteOne({ email });
 
-    //Generating JWT token
-    const token = jwt.sign(
-      { id: newUser._id, email: newUser.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-    console.log("jwt Token Generated")
+
 
 
     return res.status(200).json({
@@ -252,6 +240,7 @@ const loadLogin = (req, res) => {
   try {
 
     const message = req.query.message || null;
+
     res.render("login", { message });
 
 
@@ -287,13 +276,17 @@ const login = async (req, res) => {
       return res.status(401).render("login", { message: "Incorrect Email or Password" });
     }
 
+    //Generating JWT token
     const token = jwt.sign(
       { userId: findUser._id, email: findUser.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+    console.log("jwt Token Generated")
 
-    res.cookie("auth_token", token, {
+
+
+    res.cookie("user_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 3600000,
@@ -507,8 +500,8 @@ const logout = async (req, res) => {
 
   try {
 
-    // Clear the auth_token cookie
-    res.clearCookie("auth_token", {
+    // Clear the user_token cookie
+    res.clearCookie("user_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

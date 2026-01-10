@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const requireAuth = async (req, res, next) => {
     try {
-        const token = req.cookies.auth_token;
+        const token = req.cookies.vendor_token;
 
         if (!token) {
             console.log("no token  for login");
@@ -14,10 +14,16 @@ const requireAuth = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (decoded.role !== "vendor") {
+            return res.status(403).send("Access denied");
+        }
+
         const vendor = await Vendor.findById(decoded.vendorId);
 
+
         if (!vendor) {
-            res.clearCookie('auth_token');
+            res.clearCookie('vendor_token');
             console.log("no vendor found");
 
             return res.redirect('/vendor/login?error=Invalid session');
@@ -26,12 +32,12 @@ const requireAuth = async (req, res, next) => {
 
 
         if (vendor.isBlocked) {
-            res.clearCookie('auth_token');
+            res.clearCookie('vendor_token');
             console.log("vendor acc blocked");
             return res.redirect('/vendor/login?error=Your account has been blocked');
         }
         if (!vendor.isApproved) {
-            res.clearCookie("auth_token");
+            res.clearCookie("vendor_token");
             console.log("not approved");
             return res.redirect("/vendor/login?message=Account is not yet approved by admin, Please try after sometime");
 
@@ -42,21 +48,21 @@ const requireAuth = async (req, res, next) => {
 
     } catch (error) {
         console.error('Auth error:', error);
-        res.clearCookie('auth_token');
+        res.clearCookie('vendor_token');
         return res.redirect('/vendor/login?error=Session expired');
     }
 };
 
 const checkAuth = async (req, res, next) => {
     try {
-        const token = req.cookies.auth_token;
+        const token = req.cookies.vendor_token;
 
         if (token) {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            const vendor = await Vendor.findById(decoded.id);
+            const vendor = await Vendor.findById(decoded.vendorId);
 
             if (vendor && !vendor.isBlocked && vendor.isApproved) {
-                return res.redirect("/vendor/dashboard");
+                return res.redirect("/vendor/");
             }
         }
         next();

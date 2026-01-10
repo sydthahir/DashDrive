@@ -72,7 +72,7 @@ const listCars = async (req, res) => {
     try {
         // Use req.user.id from JWT
         const cars = await car.find({ vendor: req.vendor.id }).lean();
-        res.render("carList", {
+        res.render("vendorCarList", {
             title: "My Cars",
             cars,
             query: req.query,
