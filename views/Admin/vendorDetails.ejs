@@ -1,0 +1,398 @@
+<%- include("../partials/admin/header.ejs") %>
+    <style>
+        .avatar-xl {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.25rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-color: transparent;
+            color: #0d6efd;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            background: transparent;
+        }
+
+        .info-list .label {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-list .value {
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 1rem;
+        }
+
+        .doc-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #0d6efd;
+        }
+    </style>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <main role="main" class="col-12 px-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a href="/admin/dashboard"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/admin/vendors" class="text-decoration-none">Vendors</a>
+                        </li>
+                        <li class="breadcrumb-item active">Vendor Details</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <!-- Left Main Section -->
+                    <div class="col-lg-8">
+                        <!-- Vendor Profile Card -->
+                        <div class="card rounded-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="avatar-xl rounded-circle bg-primary-subtle text-primary me-4">
+                                        <%= vendor.fullName ? vendor.fullName.charAt(0).toUpperCase() : 'V' %>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-1">
+                                            <%= vendor.fullName %>
+                                        </h3>
+                                        <p class="text-muted mb-2"><i class="fas fa-building me-2"></i>
+                                            <%= vendor.companyName %>
+                                        </p>
+                                        <span
+                                            class="badge rounded-pill <%= vendor.status === 'approved' ? 'bg-success' : (vendor.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark') %>">
+                                            <%= vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1) %>
+                                        </span>
+                                        <% if (vendor.isBlocked) { %>
+                                            <span class="badge rounded-pill bg-danger ms-2">Blocked</span>
+                                            <% } %>
+                                    </div>
+                                </div>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="info-list">
+                                            <div class="label">Email Address</div>
+                                            <div class="value">
+                                                <%= vendor.email %>
+                                            </div>
+
+                                            <div class="label">Phone Number</div>
+                                            <div class="value">
+                                                <%= vendor.phone %>
+                                            </div>
+
+                                            <div class="label">Joined Date</div>
+                                            <div class="value">
+                                                <%= new Date(vendor.createdAt).toLocaleDateString('en-US', {
+                                                    day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-list">
+                                            <div class="label">GST Number</div>
+                                            <div class="value">
+                                                <%= vendor.taxId || 'N/A' %>
+                                            </div>
+
+                                            <div class="label">Business License ID</div>
+                                            <div class="value">
+                                                <%= vendor.businessLicense || 'N/A' %>
+                                            </div>
+
+                                            <div class="label">Business Address</div>
+                                            <div class="value">
+                                                <%= vendor.businessAddress %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs Section -->
+                        <div class="card rounded-3">
+                            <div class="card-header border-bottom-0 p-0">
+                                <ul class="nav nav-tabs px-4" id="vendorTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="documents-tab" data-bs-toggle="tab"
+                                            data-bs-target="#documents" type="button" role="tab">Documents</button>
+                                    </li>
+                                    <!-- Placeholders for future features -->
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="cars-tab" data-bs-toggle="tab"
+                                            data-bs-target="#cars" type="button" role="tab">Cars Listed</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="bookings-tab" data-bs-toggle="tab"
+                                            data-bs-target="#bookings" type="button" role="tab">Bookings</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="earnings-tab" data-bs-toggle="tab"
+                                            data-bs-target="#earnings" type="button" role="tab">Earnings</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="tab-content" id="vendorTabsContent">
+                                    <!-- Documents Tab -->
+                                    <div class="tab-pane fade show active" id="documents" role="tabpanel">
+                                        <div class="row g-4">
+                                            <% if (vendor.documentUrl) { %>
+                                                <% const getFileType=(url)=> {
+                                                    if (!url) return 'other';
+                                                    const ext = url.split('.').pop().toLowerCase();
+                                                    if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) return 'image';
+                                                    if (['pdf'].includes(ext)) return 'pdf';
+                                                    return 'other';
+                                                    }
+                                                    const fileType = getFileType(vendor.documentUrl);
+                                                    %>
+                                                    <div class="col-12">
+                                                        <div class="card border">
+                                                            <div
+                                                                class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">
+                                                                    <i class="fas fa-file-contract me-2"></i>Business
+                                                                    Document
+                                                                </h6>
+                                                                <a href="<%= vendor.documentUrl %>" target="_blank"
+                                                                    class="btn btn-sm btn-primary">
+                                                                    <i class="fas fa-external-link-alt me-1"></i>Open
+                                                                    File
+                                                                </a>
+                                                            </div>
+                                                            <div class="card-body text-center p-4">
+                                                                <% if (fileType==='image' ) { %>
+                                                                    <img src="<%= vendor.documentUrl %>"
+                                                                        class="img-fluid rounded mb-3"
+                                                                        style="max-height: 400px; object-fit: contain;"
+                                                                        alt="Business Document">
+                                                                    <% } else if (fileType==='pdf' ) { %>
+                                                                        <div class="py-4">
+                                                                            <i
+                                                                                class="fas fa-file-pdf text-danger fa-4x mb-3"></i>
+                                                                            <h5>PDF Document</h5>
+                                                                            <p class="text-muted">Click the button above
+                                                                                to view the full PDF</p>
+                                                                        </div>
+                                                                        <% } else { %>
+                                                                            <div class="py-4">
+                                                                                <i
+                                                                                    class="fas fa-file-alt text-secondary fa-4x mb-3"></i>
+                                                                                <h5>Document File</h5>
+                                                                                <p class="text-muted">Click the button
+                                                                                    above to download/view the file</p>
+                                                                            </div>
+                                                                            <% } %>
+                                                            </div>
+                                                            <div class="card-footer bg-transparent">
+                                                                <div
+                                                                    class="d-flex justify-content-between text-muted align-items-center">
+                                                                    <small><i
+                                                                            class="fas fa-check-circle text-success me-1"></i>Verified
+                                                                        Upload</small>
+                                                                    <small>Uploaded on <%= new
+                                                                            Date(vendor.updatedAt).toLocaleDateString()
+                                                                            %></small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <div class="col-12 text-center py-5">
+                                                            <div class="bg-light rounded-circle d-inline-flex p-4 mb-3">
+                                                                <i class="fas fa-folder-open fa-3x text-muted"></i>
+                                                            </div>
+                                                            <h5>No Documents Found</h5>
+                                                            <p class="text-muted">The vendor has not uploaded any
+                                                                verification documents yet.</p>
+                                                        </div>
+                                                        <% } %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Placeholders -->
+                                    <div class="tab-pane fade" id="cars" role="tabpanel">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-car fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No listed cars available to display.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="bookings" role="tabpanel">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No bookings history available.</p>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="earnings" role="tabpanel">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No earnings data available.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar - Admin Actions -->
+                    <div class="col-lg-4">
+                        <div class="card rounded-3 mb-4">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-4">Admin Actions</h5>
+                                <div class="d-grid gap-3">
+                                    <% if (vendor.status==='pending' ) { %>
+                                        <button class="btn btn-success action-btn" data-action="approve"
+                                            data-id="<%= vendor._id %>">
+                                            <i class="fas fa-check-circle me-2"></i>Approve Vendor
+                                        </button>
+                                        <button class="btn btn-danger action-btn" data-action="reject"
+                                            data-id="<%= vendor._id %>">
+                                            <i class="fas fa-times-circle me-2"></i>Reject Vendor
+                                        </button>
+                                        <% } %>
+
+                                            <% if (vendor.isBlocked) { %>
+                                                <button class="btn btn-success action-btn" data-action="unblock"
+                                                    data-id="<%= vendor._id %>">
+                                                    <i class="fas fa-unlock me-2"></i>Unblock Vendor
+                                                </button>
+                                                <% } else { %>
+                                                    <button class="btn btn-outline-danger action-btn"
+                                                        data-action="block" data-id="<%= vendor._id %>">
+                                                        <i class="fas fa-ban me-2"></i>Block Vendor
+                                                    </button>
+                                                    <% } %>
+
+                                                        <button class="btn btn-light border text-start">
+                                                            <i class="fas fa-list-alt me-2 text-muted"></i>View Vendor
+                                                            Bookings
+                                                        </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const actionButtons = document.querySelectorAll('.action-btn');
+
+            actionButtons.forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const action = btn.dataset.action;
+                    const vendorId = btn.dataset.id;
+
+                    let url, title, text, confirmBtnColor;
+
+                    switch (action) {
+                        case 'approve':
+                            url = `/admin/vendors/approve/${vendorId}`;
+                            title = 'Approve Vendor?';
+                            text = 'This will allow the vendor to access the platform.';
+                            confirmBtnColor = '#198754';
+                            break;
+                        case 'reject':
+                            url = `/admin/vendors/reject/${vendorId}`;
+                            title = 'Reject Vendor?';
+                            text = 'This will reject the vendor application.';
+                            confirmBtnColor = '#dc3545';
+                            break;
+                        case 'block':
+                            url = '/admin/vendors/block';
+                            title = 'Block Vendor?';
+                            text = 'This will restrict the vendor from accessing the platform.';
+                            confirmBtnColor = '#dc3545';
+                            break;
+                        case 'unblock':
+                            url = '/admin/vendors/unblock';
+                            title = 'Unblock Vendor?';
+                            text = 'This will restore vendor access.';
+                            confirmBtnColor = '#198754';
+                            break;
+                    }
+
+                    const result = await Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: confirmBtnColor,
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, proceed!'
+                    });
+
+                    if (result.isConfirmed) {
+                        try {
+                            const options = {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                            };
+
+                            // Block/Unblock endpoints expect JSON body with 'id', others use params
+                            if (action === 'block' || action === 'unblock') {
+                                options.body = JSON.stringify({ id: vendorId });
+                            }
+
+                            const res = await fetch(url, options);
+                            const data = await res.json();
+
+                            if (res.ok && data.success) {
+                                await Swal.fire('Success', data.message, 'success');
+                                window.location.reload();
+                            } else {
+                                throw new Error(data.message || 'Action failed');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            Swal.fire('Error', error.message, 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <%- include("../partials/admin/footer.ejs") %>

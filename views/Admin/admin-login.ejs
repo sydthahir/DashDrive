@@ -15,6 +15,8 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique&display=swap" rel="stylesheet">
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/modern-style.css">
 
@@ -220,7 +222,7 @@
               <p class="text-muted">Enter your credentials to continue</p>
             </div>
             <form action="/admin/login" method="POST" class="needs-validation" novalidate>
-         
+
               <div class="mb-4">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required
@@ -232,7 +234,7 @@
                 <label for="password" class="form-label">Password</label>
                 <div class="password-field">
                   <input type="password" class="form-control" id="password" name="password" required minlength="6">
-                  <span class="password-toggle" onclick="togglePassword('password')">
+                  <span class="password-toggle" onclick="togglePassword(event,'password')">
                     <i class="far fa-eye"></i>
                   </span>
                 </div>
@@ -267,18 +269,16 @@
   <!-- Form Validation Script -->
   <script>
     // Password toggle functionality
-    function togglePassword(fieldId) {
+    function togglePassword(event, fieldId) {
       const passwordField = document.getElementById(fieldId);
       const icon = event.currentTarget.querySelector('i');
 
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
       } else {
         passwordField.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
       }
     }
 

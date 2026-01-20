@@ -32,6 +32,32 @@
             border-radius: 16px;
         }
 
+/* Sidebar Logo Section */
+.sidebar-logo-section {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    margin-bottom: 1rem;
+}
+
+.sidebar-logo-link {
+    display: inline-block;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.sidebar-logo-link:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.sidebar-logo-img {
+    max-width: 180px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
 
 /* Sidebar button */
 .toggle-sidebar {

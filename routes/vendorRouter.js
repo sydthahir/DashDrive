@@ -3,7 +3,7 @@ const router = express.Router()
 const vendorController = require("../controllers/vendor/vendorController")
 const vendorAuth = require("../middlewares/vendorAuth")
 const carController = require("../controllers/vendor/carController")
-const upload = require("../middlewares/multer");
+const upload = require("../middlewares/upload");
 
 
 //Error Page
@@ -38,9 +38,12 @@ router.post("/reset-password", vendorController.resetPassword)
 
 
 
+router.get("/bookings", vendorAuth.requireAuth, vendorController.loadBookings)
+router.get("/earnings", vendorAuth.requireAuth, vendorController.loadEarnings)
+
 //Car Management
 router.get("/cars/register-cars", vendorAuth.requireAuth, carController.loadCarForm)
-router.post("/cars/register-cars", vendorAuth.requireAuth, upload.single("carImage"), carController.registerCar)
+router.post("/cars/register-cars", vendorAuth.requireAuth, upload.array("carImages", 5), carController.registerCar)
 router.get("/cars", vendorAuth.requireAuth, carController.listCars)
 
 

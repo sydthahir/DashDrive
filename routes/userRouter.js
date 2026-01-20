@@ -32,7 +32,11 @@ router.post("/login", userController.login)
 //Home page management
 router.get("/home", userAuth, userController.loadHomepage)
 
-router.get("/cars", userController.loadCarsPage)
+router.get("/cars", userAuth, userController.loadCarsPage)
+router.get("/listings", userAuth, userController.loadListings)
+router.get("/services", userAuth, userController.loadServices)
+router.get("/contact", userAuth, userController.loadContact)
+router.get("/about", userAuth, userController.loadAbout)
 router.get("/logout", userController.logout)
 
 
@@ -65,25 +69,24 @@ router.get('/auth/google/callback',
             const token = jwt.sign(
                 {
                     userId: user._id.toString(),
-                    email: user.email,
-                    name: user.name
+                    email: user.email
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: "1h" }
             );
 
             // Clear any existing auth token
-            res.clearCookie("auth_token", {
+            res.clearCookie("user_token", {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
+                sameSite: "lax",
                 path: "/"
             });
 
             // Set the new auth token
-            res.cookie('auth_token', token, {
+            res.cookie('user_token', token, {
                 httpOnly: true,
-                secure: false,
+                secure: process.env.NODE_ENV === "production",
                 maxAge: 3600000, // 1 hour
                 sameSite: "lax",
                 path: "/"

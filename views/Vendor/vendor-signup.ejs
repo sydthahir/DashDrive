@@ -112,6 +112,89 @@
             display: none;
         }
 
+        /* Professional Error Alert Styling */
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            border-left: 4px solid #dc3545;
+            animation: slideDown 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .alert-custom .alert-icon {
+            color: #dc3545;
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+            animation: pulse 2s infinite;
+        }
+
+        .alert-custom .alert-message {
+            color: #721c24;
+            font-weight: 500;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .alert-custom.fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+                max-height: 0;
+                margin-bottom: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
         .input-group-text {
             cursor: pointer;
             background-color: hwb(228 78% 9% / 0.973);
@@ -139,95 +222,113 @@
                             <h2>Join DashDrive</h2>
                             <p>Register your business as a vendor</p>
                         </div>
-                        <form id="signupForm" class="row g-3" action="/vendor/register" method="POST">
-                            <div class="col-md-6">
-                                <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="firstName" name="firstName" required>
-                                <span id="firstNameError" class="error-message"></span>
+                        <% if (message) { %>
+                            <div class="alert-custom fade show" id="errorAlert" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle alert-icon"></i>
+                                    <p class="alert-message mb-0 flex-grow-1">
+                                        <%= message %>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="lastName" name="lastName" required>
-                                <span id="lastNameError" class="error-message"></span>
-                            </div>
+                            <% } %>
+                                <form id="signupForm" class="row g-3" action="/vendor/register" method="POST">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName"
+                                            required>
+                                        <span id="firstNameError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                        <span id="lastNameError" class="error-message"></span>
+                                    </div>
 
-                            <div class="col-md-6">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" required>
-                                <span id="phoneError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="email" class="form-label">Email address</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                                <span id="emailError" class="error-message"></span>
-                            </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                                        <span id="phoneError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email address</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                        <span id="emailError" class="error-message"></span>
+                                    </div>
 
-                            <div class="col-md-6">
-                                <label for="password" class="form-label">Password</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password" required>
-                                    <span class="input-group-text" onclick="togglePassword('password')">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                </div>
-                                <span id="passwordError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="confirmPassword"
-                                        name="confirmPassword" required>
-                                    <span class="input-group-text" onclick="togglePassword('confirmPassword')">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                </div>
-                                <span id="confirmPasswordError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <label for="companyName" class="form-label">Company Name</label>
-                                <input type="text" class="form-control" id="companyName" name="companyName" required>
-                                <span id="companyNameError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <label for="businessAddress" class="form-label">Business Address</label>
-                                <textarea class="form-control" rows="3" id="businessAddress" name="businessAddress"
-                                    required></textarea>
-                                <span id="businessAddressError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="businessLicense" class="form-label">Business License Number</label>
-                                <input type="text" class="form-control" id="businessLicense" name="businessLicense">
-                                <span id="businessLicenseError" class="error-message"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="taxId" class="form-label">Tax ID</label>
-                                <input type="text" class="form-control" id="taxId" name="taxId" required>
-                                <span id="taxIdError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <label for="documents" class="form-label">Upload Business Documents</label>
-                                <input type="file" class="form-control" id="documents" name="documents" multiple>
-                                <span id="documentsError" class="error-message"></span>
-                                <div class="form-text">Please upload any of the below: business license, insurance
-                                    documents, and vehicle registration papers.</div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
-                                    <label class="form-check-label" for="terms">
-                                        I agree to the Terms and Conditions and Privacy Policy
-                                    </label>
-                                </div>
-                                <span id="termsError" class="error-message"></span>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary w-100 mt-3">Register as Vendor</button>
-                                <p class="text-center mt-3 mb-0">
-                                    Already have an account?
-                                    <a href="/vendor/login" class="text-primary fw-bold">Login</a>
-                                </p>
-                            </div>
-                        </form>
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">Password</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" name="password"
+                                                required>
+                                            <span class="input-group-text" onclick="togglePassword('password')">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <span id="passwordError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="confirmPassword"
+                                                name="confirmPassword" required>
+                                            <span class="input-group-text" onclick="togglePassword('confirmPassword')">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <span id="confirmPasswordError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="companyName" class="form-label">Company Name</label>
+                                        <input type="text" class="form-control" id="companyName" name="companyName"
+                                            required>
+                                        <span id="companyNameError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="businessAddress" class="form-label">Business Address</label>
+                                        <textarea class="form-control" rows="3" id="businessAddress"
+                                            name="businessAddress" required></textarea>
+                                        <span id="businessAddressError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="businessLicense" class="form-label">Business License Number</label>
+                                        <input type="text" class="form-control" id="businessLicense"
+                                            name="businessLicense">
+                                        <span id="businessLicenseError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="taxId" class="form-label">Tax ID</label>
+                                        <input type="text" class="form-control" id="taxId" name="taxId" required>
+                                        <span id="taxIdError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="documents" class="form-label">Upload Business Documents</label>
+                                        <input type="file" class="form-control" id="documents" name="documents" multiple
+                                            required>
+                                        <span id="documentsError" class="error-message"></span>
+                                        <div class="form-text">Please upload any of the below: business license,
+                                            insurance
+                                            documents, and vehicle registration papers.</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="terms" name="terms"
+                                                required>
+                                            <label class="form-check-label" for="terms">
+                                                I agree to the Terms and Conditions and Privacy Policy
+                                            </label>
+                                        </div>
+                                        <span id="termsError" class="error-message"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary w-100 mt-3">Register as
+                                            Vendor</button>
+                                        <p class="text-center mt-3 mb-0">
+                                            Already have an account?
+                                            <a href="/vendor/login" class="text-primary fw-bold">Login</a>
+                                        </p>
+                                    </div>
+                                </form>
                     </div>
                 </div>
             </div>
@@ -419,6 +520,19 @@
                     e.preventDefault();
                 }
             });
+        });
+
+        // Auto-hide error message after 5 seconds
+        document.addEventListener("DOMContentLoaded", function () {
+            const errorAlert = document.getElementById("errorAlert");
+            if (errorAlert) {
+                setTimeout(function () {
+                    errorAlert.classList.add("fade-out");
+                    setTimeout(function () {
+                        errorAlert.remove();
+                    }, 500);
+                }, 5000);
+            }
         });
 
         // Password Toggle Functionality

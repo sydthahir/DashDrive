@@ -1,7 +1,7 @@
 const car = require("../../models/carSchema")
-const uploadFile = require("../../utils/s3");
+const uploadFile = require("../../middlewares/upload");
 
-
+//Car registeration form
 const loadCarForm = async (req, res) => {
     try {
 
@@ -11,7 +11,6 @@ const loadCarForm = async (req, res) => {
             "Bentley",
             "BMW",
             "Ford",
-            "Kia",
             "Land Rover",
             "Mercedes",
             "Toyota",
@@ -19,6 +18,7 @@ const loadCarForm = async (req, res) => {
             "Volvo"
         ];
         const Features = ["SportEdition", "Petrol", "GPS", "Leather Seats"]
+
         res.render("registerCar", {
             title: "Register New Car",
             carBrands: carBrands,
@@ -32,33 +32,49 @@ const loadCarForm = async (req, res) => {
         res.redirect("/page-error");
     }
 };
+
+//Car registeration 
 const registerCar = async (req, res) => {
     try {
-        const imageUrl = await uploadFile(req.file);
 
-        const { brand, model, year, registerationNumber, color, mileage, features, chargePerSlot, description } = req.body
+        if (!req.files || req.files.length === 0) {
+            return res.redirect("/vendor/register-cars?error=Please upload at least one image");
+        }
+        const imageUrls = req.files.map(file => file.path);
+        console.log(req.files);
+
+
+        const { brand, model, year, registrationNumber, color, mileage, features, chargePerSlot, securityDeposit,
+            availableDays, description } = req.body
+        let featuresString = Array.isArray(features) ? features.join(",") : features;
+
+        //AvailableDays
+        const availableDaysArray = Array.isArray(availableDays)
+            ? availableDays
+            : [availableDays];
 
         const newCar = new car({
             vendor: req.vendor.id,
             brand,
             model,
             year,
-            registerationNumber,
+            registrationNumber,
             color,
             mileage,
-            features,
+            features: featuresString,
             chargePerSlot,
             securityDeposit,
-            availableDays,
+            availableDays: availableDaysArray,
             description,
-            image: imageUrl,
+            images: imageUrls,
 
         })
 
+        //Creating new car data on DB
         await newCar.save()
-        console.log("car registered");
+        console.log("car registeration success");
 
-        console.log("Uploaded image URL:", imageUrl);
+        console.log("Uploaded image URLs:", imageUrls);
         res.redirect("/vendor/cars?success=Car registered successfully");
 
     } catch (error) {
@@ -68,14 +84,17 @@ const registerCar = async (req, res) => {
 
 }
 
+//Car Listing
 const listCars = async (req, res) => {
     try {
-        // Use req.user.id from JWT
+        // Use req.vendor.id from JWT
         const cars = await car.find({ vendor: req.vendor.id }).lean();
         res.render("vendorCarList", {
             title: "My Cars",
             cars,
             query: req.query,
+            activePage: "cars",
+            vendor: req.vendor
         });
     } catch (error) {
         console.error("Error listing cars:", error);

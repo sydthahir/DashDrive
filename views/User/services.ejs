@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cars - DashDrive</title>
+    <title>Services - DashDrive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -114,7 +114,7 @@
 
         .coming-soon-container {
             text-align: center;
-            max-width: 700px;
+            max-width: 600px;
             animation: fadeInUp 0.8s ease-out;
         }
 
@@ -184,6 +184,54 @@
             margin-bottom: 2.5rem;
         }
 
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2.5rem 0;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-item i {
+            color: #8bbd76;
+            font-size: 1.5rem;
+            margin-top: 0.2rem;
+        }
+
+        .feature-item div {
+            flex: 1;
+        }
+
+        .feature-item h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-item p {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+            line-height: 1.5;
+        }
+
         .btn-home {
             display: inline-block;
             padding: 1rem 2.5rem;
@@ -203,30 +251,6 @@
             text-decoration: none;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(51, 51, 51, 0.3);
-        }
-
-        /* Car Animation */
-        .car-animation {
-            margin-top: 3rem;
-        }
-
-        .car-animation img {
-            max-width: 200px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
         }
 
         /* Footer */
@@ -260,6 +284,10 @@
             .icon-wrapper i {
                 font-size: 2.5rem;
             }
+
+            .features-list {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -281,7 +309,7 @@
                         <a class="nav-link" href="/listings">Listings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/services">Services</a>
+                        <a class="nav-link active" href="/services">Services</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/contact">Contact</a>
@@ -299,23 +327,21 @@
     </nav>
 
     <!-- Coming Soon Section -->
-   
     <section class="coming-soon-section">
-
         <div class="coming-soon-container">
- <div class="car-animation">
-        <img src="/images/car-repair.png" alt="Car Icon">
-    </div>
-            <h1>Premium Car Collection</h1>
+            <div class="icon-wrapper">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h1>Services</h1>
             <h2>Available Soon!</h2>
-            <p>Our team is putting the finishing touches on our extensive car collection. Stay tuned for an amazing
-                selection of premium vehicles!</p>
+            <p>We're working hard to bring you an exceptional range of automotive services. Our comprehensive service
+                offerings will be launching shortly to enhance your DashDrive experience.</p>
+
+          
 
             <a href="/home" class="btn-home">
                 <i class="fas fa-home me-2"></i> Back to Home
             </a>
-
-
         </div>
     </section>
 

@@ -16,7 +16,7 @@
 
                 <div class="dashboard-header">
                     <div class="header-title">Manage Your Cars</div>
-                    <a href="/vendor/cars/register" class="new-car-btn">
+                    <a href="/vendor/cars/register-cars" class="new-car-btn">
                         <i class="fas fa-plus"></i>
                         Register New Car
                     </a>
@@ -47,11 +47,9 @@
                                     <tr>
                                         <td>
                                             <% if (car.images && car.images.length> 0) { %>
-                                                <img src="<%= car.images[0] %>" alt="<%= car.brand %> <%= car.model %>"
-                                                    class="car-image">
+                                                <img src="<%= car.images[0] %>">
                                                 <% } else { %>
-                                                    <img src="https://via.placeholder.com/100x60" alt="No Image"
-                                                        class="car-image">
+                                                    <img src="https://via.placeholder.com/100x60">
                                                     <% } %>
                                         </td>
                                         <td>
@@ -92,5 +90,3 @@
                         </tbody>
                     </table>
                 </div>
-
-            

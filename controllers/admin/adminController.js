@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const Vendor = require("../../models/vendorSchema");
-const { sendVendorApprovalMail } = require("../../utils/mailer")
+const { sendVendorApprovalMail, sendVendorRejectionMail } = require("../../utils/mailer")
 
 //Page error
 const pageError = (req, res) => {
@@ -60,8 +60,7 @@ const login = async (req, res) => {
         const token = jwt.sign(
             {
                 id: admin._id,
-                isAdmin: true,
-                email: admin.email
+                isAdmin: true
             },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
@@ -69,7 +68,7 @@ const login = async (req, res) => {
 
         res.cookie('admin_token', token, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: 'lax',
             maxAge: 3600000, // 1 hour in milliseconds
             path: '/'
@@ -109,27 +108,33 @@ const loadUsers = async (req, res) => {
     try {
         const adminId = req.user.id;
 
+        // User Searching
+        const search = req.query.search || '';
+
+
         // Pagination parameters
         const page = parseInt(req.query.page) || 1;
         const limit = 3; // Number of users per page
         const skip = (page - 1) * limit;
-
+        const searchFilter = {
+            isAdmin: false,
+            name: { $regex: search, $options: 'i' }
+        };
         const [totalUsers, activeUsers, newUsers, users, admin, totalCount] = await Promise.all([
             User.countDocuments({ isAdmin: false }),
-            User.countDocuments({ isActive: true, isAdmin: false }),
+            User.countDocuments({ isBlocked: false, isAdmin: false }),
             User.countDocuments({
                 createdAt: { $gte: new Date(new Date().setDate(1)).setHours(0, 0, 0, 0) },
                 isAdmin: false
             }),
-            User.find(
-                { isAdmin: false },
-                '_id name email createdAt isBlocked'
-            )
+
+            User.find(searchFilter)
+                .select('_id name email createdAt isBlocked')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit),
             User.findById(adminId),
-            User.countDocuments({ isAdmin: false }) // Total count for pagination
+            User.countDocuments(searchFilter)
         ]);
 
         const totalPages = Math.ceil(totalCount / limit);
@@ -147,7 +152,8 @@ const loadUsers = async (req, res) => {
             currentPage: page,
             totalPages,
             hasNextPage: page < totalPages,
-            hasPrevPage: page > 1
+            hasPrevPage: page > 1,
+            search
         });
 
     } catch (error) {
@@ -188,7 +194,7 @@ const getUserDetails = async (req, res) => {
             success: true,
             message: "User details retrieved successfully",
             user: {
-                _id: user._id,
+
                 name: user.name,
                 email: user.email,
                 createdAt: user.createdAt,
@@ -201,7 +207,6 @@ const getUserDetails = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 }
-
 
 //Customer Block
 const customerBlocked = async (req, res) => {
@@ -241,7 +246,6 @@ const customerBlocked = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 }
-
 
 
 //Customer Unblock
@@ -284,6 +288,7 @@ const customerUnblocked = async (req, res) => {
 
 
 
+
 //Loading of Bookings
 const loadBookings = async (req, res) => {
     try {
@@ -312,28 +317,39 @@ const loadVendors = async (req, res) => {
         const adminId = req.user.id;
         const admin = await User.findById(adminId);
 
+
+        // User Searching
+        const search = req.query.search || '';
+
         if (!admin || !admin.isAdmin) {
             return res.redirect("/admin/login");
         }
 
         // Pagination parameters
         const page = parseInt(req.query.page) || 1;
-        const limit = 3; // Number of vendors per page (same as users)
+        const limit = 3; // Number of vendors per page 
         const skip = (page - 1) * limit;
+        const searchFilter = {
+            status: 'approved',
+            $or: [
+                { fullName: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } }
+            ]
+        };
 
         const [vendors, totalCount, totalVendors, activeVendors, newVendors] = await Promise.all([
-            Vendor.find({ status: 'approved' })
+            Vendor.find(searchFilter)
                 .select('fullName email phone isApproved isBlocked createdAt')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit),
-            Vendor.countDocuments({ status: 'approved' }), // Total approved vendors
+            Vendor.countDocuments(searchFilter), // Total approved vendors matching search
             Vendor.countDocuments({ status: 'approved' }), // For stats card
             Vendor.countDocuments({ status: 'approved', isBlocked: false }), // Active vendors
             Vendor.countDocuments({
                 status: 'approved',
                 createdAt: { $gte: new Date(new Date().setDate(1)).setHours(0, 0, 0, 0) }
-            }) // New vendors this month
+            }) //vendors this month
         ]);
 
         const totalPages = Math.ceil(totalCount / limit);
@@ -348,7 +364,8 @@ const loadVendors = async (req, res) => {
             totalPages,
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
-            currentPage: 'vendors'
+            currentPage: page,
+            search
         });
 
     } catch (error) {
@@ -356,7 +373,6 @@ const loadVendors = async (req, res) => {
         return res.redirect("/page-error");
     }
 };
-
 
 //Pending Vendors
 const getPendingVendors = async (req, res) => {
@@ -387,26 +403,34 @@ const approveVendor = async (req, res) => {
     try {
         const vendorId = req.params.id;
 
-        const updatedVendor = await Vendor.findByIdAndUpdate(
-            vendorId,
-            {
-                status: 'approved',
-                isApproved: true
-            },
-            { new: true }
-        )
+        const vendor = await Vendor.findById(vendorId)
 
-        if (!updatedVendor) {
+        if (!vendor) {
             return res.status(404).json({
                 success: false,
                 message: 'Vendor not found'
             });
         }
+        // Prevent Multiple approval
+        if (vendor.status === "approved") {
+            return res.status(400).json({
+                success: false,
+                message: "Vendor already approved"
+            });
+        }
+
+        //Approve vendor
+        vendor.status = "approved";
+        vendor.isApproved = true;
+        await vendor.save();
+
         //Send mail after approval
         await sendVendorApprovalMail(
-            updatedVendor.email,
-            updatedVendor.name
+            vendor.email,
+            vendor.fullName
         );
+        console.log("Vendor approval success & Email sent")
+
 
         return res.status(200).json({
             success: true,
@@ -423,29 +447,71 @@ const approveVendor = async (req, res) => {
 }
 
 
+//Get Vendor Details
+const getVendorDetails = async (req, res) => {
+    try {
+        const vendorId = req.params.id;
+
+        if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+            return res.redirect("/page-error");
+        }
+
+        const vendor = await Vendor.findById(vendorId);
+
+        if (!vendor) {
+            return res.redirect("/page-error");
+        }
+
+        // Ensure admin is authenticated (though middleware handles this)
+        if (!req.user || !req.user.id) {
+            return res.redirect("/admin/login");
+        }
+
+        res.render('vendorDetails', {
+            vendor
+        });
+
+    } catch (error) {
+        console.error("Error fetching vendor details:", error);
+        return res.redirect("/page-error");
+    }
+}
+
 
 //Reject vendor
 const rejectVendor = async (req, res) => {
     try {
         const vendorId = req.params.id;
 
-        const updatedVendor = await Vendor.findByIdAndUpdate(
-            vendorId,
-            {
-                status: 'rejected',
-                isApproved: false,
-                isBlocked: true
-            },
-            { new: true }
-        );
+        const vendor = await Vendor.findById(vendorId);
 
-        if (!updatedVendor) {
+        if (!vendor) {
             return res.status(404).json({
                 success: false,
                 message: 'Vendor not found'
             });
         }
 
+        //Block Multiple Vendor rejecting
+        if (vendor.status === "rejected") {
+            return res.status(400).json({
+                success: false,
+                message: "Vendor already rejected"
+            });
+        }
+
+        //Reject vendor
+        vendor.status = "rejected";
+        vendor.isApproved = false;
+        vendor.isBlocked = true
+        await vendor.save();
+
+        //Send mail after rejection
+        await sendVendorRejectionMail(
+            vendor.email,
+            vendor.fullName
+        );
+        console.log("Vendor rejection success & Email sent")
         return res.status(200).json({
             success: true,
             message: 'Vendor rejected successfully'
@@ -558,5 +624,6 @@ module.exports = {
     rejectVendor,
     blockVendor,
     unblockVendor,
+    getVendorDetails,
     logout
 };

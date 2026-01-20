@@ -468,7 +468,7 @@
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="/vendor/dashboard" class="nav-link">
+                <a href="/vendor/" class="nav-link">
                     <i class="fas fa-home"></i>
                     Dashboard
                 </a>
@@ -541,8 +541,8 @@
                                             <h1 class="text-2xl font-semibold text-center mb-6 form-title">Register New
                                                 Car</h1>
 
-                                            <form action="/vendor/cars" method="POST" enctype="multipart/form-data"
-                                                class="needs-validation" novalidate>
+                                            <form action="/vendor/cars/register-cars" method="POST"
+                                                enctype="multipart/form-data" class="needs-validation" novalidate>
                                                 <!-- Basic Details -->
                                                 <div class="mb-6">
                                                     <div class="flex items-center gap-2 mb-4">
@@ -575,20 +575,20 @@
                                                         </div>
                                                         <div>
                                                             <label class="form-label" for="year">Year</label>
-                                                            <input type="number" name="year" id="year" min="1900"
+                                                            <input type="number" name="year" id="year" min="2000"
                                                                 max="2025" required class="form-control">
                                                             <div class="invalid-feedback">Please enter a valid year
-                                                                (1900-2025).</div>
+                                                                (2000-2025).</div>
                                                             <div id="error-year" class="error-message"></div>
                                                         </div>
                                                         <div>
                                                             <label class="form-label"
-                                                                for="registerationNumber">Registration Number</label>
-                                                            <input type="text" name="registerationNumber"
-                                                                id="registerationNumber" required class="form-control">
+                                                                for="registrationNumber">Registration Number</label>
+                                                            <input type="text" name="registrationNumber"
+                                                                id="registrationNumber" required class="form-control">
                                                             <div class="invalid-feedback">Please enter the registration
                                                                 number.</div>
-                                                            <div id="error-registerationNumber" class="error-message">
+                                                            <div id="error-registrationNumber" class="error-message">
                                                             </div>
                                                         </div>
                                                         <div>
@@ -601,12 +601,41 @@
                                                         </div>
                                                         <div>
                                                             <label class="form-label" for="mileage">Mileage
-                                                                (KMs)</label>
+                                                                (kmpl)</label>
                                                             <input type="number" name="mileage" id="mileage" min="0"
                                                                 required class="form-control">
                                                             <div class="invalid-feedback">Please enter a valid mileage.
                                                             </div>
                                                             <div id="error-mileage" class="error-message"></div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="carType">Car Type / Body
+                                                                Style</label>
+                                                            <select name="carType" id="carType" required
+                                                                class="form-control">
+                                                                <option value="">Select Car Type</option>
+                                                                <option value="Sedan">Sedan</option>
+                                                                <option value="SUV">SUV</option>
+                                                                <option value="Hatchback">Hatchback</option>
+                                                                <option value="Coupe">Coupe</option>
+                                                            </select>
+                                                            <div class="invalid-feedback">Please select a car type.
+                                                            </div>
+                                                            <div id="error-carType" class="error-message"></div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label" for="fuelType">Fuel Type</label>
+                                                            <select name="fuelType" id="fuelType" required
+                                                                class="form-control">
+                                                                <option value="">Select Fuel Type</option>
+                                                                <option value="Petrol">Petrol</option>
+                                                                <option value="Diesel">Diesel</option>
+                                                                <option value="Electric">Electric</option>
+                                                                <option value="Hybrid">Hybrid</option>
+                                                            </select>
+                                                            <div class="invalid-feedback">Please select a fuel type.
+                                                            </div>
+                                                            <div id="error-fuelType" class="error-message"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -627,6 +656,7 @@
                                                             (JPG, PNG, GIF)</p>
                                                         <div id="error-carImages" class="error-message"></div>
                                                     </div>
+
                                                 </div>
 
                                                 <!-- Features -->
@@ -639,11 +669,11 @@
                                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 features-grid">
                                                         <% features.forEach(feature=> { %>
                                                             <div class="custom-checkbox">
-                                                                <input type="checkbox" id="<%= feature.id %>"
-                                                                    name="features" value="<%= feature.id %>">
-                                                                <label for="<%= feature.id %>"
+                                                                <input type="checkbox" id="<%= feature %>"
+                                                                    name="features" value="<%= feature %>">
+                                                                <label for="<%= feature%>"
                                                                     class="text-sm font-medium leading-none">
-                                                                    <%= feature.label %>
+                                                                    <%= feature %>
                                                                 </label>
                                                             </div>
                                                             <% }); %>
@@ -823,9 +853,11 @@
                 brand: document.getElementById('brand'),
                 model: document.getElementById('model'),
                 year: document.getElementById('year'),
-                registerationNumber: document.getElementById('registerationNumber'),
+                registrationNumber: document.getElementById('registrationNumber'),
                 color: document.getElementById('color'),
                 mileage: document.getElementById('mileage'),
+                carType: document.getElementById('carType'),
+                fuelType: document.getElementById('fuelType'),
                 carImages: document.getElementById('carImages'),
                 chargePerSlot: document.getElementById('chargePerSlot'),
                 securityDeposit: document.getElementById('securityDeposit'),
@@ -884,14 +916,14 @@
                 }
 
                 // Registration Number validation
-                if (inputs.registerationNumber.value.trim() === '') {
-                    showError(inputs.registerationNumber, 'Please enter the registration number');
+                if (inputs.registrationNumber.value.trim() === '') {
+                    showError(inputs.registrationNumber, 'Please enter the registration number');
                     isValid = false;
-                } else if (inputs.registerationNumber.value.trim().length < 6) {
-                    showError(inputs.registerationNumber, 'Registration number must be at least 6 characters');
+                } else if (inputs.registrationNumber.value.trim().length < 6) {
+                    showError(inputs.registrationNumber, 'Registration number must be at least 6 characters');
                     isValid = false;
                 } else {
-                    hideError(inputs.registerationNumber);
+                    hideError(inputs.registrationNumber);
                 }
 
                 // Color validation
@@ -914,6 +946,22 @@
                     isValid = false;
                 } else {
                     hideError(inputs.mileage);
+                }
+
+                // Car Type validation
+                if (inputs.carType.value.trim() === '') {
+                    showError(inputs.carType, 'Please select a car type');
+                    isValid = false;
+                } else {
+                    hideError(inputs.carType);
+                }
+
+                // Fuel Type validation
+                if (inputs.fuelType.value.trim() === '') {
+                    showError(inputs.fuelType, 'Please select a fuel type');
+                    isValid = false;
+                } else {
+                    hideError(inputs.fuelType);
                 }
 
                 // Car Images validation
@@ -968,9 +1016,9 @@
                             showError(this, 'Please enter the car year');
                         } else if (this.id === 'year' && (this.value < 1900 || this.value > 2025)) {
                             showError(this, 'Year must be between 1900 and 2025');
-                        } else if (this.id === 'registerationNumber' && this.value.trim() === '') {
+                        } else if (this.id === 'registrationNumber' && this.value.trim() === '') {
                             showError(this, 'Please enter the registration number');
-                        } else if (this.id === 'registerationNumber' && this.value.trim().length < 6) {
+                        } else if (this.id === 'registrationNumber' && this.value.trim().length < 6) {
                             showError(this, 'Registration number must be at least 6 characters');
                         } else if (this.id === 'color' && this.value.trim() === '') {
                             showError(this, 'Please enter the car color');
@@ -980,6 +1028,10 @@
                             showError(this, 'Please enter the mileage');
                         } else if (this.id === 'mileage' && this.value < 0) {
                             showError(this, 'Mileage cannot be negative');
+                        } else if (this.id === 'carType' && this.value.trim() === '') {
+                            showError(this, 'Please select a car type');
+                        } else if (this.id === 'fuelType' && this.value.trim() === '') {
+                            showError(this, 'Please select a fuel type');
                         } else if (this.id === 'carImages' && this.files.length === 0) {
                             showError(this, 'Please upload at least one image');
                         } else if (this.id === 'carImages' && this.files.length > 5) {

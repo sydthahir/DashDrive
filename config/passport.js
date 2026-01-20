@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const env = require("dotenv").config()
 
 const jwtOptions = {
-    jwtFromRequest: (req) => req?.cookies?.auth_token,
+    jwtFromRequest: (req) => req?.cookies?.user_token,
     secretOrKey: process.env.JWT_SECRET,
 };
 

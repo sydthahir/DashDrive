@@ -4,6 +4,11 @@ const { Schema } = mongoose
 
 const carSchema = new Schema({
 
+    vendor: {
+        type: Schema.Types.ObjectId,
+        ref: "Vendor",
+        required: true
+    },
     brand: {
         type: String,
         required: true
@@ -17,7 +22,7 @@ const carSchema = new Schema({
         type: Number,
         required: true
     },
-    registerationNumber: {
+    registrationNumber: {
         type: String,
         required: true
     },
@@ -30,9 +35,19 @@ const carSchema = new Schema({
         type: String,
         required: true
     },
+    carType: {
+        type: String,
+        enum: ['Sedan', 'SUV', 'Hatchback', 'Coupe'],
+        required: true
+    },
+    fuelType: {
+        type: String,
+        enum: ['Petrol', 'Diesel', 'Electric', 'Hybrid'],
+        required: true
+    },
     features: {
         type: String,
-        required: true
+        required: false
     },
     chargePerSlot: {
         type: String,
@@ -40,25 +55,35 @@ const carSchema = new Schema({
     },
     description: {
         type: String,
-        required: true
+        required: false,
+        default: ""
     },
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],
-        default: "pendinng"
+        default: "pending"
     },
     availability: {
         type: String,
         enum: ["available", "unavailable", "maintenance"],
         default: "available"
     },
+    securityDeposit: {
+        type: Number,
+        required: false
+    },
+    availableDays: {
+        type: [String],
+        required: false
+    },
+
+    images: {
+        type: [String],
+        required: true
+    },
     expiresAt: {
         type: Date,
         required: false
-    },
-    imageUrl: {
-        type: String,
-        required: true
     }
 
 },

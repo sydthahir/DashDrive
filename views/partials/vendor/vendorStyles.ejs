@@ -6,13 +6,16 @@
     <% } %>
 
 
-<% if (page === "../Vendor/dashboardContent") { %>
-    <link rel="stylesheet" href="/css/vendor-dashboard.css">
-<% } %>
+        <% if (page==="../Vendor/dashboardContent" ) { %>
+            <link rel="stylesheet" href="/css/vendor-dashboard.css">
+            <% } %>
 
-<% if (page === "../Vendor/profile") { %>
-    <link rel="stylesheet" href="/css/vendor-profile.css">
-<% } %>
-
-
-    
+                <% if (page==="../Vendor/profile" ) { %>
+                    <link rel="stylesheet" href="/css/vendor-profile.css">
+                    <% } %>
+                        <% if (page==="../Vendor/bookings" ) { %>
+                            <link rel="stylesheet" href="/css/vendor-profile.css">
+                            <% } %>
+                                <% if (page==="../Vendor/earnings" ) { %>
+                                    <link rel="stylesheet" href="/css/vendor-profile.css">
+                                    <% } %>

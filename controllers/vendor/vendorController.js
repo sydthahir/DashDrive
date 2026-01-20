@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const TempData = require("../../models/tempVendor");
 const jwt = require('jsonwebtoken');
 const generateOTP = require('../../utils/otpGenerator');
-const sendOtpMail = require('../../utils/mailer');
+const { sendOtpMail } = require('../../utils/mailer');
 const { securePassword } = require('../../utils/hashPassword');
 const env = require("dotenv").config();
 const { CURSOR_FLAGS } = require("mongodb");
 const { loadDashboard } = require("../admin/adminController");
 const bcrypt = require("bcrypt");
-const uploadFile = require("../../utils/s3");
+const uploadFile = require("../../middlewares/upload");
 
 
 
@@ -326,7 +326,7 @@ const getDashboard = async (req, res) => {
 
 
         console.log("Login success");
-        return res.render("vendorDashboard");
+        return res.render("vendorDashboard", { vendor: req.vendor });
 
 
     } catch (error) {
@@ -334,7 +334,6 @@ const getDashboard = async (req, res) => {
         res.status(500).send("Server error");
     }
 }
-
 
 
 //Loading of forgot password page
@@ -621,6 +620,8 @@ const profile = async (req, res) => {
             page: "../Vendor/profile",
             activePage: "profile",
             vendor: {
+                _id: vendor._id,
+                status: vendor.status,
                 fullName: vendor.fullName || "",
                 companyName: vendor.companyName || "",
                 email: vendor.email || "",
@@ -720,7 +721,6 @@ const updateProfile = async (req, res) => {
 }
 
 
-
 //logout
 const logout = async (req, res) => {
     try {
@@ -740,6 +740,40 @@ const logout = async (req, res) => {
 }
 
 
+// Load Bookings
+const loadBookings = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+        return res.render("../partials/vendor/layout", {
+            title: "Bookings",
+            page: "../Vendor/bookings",
+            activePage: "bookings",
+            vendor: vendor,
+            bookings: []
+        });
+    } catch (error) {
+        console.error("Error loading bookings:", error);
+        res.status(500).send("Server error");
+    }
+};
+
+// Load Earnings
+const loadEarnings = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+        return res.render("../partials/vendor/layout", {
+            title: "Earnings",
+            page: "../Vendor/earnings",
+            activePage: "earnings",
+            vendor: vendor,
+            earnings: null
+        });
+    } catch (error) {
+        console.error("Error loading earnings:", error);
+        res.status(500).send("Server error");
+    }
+};
+
 module.exports = {
     pageError,
     loadSignup,
@@ -757,5 +791,7 @@ module.exports = {
     getDashboard,
     profile,
     updateProfile,
-    logout
+    logout,
+    loadBookings,
+    loadEarnings
 };

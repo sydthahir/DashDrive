@@ -76,10 +76,10 @@
                                                                     onclick="rejectVendor('<%= vendor._id %>')">
                                                                     <i class="fas fa-times"></i> Reject
                                                                 </button>
-                                                                <button class="btn btn-sm btn-info"
-                                                                    onclick="viewVendorDetails('<%= vendor._id %>')">
+                                                                <a href="/admin/vendors/details/<%= vendor._id %>"
+                                                                    class="btn btn-sm btn-info text-white">
                                                                     <i class="fas fa-eye"></i> View
-                                                                </button>
+                                                                </a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -101,6 +101,8 @@
         </div>
     </div>
 
+
+
     <!-- Confirmation Modal -->
     <div class="modal fade" id="confirmationModal" tabindex="-1">
         <div class="modal-dialog">
@@ -120,9 +122,13 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let selectedVendorId = null;
         let actionType = null;
+        let isProcessing = false;
+
+
 
         function approveVendor(vendorId) {
             selectedVendorId = vendorId;
@@ -137,13 +143,25 @@
             document.getElementById('confirmationMessage').textContent = 'Are you sure you want to reject this vendor?';
             new bootstrap.Modal(document.getElementById('confirmationModal')).show();
         }
+        document.getElementById('confirmationModal').addEventListener('hidden.bs.modal', () => {
+            isProcessing = false;
+            selectedVendorId = null;
+            actionType = null;
 
-        function viewVendorDetails(vendorId) {
-            window.location.href = `/admin/vendors/${vendorId}`;
-        }
+            const confirmBtn = document.getElementById('confirmAction');
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = "Confirm";
+        });
+
 
         document.getElementById('confirmAction').addEventListener('click', async function () {
-            if (!selectedVendorId || !actionType) return;
+            if (!selectedVendorId || !actionType || isProcessing) return;
+
+            isProcessing = true;
+
+            const confirmBtn = this;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = "Processing...";
 
             try {
                 const response = await fetch(`/admin/vendors/${actionType}/${selectedVendorId}`, {
@@ -153,14 +171,28 @@
                     }
                 });
 
-                if (response.ok) {
-                    window.location.reload();
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok && data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message || 'Action completed'
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 } else {
-                    alert('Failed to perform action. Please try again.');
+                    throw new Error(data.message || 'Failed to perform action');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                Swal.fire('Error', 'An error occurred', 'error');
+
+                //Re-enable button on failure
+                isProcessing = false;
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = "Confirm";
+
             }
         });
     </script>

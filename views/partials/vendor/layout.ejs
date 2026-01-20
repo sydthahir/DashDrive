@@ -23,23 +23,101 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="vendor-navbar">
-        <button class="toggle-sidebar" aria-label="Toggle sidebar">
-            <i class="fas fa-bars"></i>
-        </button>
+    <style>
+        .vendor-navbar {
+            height: 70px;
+            z-index: 900;
+            /* Ensure sidebar (usually 1000+) stays on top on mobile */
+            left: 0 !important;
+            width: 100% !important;
+        }
 
-        <a href="/vendor" class="vendor-logo">
-            <img src="/images/logoDashDrive.png" alt="DashDrive Logo">
-        </a>
-    </nav>
+        .main-content {
+            padding-top: 90px;
+        }
+    </style>
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay"></div>
+    <!-- Navbar -->
+    <!-- Navbar -->
+    <nav class="vendor-navbar d-flex justify-content-between align-items-center px-4 py-3 bg-white border-bottom shadow-sm fixed-top"
+        style="margin-left: 0; transition: margin-left 0.3s;">
+        <div class="d-flex align-items-center gap-3">
+            <!-- Logo -->
+            <a href="/vendor/" class="navbar-brand d-flex align-items-center text-decoration-none me-3">
+                <img src="/images/logoDashDrive.png" alt="DashDrive Logo" style="height: 45px; width: auto;">
+            </a>
 
-    <!-- Hamburger -->
-    <button class="toggle-sidebar">
-        <i class="fas fa-bars"></i>
-    </button>
+            <button class="toggle-sidebar btn btn-light border-0 shadow-sm" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="d-flex align-items-center gap-4">
+            <% if (typeof vendor !=='undefined' && vendor) { %>
+                <!-- Status Badge -->
+                <div class="d-none d-md-block">
+                    <% if (vendor.status==='approved' ) { %>
+                        <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">
+                            <i class="fas fa-check-circle me-1"></i> Approved
+                        </span>
+                        <% } else if (vendor.status==='blocked' ) { %>
+                            <span
+                                class="badge bg-danger-subtle text-danger border border-danger px-3 py-2 rounded-pill">
+                                <i class="fas fa-ban me-1"></i> Blocked
+                            </span>
+                            <% } else { %>
+                                <span
+                                    class="badge bg-warning-subtle text-warning border border-warning px-3 py-2 rounded-pill">
+                                    <i class="fas fa-clock me-1"></i> Pending
+                                </span>
+                                <% } %>
+                </div>
+
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                        id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="me-2 text-end d-none d-md-block">
+                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                <%= vendor.fullName || 'Vendor' %>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                <%= vendor.email %>
+                            </div>
+                        </div>
+                        <img src="<%= vendor.profileImage || 'https://ui-avatars.com/api/?name=' + (vendor.fullName || 'Vendor') %>"
+                            alt="Profile" class="rounded-circle border" width="40" height="40"
+                            style="object-fit: cover;">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="profileDropdown">
+                        <li class="px-3 py-2 d-md-none">
+                            <div class="fw-bold">
+                                <%= vendor.fullName || 'Vendor' %>
+                            </div>
+                            <div class="text-muted small">
+                                <%= vendor.email %>
+                            </div>
+                        </li>
+                        <li class="d-md-none">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item py-2" href="/vendor/profile"><i
+                                    class="fas fa-user me-2 text-muted"></i> My Profile</a></li>
+                        <li><a class="dropdown-item py-2" href="/vendor/settings"><i
+                                    class="fas fa-cog me-2 text-muted"></i> Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item py-2 text-danger" href="/vendor/logout"><i
+                                    class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+                <% } else { %>
+                    <a href="/vendor/login" class="btn btn-primary">Login</a>
+                    <% } %>
+        </div>
+    </nav>
 
     <!-- Sidebar -->
     <div class="sidebar">
@@ -50,6 +128,19 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/vendor/" class="text-decoration-none">Vendor</a></li>
+                    <% if (typeof activePage !=='undefined' && activePage) { %>
+                        <li class="breadcrumb-item active text-capitalize" aria-current="page">
+                            <%= activePage==='dashboard' ? 'Dashboard' : activePage.replace(/([A-Z])/g, ' $1' ).trim()
+                                %>
+                        </li>
+                        <% } %>
+                </ol>
+            </nav>
+
             <%- include(page) %>
         </div>
     </div>
