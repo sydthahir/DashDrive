@@ -1,0 +1,89 @@
+/* ============================================
+   GLOBAL FONT SYSTEM - DashDrive
+   ============================================
+ 
+
+/* Poppins (Primary Font) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+
+:root {
+    --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Global Font Application */
+* {
+    font-family: var(--font-primary);
+}
+
+body {
+    font-family: var(--font-primary);
+}
+
+/* Form Elements - Ensure they inherit the font (often missed by browsers) */
+input,
+textarea,
+select,
+button,
+.form-control,
+.btn,
+.form-select,
+.input-group-text {
+    font-family: var(--font-primary) !important;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-primary);
+}
+
+/* Labels and Form Labels */
+label,
+.form-label {
+    font-family: var(--font-primary);
+}
+
+/* Paragraphs and Text */
+p,
+span,
+div,
+a {
+    font-family: var(--font-primary);
+}
+
+/* Tables */
+table,
+th,
+td {
+    font-family: var(--font-primary);
+}
+
+/* Lists */
+ul,
+ol,
+li {
+    font-family: var(--font-primary);
+}
+
+/* Modals, Alerts, Toasts */
+.modal,
+.alert,
+.toast,
+.swal2-popup {
+    font-family: var(--font-primary) !important;
+}
+
+/* SweetAlert2 Specific Overrides */
+.swal2-title,
+.swal2-content,
+.swal2-html-container,
+.swal2-confirm,
+.swal2-cancel,
+.swal2-footer {
+    font-family: var(--font-primary) !important;
+}

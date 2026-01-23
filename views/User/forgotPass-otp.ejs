@@ -3,7 +3,7 @@
 
     <style>
         body {
-            font-family: "Poppins", sans-serif;
+
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -19,7 +19,7 @@
             font-size: 2.5rem;
             font-weight: 700;
             text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
+
             z-index: 1000;
 
         }
@@ -186,7 +186,7 @@
                 const email = document.getElementById('email').value;
                 let countdown = 15;
                 let timerInterval;
-    
+
                 // OTP input handling
                 otpInputs.forEach((input, index) => {
                     input.addEventListener("keyup", (e) => {
@@ -204,20 +204,20 @@
                         errorDiv.style.display = "none";
                     });
                 });
-    
+
                 // Form submission with AJAX
                 form.addEventListener("submit", (e) => {
                     e.preventDefault();
                     const otp = Array.from(otpInputs)
                         .map((input) => input.value)
                         .join("");
-    
+
                     if (otp.length !== 4) {
                         errorDiv.style.display = "block";
                         errorDiv.textContent = "Please enter all 4 digits";
                         return;
                     }
-    
+
                     $.ajax({
                         type: "POST",
                         url: "/verify-passForgot-otp",
@@ -243,7 +243,7 @@
                         }
                     });
                 });
-    
+
                 // Timer function
                 function startTimer() {
                     clearInterval(timerInterval);
@@ -258,14 +258,14 @@
                         }
                     }, 1000);
                 }
-    
+
                 // Start initial timer
                 startTimer();
-    
+
                 // Resend OTP
                 resendBtn.addEventListener("click", (e) => {
                     e.preventDefault();
-    
+
                     $.ajax({
                         type: "POST",
                         url: "/resend-forget-otp",

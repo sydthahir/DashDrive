@@ -17,7 +17,7 @@ router.post("/resend-otp", vendorController.resendOTP);
 
 
 //Login management
-router.get("/login", vendorAuth.checkAuth, vendorController.loadLogin)
+router.get("/login", vendorAuth.checkAuth,vendorController.loadLogin)
 router.post("/login", vendorController.login)
 router.get("/", vendorAuth.requireAuth, vendorController.getDashboard)
 

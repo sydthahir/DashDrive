@@ -17,7 +17,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
 }
 
 body {
@@ -282,7 +281,7 @@ body {
     margin-top: 5px;
 }
 
-.profile-field.is-invalid ~ .invalid-feedback {
+.profile-field.is-invalid~.invalid-feedback {
     display: block;
 }
 
@@ -476,4 +475,3 @@ body {
         transform: rotate(360deg);
     }
 }
-

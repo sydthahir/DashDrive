@@ -25,6 +25,9 @@ const pageNotFound = async (req, res) => {
 
 const loadLandingPage = async (req, res) => {
   try {
+    if(req.cookies.user_token){
+ return res.redirect("/home")
+    }
     return res.render("landingPage")
   } catch (error) {
     console.log("page not found")
@@ -216,6 +219,9 @@ const resendOTP = async (req, res) => {
 const loadLogin = (req, res) => {
   try {
     const message = req.query.message || null
+    if(req.cookies.user_token){
+        return res.redirect("/home")
+    }
 
     res.render("login", { message })
   } catch (error) {
@@ -574,9 +580,25 @@ const loadServices = async (req, res) => {
 //Loading of listing cars page
 const loadListings = async (req, res) => {
   try {
-    return res.render("listings")
+    const Car = require("../../models/carSchema")
+    const Brand = require("../../models/brandModel")
+
+    // Fetch all approved and available cars with brand and vendor info
+    const cars = await Car.find({
+      status: "approved",
+      availability: "available"
+    })
+      .populate("brand", "name logo")
+      .populate("vendor", "businessName")
+      .sort({ createdAt: -1 })
+      .lean()
+
+    // Get all active brands for filter
+    const brands = await Brand.find({ isActive: true }).sort({ name: 1 }).lean()
+
+    return res.render("listings", { cars, brands })
   } catch (error) {
-    console.log("listings page not found")
+    console.log("Error loading listings page:", error)
     res.status(500).send("Server Error")
   }
 }

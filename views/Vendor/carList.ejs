@@ -47,23 +47,24 @@
                                     <tr>
                                         <td>
                                             <% if (car.images && car.images.length> 0) { %>
-                                                <img src="<%= car.images[0] %>">
+                                                <img src="<%= car.images[0] %>" alt="<%= car.model %>"
+                                                    class="car-image">
                                                 <% } else { %>
-                                                    <img src="https://via.placeholder.com/100x60">
+                                                    <img src="https://via.placeholder.com/100x60" alt="No image"
+                                                        class="car-image">
                                                     <% } %>
                                         </td>
                                         <td>
                                             <%= car.model %>
                                         </td>
                                         <td>
-                                            <%= car.brand %>
+                                            <%= car.brand ? car.brand.name : 'N/A' %>
                                         </td>
                                         <td>
                                             <%= car.registrationNumber %>
                                         </td>
                                         <td class="d-none d-md-table-cell">
-                                            <%= car.features && car.features.includes('petrol') ? 'Petrol' : 'Unknown'
-                                                %>
+                                            <%= car.fuelType || 'N/A' %>
                                         </td>
                                         <td class="d-none d-md-table-cell">Automatic</td>
                                         <td>

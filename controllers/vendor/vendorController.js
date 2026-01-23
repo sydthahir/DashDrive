@@ -275,7 +275,7 @@ const login = async (req, res) => {
 
 
         // Check if account is approved
-        if (!findVendor.isApproved) {
+        if (!findVendor.isApproved ||findVendor.status==='pending' ) {
             console.log("Account not approved");
 
             return res.status(403).render("vendor-login", { message: "Account is not yet approved by admin" });

@@ -11,10 +11,9 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-// 🔐 OTP MAIL
+// OTP MAIL
 const sendOtpMail = async (email, otp) => {
   try {
-   
     const info = await transporter.sendMail({
       from: process.env.NODEMAILER_EMAIL,
       to: email,
@@ -30,7 +29,7 @@ const sendOtpMail = async (email, otp) => {
   }
 }
 
-// VENDOR APPROVAL MAIL
+// Vendor Approval MAIL
 const sendVendorApprovalMail = async (email, name) => {
   await transporter.sendMail({
     from: `"DashDrive" <${process.env.EMAIL_USER}>`,
@@ -49,6 +48,8 @@ const sendVendorApprovalMail = async (email, name) => {
     `,
   })
 }
+
+//Vendor Rejection MAIL
 const sendVendorRejectionMail = async (email, name) => {
   await transporter.sendMail({
     from: `"DashDrive" <${process.env.EMAIL_USER}>`,
@@ -65,8 +66,60 @@ const sendVendorRejectionMail = async (email, name) => {
   })
 }
 
+//Car Approval  MAIL
+const sendCarApprovalMail = async (email, name, carBrand, carModel) => {
+  if (!email) {
+    throw new Error("Vendor email is missing")
+  }
+
+  await transporter.sendMail({
+    from: `"DashDrive"  <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "Your Car Listing Has Been Approved – DashDrive",
+    html: ` <p>Hello</p><h3> ${name} ,</h3>
+      <p>Congratulations! We’re happy to inform you the car <strong> ${carBrand} ${carModel} </strong> that you registered on
+      <strong> DashDrive </strong> has been successfully reviewed and <strong> approved </strong> by our admin team.</p>
+      <p>Your car listing is now live on the <strong> DashDrive </strong> platform and visible to users for test drive bookings.</p>
+      <p>You can now log in to your vendor dashboard to:</p>
+   <ul>
+      <li>Manage car availability and time slots.</li>
+      <li>View and handle test drive bookings.</li>
+      <li>Edit car details and documents if required.</li>
+   </ul>
+
+   <p>Thank you for partnering with <strong>DashDrive</strong>. We look forward to a successful collaboration.</p>
+
+    <p>Warm regards,<br>
+    <strong> Admin Team <br>
+    DashDrive </strong></p>`,
+  })
+}
+
+//Car Rejection MAIL
+const sendCarRejectionMail = async (email, name, carBrand, carModel) => {
+  if (!email) {
+    throw new Error("Vendor email is missing")
+  }
+  await transporter.sendMail({
+    from: `"DashDrive"  <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "Update on Your Car Listing – DashDrive",
+    html: ` <p>Hello </p><h3> ${name} ,</h3>
+     <p>Thank you for registering your car on <strong> DashDrive </strong>. After carefully reviewing the submitted details and documents,
+      we regret to inform you that <strong> ${carBrand} ${carModel} </strong> listing has <strong> not been approved </strong> at this time.</p>
+
+  <p>We appreciate your cooperation and thank you for partnering with <strong> DashDrive </strong>.</p>
+
+    <p>Kind regards,<br>
+    <strong>Admin Team</strong><br>
+    DashDrive</p>`,
+  })
+}
+
 module.exports = {
   sendOtpMail,
   sendVendorApprovalMail,
   sendVendorRejectionMail,
+  sendCarApprovalMail,
+  sendCarRejectionMail,
 }
