@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="/css/global-fonts.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#051c34',
+                        accent: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --primary-color: #8bbd76;
+            --secondary-color: #f5da9a;
+            --text-dark: #333;
+            --text-light: #666;
+            --white: #ffffff;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+        body {
+            background-color: #ecedf0;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: var(--white);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .brand-logo span {
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateX(5px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Form Styles */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3436;
+
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #2d3436;
+
+        }
+
+        .form-control {
+            border: 1px solid #e1e1e1;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+            background-color: #fff;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 1rem;
+            background-color: #333333;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+
+        }
+
+        .btn-signup:hover {
+            background-color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 51, 51, 0.2);
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            opacity: 0;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        .custom-checkbox label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #2d3436;
+
+        }
+
+        .custom-checkbox label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6c757d;
+            border-radius: 4px;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked+label::before {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked+label::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .current-images {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="brand-logo">Dash<span>Drive</span></a>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/vendor/" class="nav-link"><i class="fas fa-home"></i>Dashboard</a></li>
+            <li class="nav-item"><a href="/vendor/cars" class="nav-link active"><i class="fas fa-car"></i>My Cars</a>
+            </li>
+            <li class="nav-item"><a href="/vendor/bookings" class="nav-link"><i
+                        class="fas fa-calendar-check"></i>Bookings</a></li>
+            <li class="nav-item"><a href="/vendor/earnings" class="nav-link"><i class="fas fa-wallet"></i>Earnings</a>
+            </li>
+            <li class="nav-item"><a href="/vendor/profile" class="nav-link"><i class="fas fa-user"></i>Profile</a></li>
+            <li class="nav-item"><a href="/vendor/settings" class="nav-link"><i class="fas fa-cog"></i>Settings</a></li>
+            <li class="nav-item"><a href="/vendor/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i>Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <main class="py-4 px-3">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-10 col-xl-8">
+                        <div class="bg-white shadow-lg rounded-lg form-container">
+                            <h1 class="text-2xl font-semibold text-center mb-6 form-title">Edit Car - <%= car.model %>
+                            </h1>
+
+                            <form action="/vendor/cars/edit/<%= car._id %>" method="POST" enctype="multipart/form-data">
+                                <!-- Basic Details -->
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="w-1 h-4 bg-red-500"></div>
+                                        <h2 class="text-lg font-medium section-title">Basic Details</h2>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 form-grid">
+                                        <div>
+                                            <label class="form-label" for="brand">Brand</label>
+                                            <select name="brand" id="brand" required class="form-control">
+                                                <option value="">Select Brand</option>
+                                                <% brands.forEach(brand=> { %>
+                                                    <option value="<%= brand._id %>"
+                                                        <%=String(car.brand._id)===String(brand._id) ? 'selected' : ''
+                                                        %>>
+                                                        <%= brand.name %>
+                                                    </option>
+                                                    <% }); %>
+                                            </select>
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="model">Model</label>
+                                            <input type="text" name="model" id="model" value="<%= car.model %>" required
+                                                class="form-control">
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="year">Year</label>
+                                            <input type="number" name="year" id="year" value="<%= car.year %>"
+                                                min="2000" max="2025" required class="form-control">
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="registrationNumber">Registration
+                                                Number</label>
+                                            <input type="text" name="registrationNumber" id="registrationNumber"
+                                                value="<%= car.registrationNumber %>" required class="form-control">
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="color">Color</label>
+                                            <input type="text" name="color" id="color" value="<%= car.color %>" required
+                                                class="form-control">
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="mileage">Mileage (kmpl)</label>
+                                            <input type="number" name="mileage" id="mileage" value="<%= car.mileage %>"
+                                                min="0" required class="form-control">
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="carType">Car Type</label>
+                                            <select name="carType" id="carType" required class="form-control">
+                                                <option value="Sedan" <%=car.carType==='Sedan' ? 'selected' : '' %>
+                                                    >Sedan</option>
+                                                <option value="SUV" <%=car.carType==='SUV' ? 'selected' : '' %>>SUV
+                                                </option>
+                                                <option value="Hatchback" <%=car.carType==='Hatchback' ? 'selected' : ''
+                                                    %>>Hatchback</option>
+                                                <option value="Coupe" <%=car.carType==='Coupe' ? 'selected' : '' %>
+                                                    >Coupe</option>
+                                            </select>
+                                            <div class="error-message"></div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="fuelType">Fuel Type</label>
+                                            <select name="fuelType" id="fuelType" required class="form-control">
+                                                <option value="Petrol" <%=car.fuelType==='Petrol' ? 'selected' : '' %>
+                                                    >Petrol</option>
+                                                <option value="Diesel" <%=car.fuelType==='Diesel' ? 'selected' : '' %>
+                                                    >Diesel</option>
+                                                <option value="Electric" <%=car.fuelType==='Electric' ? 'selected' : ''
+                                                    %>>Electric</option>
+                                                <option value="Hybrid" <%=car.fuelType==='Hybrid' ? 'selected' : '' %>
+                                                    >Hybrid</option>
+                                            </select>
+                                            <div class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Car Images -->
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="w-1 h-4 bg-red-500"></div>
+                                        <h2 class="text-lg font-medium section-title">Car Images</h2>
+                                    </div>
+                                    <div class="current-images mb-3">
+                                        <% car.images.forEach(img=> { %>
+                                            <img src="<%= img %>" class="image-preview" alt="Car image">
+                                            <% }); %>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" for="carImages">Update Images (Optional - Max
+                                            5)</label>
+                                        <input type="file" name="carImages" id="carImages" multiple accept="image/*"
+                                            class="form-control">
+                                        <p class="text-xs text-gray-500 mt-1">Leave empty to keep current images</p>
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Features -->
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="w-1 h-4 bg-red-500"></div>
+                                        <h2 class="text-lg font-medium section-title">Features</h2>
+                                    </div>
+                                    <div class="flex flex-wrap">
+                                        <% features.forEach(feature=> { %>
+                                            <% const isChecked=car.features &&
+                                                car.features.split(',').includes(feature); %>
+                                                <div class="custom-checkbox">
+                                                    <input type="checkbox" id="<%= feature %>" name="features"
+                                                        value="<%= feature %>" <%=isChecked ? 'checked' : '' %>>
+                                                    <label for="<%= feature %>">
+                                                        <%= feature %>
+                                                    </label>
+                                                </div>
+                                                <% }); %>
+                                    </div>
+                                </div>
+
+                                <!-- Pricing & Availability -->
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="w-1 h-4 bg-red-500"></div>
+                                        <h2 class="text-lg font-medium section-title">Pricing & Availability</h2>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="form-label">Charge (₹ Per Slot)</label>
+                                            <input type="number" name="chargePerSlot" value="<%= car.chargePerSlot %>"
+                                                required class="form-control">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Security Deposit (₹)</label>
+                                            <input type="number" name="securityDeposit"
+                                                value="<%= car.securityDeposit %>" required class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="form-label">Available Days</label>
+                                        <div class="flex flex-wrap">
+                                            <% daysOfWeek.forEach(day=> { %>
+                                                <div class="custom-checkbox">
+                                                    <input type="checkbox" id="<%= day %>" name="availableDays"
+                                                        value="<%= day %>" <%=car.availableDays.includes(day)
+                                                        ? 'checked' : '' %>>
+                                                    <label for="<%= day %>">
+                                                        <%= day %>
+                                                    </label>
+                                                </div>
+                                                <% }); %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-6">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="description" rows="4"
+                                        class="form-control"><%= car.description %></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-signup">Update Car</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

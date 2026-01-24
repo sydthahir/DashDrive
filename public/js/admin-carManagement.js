@@ -92,8 +92,8 @@ function generateCarDetailsHTML(car) {
             <div class="car-images-grid">
                 ${car.images && car.images.length > 0 ?
             car.images.map(img => `
-                        <img src="/${img}" alt="${car.model}" class="car-detail-image" 
-                             onclick="window.open('/${img}', '_blank')">
+                        <img src="${img}" alt="${car.model}" class="car-detail-image" 
+                             onclick="window.open('${img}', '_blank')">
                     `).join('') :
             '<p class="text-muted">No images available</p>'
         }
@@ -112,7 +112,7 @@ function generateCarDetailsHTML(car) {
                 <div class="detail-value">
                     ${car.brand ? `
                         <div class="d-flex align-items-center gap-2">
-                            ${car.brand.logo ? `<img src="/${car.brand.logo}" alt="${car.brand.name}" style="width: 24px; height: 24px; object-fit: contain;">` : ''}
+                            ${car.brand.logo ? `<img src="${car.brand.logo}" alt="${car.brand.name}" style="width: 24px; height: 24px; object-fit: contain;">` : ''}
                             <span>${car.brand.name}</span>
                         </div>
                     ` : 'N/A'}

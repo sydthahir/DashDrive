@@ -1,93 +1,450 @@
-<!-- Success/Error Messages -->
-<% if (query.success) { %>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i>
-        <%= query.success %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<style>
+    /* Scoped Styles for Car List */
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid #edf2f7;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .bg-blue-light {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .bg-green-light {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .bg-orange-light {
+        background: #fff3e0;
+        color: #ef6c00;
+    }
+
+    .bg-red-light {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: #718096;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .content-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid #edf2f7;
+        overflow: hidden;
+    }
+
+    .card-header-flexible {
+        padding: 1.5rem;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        min-width: 250px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+    }
+
+    .search-input {
+        padding-left: 40px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        width: 100%;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        border-color: #3182ce;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+    }
+
+    .car-table th {
+        background: #f7fafc;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #4a5568;
+        padding: 1rem;
+        border-bottom: 2px solid #edf2f7;
+    }
+
+    .car-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .car-thumbnail-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .car-thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .car-info h6 {
+        margin: 0;
+        color: #2d3748;
+        font-weight: 600;
+    }
+
+    .car-info small {
+        color: #718096;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-approved {
+        background: #e6fffa;
+        color: #2c7a7b;
+    }
+
+    .status-pending {
+        background: #fffaf0;
+        color: #c05621;
+    }
+
+    .status-rejected {
+        background: #fff5f5;
+        color: #c53030;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        border: none;
+        background: transparent;
+    }
+
+    .action-btn:hover {
+        background: #f7fafc;
+    }
+
+    .btn-edit {
+        color: #3182ce;
+    }
+
+    .btn-delete {
+        color: #e53e3e;
+    }
+
+    .btn-view {
+        color: #718096;
+    }
+
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #718096;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: #cbd5e0;
+    }
+</style>
+
+<!-- Dashboard Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">My Cars</h4>
+        <p class="text-muted mb-0">Manage and track your vehicle fleet</p>
     </div>
-    <% } %>
-        <% if (query.error) { %>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <%= query.error %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <a href="/vendor/cars/register-cars" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+        <i class="fas fa-plus"></i> Add New Car
+    </a>
+</div>
+
+<!-- Stats Summary -->
+<% let totalCars=cars ? cars.length : 0; let approvedCars=cars ? cars.filter(c=> c.status === 'approved').length : 0;
+    let pendingCars = cars ? cars.filter(c => c.status === 'pending').length : 0;
+    let rejectedCars = cars ? cars.filter(c => c.status === 'rejected').length : 0;
+    %>
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon bg-blue-light">
+                <i class="fas fa-car"></i>
             </div>
-            <% } %>
+            <div class="stat-value">
+                <%= totalCars %>
+            </div>
+            <div class="stat-label">Total Cars</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-green-light">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value">
+                <%= approvedCars %>
+            </div>
+            <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-orange-light">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">
+                <%= pendingCars %>
+            </div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-red-light">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-value">
+                <%= rejectedCars %>
+            </div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
 
-                <div class="dashboard-header">
-                    <div class="header-title">Manage Your Cars</div>
-                    <a href="/vendor/cars/register-cars" class="new-car-btn">
-                        <i class="fas fa-plus"></i>
-                        Register New Car
-                    </a>
-                </div>
+    <!-- Main Content Card -->
+    <div class="content-card">
+        <div class="card-header-flexible">
+            <h5 class="mb-0 fw-bold text-secondary">Vehicle List</h5>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" class="form-control search-input"
+                    placeholder="Search by model, brand or reg no...">
+            </div>
+        </div>
 
-                <div class="search-container">
-                    <input type="text" id="searchInput" class="search-input"
-                        placeholder="Search by model name or registration number">
-                </div>
-
-                <div class="cars-table table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="bg-light">
+        <div class="table-responsive">
+            <table class="table car-table mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Vehicle</th>
+                        <th>Model Details</th>
+                        <th>Registration</th>
+                        <th>Daily Rate</th>
+                        <th>Fuel Type</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="carTableBody">
+                    <% if (cars && cars.length> 0) { %>
+                        <% cars.forEach(car=> { %>
                             <tr>
-                                <th>Image</th>
-                                <th>Model Name</th>
-                                <th>Brand</th>
-                                <th>Registration</th>
-                                <th class="d-none d-md-table-cell">Fuel Type</th>
-                                <th class="d-none d-md-table-cell">Transmission</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="carTableBody">
-                            <% if (cars && cars.length> 0) { %>
-                                <% cars.forEach(car=> { %>
-                                    <tr>
-                                        <td>
-                                            <% if (car.images && car.images.length> 0) { %>
-                                                <img src="<%= car.images[0] %>" alt="<%= car.model %>"
-                                                    class="car-image">
-                                                <% } else { %>
-                                                    <img src="https://via.placeholder.com/100x60" alt="No image"
-                                                        class="car-image">
-                                                    <% } %>
-                                        </td>
-                                        <td>
+                                <td>
+                                    <div class="car-thumbnail-wrapper">
+                                        <img src="<%= (car.images && car.images.length > 0) ? car.images[0] : '/images/car-placeholder.png' %>"
+                                            alt="<%= car.model %>" class="car-thumbnail"
+                                            onerror="this.src='https://via.placeholder.com/60x60?text=Car'">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="car-info">
+                                        <h6>
                                             <%= car.model %>
-                                        </td>
-                                        <td>
-                                            <%= car.brand ? car.brand.name : 'N/A' %>
-                                        </td>
-                                        <td>
-                                            <%= car.registrationNumber %>
-                                        </td>
-                                        <td class="d-none d-md-table-cell">
-                                            <%= car.fuelType || 'N/A' %>
-                                        </td>
-                                        <td class="d-none d-md-table-cell">Automatic</td>
-                                        <td>
-                                            <span class="status-badge status-<%= car.status || 'pending' %>">
-                                                <%= car.status || 'Pending' %>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="action-buttons">
-                                                <button class="action-btn edit-btn"
-                                                    data-id="<%= car._id %>">Edit</button>
-                                                <button class="action-btn delete-btn"
-                                                    data-id="<%= car._id %>">Delete</button>
+                                        </h6>
+                                        <small class="d-block">
+                                            <%= car.brand ? car.brand.name : 'Unknown Brand' %> • <%= car.year %>
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="font-monospace fw-bold text-dark">
+                                        <%= car.registrationNumber %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-success">₹<%= car.chargePerSlot %>
+                                    </div>
+                                    <small class="text-muted">per day</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <%= car.fuelType %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% let statusClass='status-pending' ; let statusIcon='fa-clock' ; let
+                                        statusText='Pending' ; if(car.status==='approved' ) {
+                                        statusClass='status-approved' ; statusIcon='fa-check' ; statusText='Approved' ;
+                                        } else if(car.status==='rejected' ) { statusClass='status-rejected' ;
+                                        statusIcon='fa-times' ; statusText='Rejected' ; } %>
+                                        <span class="status-badge <%= statusClass %>">
+                                            <i class="fas <%= statusIcon %>"></i>
+                                            <%= statusText %>
+                                        </span>
+                                </td>
+                                <td class="text-end">
+                                    <button class="action-btn btn-view" title="View Details"
+                                        onclick="viewCar('<%= car._id %>')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" title="Edit Car"
+                                        onclick="editCar('<%= car._id %>')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" title="Delete Car"
+                                        onclick="deleteCar('<%= car._id %>')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class="fas fa-car-side"></i>
+                                                </div>
+                                                <h5>No Vehicles Registered Yet</h5>
+                                                <p class="text-muted">Start by adding your first vehicle to the
+                                                    platform.</p>
+                                                <a href="/vendor/cars/register-cars"
+                                                    class="btn btn-primary mt-3">Register Car</a>
                                             </div>
                                         </td>
                                     </tr>
-                                    <% }); %>
-                                        <% } else { %>
-                                            <tr>
-                                                <td colspan="8" class="text-center">No cars registered yet.
-                                                </td>
-                                            </tr>
-                                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination (Simple Implementation) -->
+        <div class="p-3 border-top d-flex justify-content-between align-items-center">
+            <small class="text-muted">Showing <%= cars.length %> vehicles</small>
+            <!-- Add pagination logic here if needed later -->
+        </div>
+    </div>
+
+    <script>
+        // Simple Client-Side Search
+        document.getElementById('tableSearch').addEventListener('keyup', function () {
+            const searchText = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#carTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(searchText)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        function editCar(id) {
+            window.location.href = `/vendor/cars/edit/${id}`;
+        }
+
+        function viewCar(id) {
+            window.location.href = `/vendor/cars/details/${id}`;
+        }
+
+        async function deleteCar(id) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you really want to delete this car? This action will remove it from your listings.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/vendor/cars/delete/${id}`, {
+                        method: 'DELETE',
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: 'Your car has been removed successfully.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to delete car', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire('Error', 'An error occurred while deleting the car', 'error');
+                }
+            }
+        }
+    </script>

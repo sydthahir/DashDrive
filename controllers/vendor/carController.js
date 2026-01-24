@@ -1,6 +1,7 @@
 const car = require("../../models/carSchema")
 const Brand = require("../../models/brandModel")
 const uploadFile = require("../../middlewares/upload")
+const mongoose = require("mongoose");
 
 //Car registeration form
 const loadCarForm = async (req, res) => {
@@ -103,8 +104,13 @@ const registerCar = async (req, res) => {
 //Car Listing
 const listCars = async (req, res) => {
   try {
-    // Use req.vendor.id from JWT
-    const cars = await car.find({ vendor: req.vendor.id }).populate('brand').lean()
+    const vendorId = new mongoose.Types.ObjectId(req.vendor._id);
+
+    // Find cars belonging to this vendor that are not marked as deleted
+    const cars = await car.find({
+      vendorId: vendorId,
+      isDeleted: { $ne: true }
+    }).populate('brand').lean();
     res.render("vendorCarList", {
       title: "My Cars",
       cars,
@@ -121,8 +127,150 @@ const listCars = async (req, res) => {
   }
 }
 
+//View Car Details
+const viewCarDetails = async (req, res) => {
+  try {
+    const carId = req.params.id;
+    const vendorId = req.vendor._id;
+
+    const carDetails = await car.findOne({ _id: carId, vendorId: vendorId }).populate('brand').lean();
+
+    if (!carDetails) {
+      return res.redirect("/vendor/cars?error=Car not found");
+    }
+
+    res.render("vendorCarDetails", {
+      title: `${carDetails.model} - Details`,
+      activePage: "cars",
+      vendor: req.vendor,
+      car: carDetails
+    });
+
+  } catch (error) {
+    console.error("Error viewing car details:", error);
+    res.redirect("/vendor/cars?error=Something went wrong");
+  }
+}
+
+// Soft Delete Car
+const deleteCar = async (req, res) => {
+  try {
+    const carId = req.params.id;
+    const vendorId = req.vendor._id;
+
+    const deletedCar = await car.findOneAndUpdate(
+      { _id: carId, vendorId: vendorId },
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!deletedCar) {
+      return res.status(404).json({ success: false, message: "Car not found or unauthorized" });
+    }
+
+    return res.json({ success: true, message: "Car deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting car:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+// Load Edit Car Form
+const loadEditCarForm = async (req, res) => {
+  try {
+    const carId = req.params.id;
+    const vendorId = req.vendor._id;
+
+    const carData = await car.findOne({ _id: carId, vendorId: vendorId }).populate('brand').lean();
+
+    if (!carData) {
+      return res.redirect("/vendor/cars?error=Car not found");
+    }
+
+    const brands = await Brand.find({ isActive: true });
+    const Features = ["SportEdition", "Automatic Transmission", "Cruise Control", "Leather Seats"];
+
+    res.render("editCar", {
+      title: "Edit Car",
+      car: carData,
+      brands: brands,
+      features: Features,
+      activePage: "cars",
+      vendor: req.vendor,
+      daysOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    });
+  } catch (error) {
+    console.error("Error loading edit form:", error);
+    res.redirect("/page-error");
+  }
+}
+
+// Update Car
+const updateCar = async (req, res) => {
+  try {
+    const carId = req.params.id;
+    const vendorId = req.vendor._id;
+
+    const {
+      brand,
+      model,
+      year,
+      registrationNumber,
+      color,
+      mileage,
+      carType,
+      fuelType,
+      features,
+      chargePerSlot,
+      securityDeposit,
+      availableDays,
+      description,
+    } = req.body;
+
+    const updateData = {
+      brand,
+      model,
+      year,
+      registrationNumber,
+      color,
+      mileage,
+      carType,
+      fuelType,
+      features: Array.isArray(features) ? features.join(",") : features,
+      chargePerSlot,
+      securityDeposit,
+      availableDays: Array.isArray(availableDays) ? availableDays : [availableDays],
+      description,
+    };
+
+    // If new images are uploaded
+    if (req.files && req.files.length > 0) {
+      updateData.images = req.files.map((file) => file.path);
+    }
+
+    const updatedCar = await car.findOneAndUpdate(
+      { _id: carId, vendorId: vendorId },
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedCar) {
+      return res.redirect("/vendor/cars?error=Car not found or unauthorized");
+    }
+
+    res.redirect("/vendor/cars?success=Car updated successfully");
+  } catch (error) {
+    console.error("Error updating car:", error);
+    res.redirect("/page-error");
+  }
+}
+
 module.exports = {
   loadCarForm,
   registerCar,
   listCars,
+  deleteCar,
+  viewCarDetails,
+  loadEditCarForm,
+  updateCar
 }

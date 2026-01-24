@@ -32,11 +32,12 @@ router.post("/login", userController.login)
 //Home page management
 router.get("/home", userAuth, userController.loadHomepage)
 
-router.get("/cars", userAuth, userController.loadCarsPage)
-router.get("/listings", userAuth, userController.loadListings)
-router.get("/services", userAuth, userController.loadServices)
-router.get("/contact", userAuth, userController.loadContact)
-router.get("/about", userAuth, userController.loadAbout)
+router.get("/avail-soon", userAuth, userController.loadCarsPage)
+router.get("/cars", userController.loadListings)
+router.get("/cars/:id", userController.loadCarDetails)
+router.get("/services", userController.loadServices)
+router.get("/contact", userController.loadContact)
+router.get("/about", userController.loadAbout)
 router.get("/logout", userController.logout)
 
 

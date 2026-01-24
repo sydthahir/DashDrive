@@ -17,7 +17,7 @@ router.post("/resend-otp", vendorController.resendOTP);
 
 
 //Login management
-router.get("/login", vendorAuth.checkAuth,vendorController.loadLogin)
+router.get("/login", vendorAuth.checkAuth, vendorController.loadLogin)
 router.post("/login", vendorController.login)
 router.get("/", vendorAuth.requireAuth, vendorController.getDashboard)
 
@@ -45,6 +45,10 @@ router.get("/earnings", vendorAuth.requireAuth, vendorController.loadEarnings)
 router.get("/cars/register-cars", vendorAuth.requireAuth, carController.loadCarForm)
 router.post("/cars/register-cars", vendorAuth.requireAuth, upload.array("carImages", 5), carController.registerCar)
 router.get("/cars", vendorAuth.requireAuth, carController.listCars)
+router.get("/cars/details/:id", vendorAuth.requireAuth, carController.viewCarDetails)
+router.get("/cars/edit/:id", vendorAuth.requireAuth, carController.loadEditCarForm)
+router.post("/cars/edit/:id", vendorAuth.requireAuth, upload.array("carImages", 5), carController.updateCar)
+router.delete("/cars/delete/:id", vendorAuth.requireAuth, carController.deleteCar)
 
 
 

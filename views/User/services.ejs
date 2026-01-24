@@ -30,77 +30,7 @@
             flex-direction: column;
         }
 
-        /* Navbar Styles */
-        .navbar {
-            padding: 1.2rem 5%;
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
 
-        .main-logo {
-            position: absolute;
-            top: 20px;
-            left: 30px;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-decoration: none;
-
-            z-index: 1000;
-        }
-
-        .main-logo span {
-            color: #8bbd76;
-        }
-
-        .nav-link {
-            color: var(--text-dark) !important;
-            font-weight: 500;
-            margin: 0 1.2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-
-        .nav-link.active:after,
-        .nav-link:hover:after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--primary) !important;
-            transform: translateY(-1px);
-        }
-
-        .user-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--bg-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-icon:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 29, 29, 0.938);
-        }
 
         /* Coming Soon Section */
         .coming-soon-section {
@@ -253,15 +183,7 @@
             box-shadow: 0 6px 20px rgba(51, 51, 51, 0.3);
         }
 
-        /* Footer */
-        footer {
-            background: #fff;
-            padding: 2rem 0;
-            border-top: 1px solid #eee;
-            text-align: center;
-            color: #666;
-            font-size: 0.9rem;
-        }
+
 
         @media (max-width: 768px) {
             .coming-soon-container h1 {
@@ -294,65 +216,34 @@
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-            <a href="/home" class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/listings">Listings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/services">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/contact">Contact</a>
-                    </li>
-                    <li class="nav-item ml-lg-3">
-                        <a class="nav-link p-0" href="/profile">
-                            <div class="user-icon">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
+    <%- include('../partials/user/header.ejs') %>
+
+        <!-- Coming Soon Section -->
+        <section class="coming-soon-section">
+            <div class="coming-soon-container">
+                <div class="icon-wrapper">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h1>Services</h1>
+                <h2>Available Soon!</h2>
+                <p>We're working hard to bring you an exceptional range of automotive services. Our comprehensive
+                    service
+                    offerings will be launching shortly to enhance your DashDrive experience.</p>
+
+
+
+                <a href="/home" class="btn-home">
+                    <i class="fas fa-home me-2"></i> Back to Home
+                </a>
             </div>
-        </div>
-    </nav>
+        </section>
 
-    <!-- Coming Soon Section -->
-    <section class="coming-soon-section">
-        <div class="coming-soon-container">
-            <div class="icon-wrapper">
-                <i class="fas fa-tools"></i>
-            </div>
-            <h1>Services</h1>
-            <h2>Available Soon!</h2>
-            <p>We're working hard to bring you an exceptional range of automotive services. Our comprehensive service
-                offerings will be launching shortly to enhance your DashDrive experience.</p>
+        <!-- Footer -->
+        <%- include('../partials/user/footer.ejs') %>
 
-
-
-            <a href="/home" class="btn-home">
-                <i class="fas fa-home me-2"></i> Back to Home
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 DashDrive. All rights reserved.</p>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Scripts -->
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

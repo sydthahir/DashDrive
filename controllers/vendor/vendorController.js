@@ -1,6 +1,7 @@
 const Vendor = require("../../models/vendorSchema");
 const mongoose = require("mongoose");
 const TempData = require("../../models/tempVendor");
+const Car = require("../../models/carSchema");
 const jwt = require('jsonwebtoken');
 const generateOTP = require('../../utils/otpGenerator');
 const { sendOtpMail } = require('../../utils/mailer');
@@ -275,7 +276,7 @@ const login = async (req, res) => {
 
 
         // Check if account is approved
-        if (!findVendor.isApproved ||findVendor.status==='pending' ) {
+        if (!findVendor.isApproved || findVendor.status === 'pending') {
             console.log("Account not approved");
 
             return res.status(403).render("vendor-login", { message: "Account is not yet approved by admin" });
@@ -323,14 +324,25 @@ const login = async (req, res) => {
 
 const getDashboard = async (req, res) => {
     try {
+        const vendorId = req.vendor._id;
 
+        // Fetch real stats
+        const totalCars = await Car.countDocuments({ vendorId, isDeleted: false });
+        // Recent bookings logic can be added here when Booking model is ready
 
         console.log("Login success");
-        return res.render("vendorDashboard", { vendor: req.vendor });
-
+        return res.render("vendorDashboard", {
+            vendor: req.vendor,
+            stats: {
+                totalCars,
+                activeBookings: 0, // Placeholder
+                totalEarnings: 0,  // Placeholder
+                avgRating: 0       // Placeholder
+            }
+        });
 
     } catch (error) {
-        console.log("Dashboard error");
+        console.error("Dashboard error:", error);
         res.status(500).send("Server error");
     }
 }

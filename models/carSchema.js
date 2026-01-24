@@ -83,6 +83,10 @@ const carSchema = new Schema(
       type: Date,
       required: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

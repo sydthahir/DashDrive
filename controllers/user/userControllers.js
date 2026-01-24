@@ -25,8 +25,8 @@ const pageNotFound = async (req, res) => {
 
 const loadLandingPage = async (req, res) => {
   try {
-    if(req.cookies.user_token){
- return res.redirect("/home")
+    if (req.cookies.user_token) {
+      return res.redirect("/home")
     }
     return res.render("landingPage")
   } catch (error) {
@@ -219,8 +219,8 @@ const resendOTP = async (req, res) => {
 const loadLogin = (req, res) => {
   try {
     const message = req.query.message || null
-    if(req.cookies.user_token){
-        return res.redirect("/home")
+    if (req.cookies.user_token) {
+      return res.redirect("/home")
     }
 
     res.render("login", { message })
@@ -583,23 +583,108 @@ const loadListings = async (req, res) => {
     const Car = require("../../models/carSchema")
     const Brand = require("../../models/brandModel")
 
-    // Fetch all approved and available cars with brand and vendor info
-    const cars = await Car.find({
-      status: "approved",
-      availability: "available"
-    })
-      .populate("brand", "name logo")
-      .populate("vendor", "businessName")
-      .sort({ createdAt: -1 })
-      .lean()
+    const { search, brand, fuel, sort, category } = req.query
 
-    // Get all active brands for filter
+    // Build query object
+    const query = {
+      status: "approved",
+      availability: "available",
+    }
+
+    if (brand) {
+      query.brand = brand
+    }
+
+    if (fuel) {
+      query.fuelType = fuel
+    }
+
+    if (category) {
+      query.carType = category
+    }
+
+    if (search) {
+      const searchRegex = new RegExp(search, "i")
+
+      // Find matching brands first
+      const matchedBrands = await Brand.find({ name: searchRegex }).select("_id")
+      const matchedBrandIds = matchedBrands.map(b => b._id)
+
+      query.$or = [
+        { model: searchRegex },
+        { brand: { $in: matchedBrandIds } }
+      ]
+    }
+
+    // Determine sort order
+    let sortOptions = { createdAt: -1 } // Default: Newest
+    let collation = null
+
+    if (sort === "price_low") {
+      sortOptions = { chargePerSlot: 1 }
+      collation = { locale: "en", numericOrdering: true } // Handle string number sorting
+    } else if (sort === "price_high") {
+      sortOptions = { chargePerSlot: -1 }
+      collation = { locale: "en", numericOrdering: true }
+    } else if (sort === "newest") {
+      sortOptions = { createdAt: -1 }
+    }
+
+    let carsQuery = Car.find(query)
+      .populate("brand", "name logo")
+      .populate("vendorId", "businessName")
+
+    if (collation) {
+      carsQuery = carsQuery.collation(collation)
+    }
+
+    const cars = await carsQuery.sort(sortOptions).lean()
+
+    // Get all active brands for the filter dropdown
     const brands = await Brand.find({ isActive: true }).sort({ name: 1 }).lean()
 
-    return res.render("listings", { cars, brands })
+    return res.render("listings", {
+      cars,
+      brands,
+      query: req.query // Pass current filters back to view
+    })
   } catch (error) {
     console.log("Error loading listings page:", error)
     res.status(500).send("Server Error")
+  }
+}
+
+//Loading of single car details page
+const loadCarDetails = async (req, res) => {
+  try {
+    const Car = require("../../models/carSchema")
+    const { id } = req.params
+
+    const car = await Car.findById(id)
+      .populate("brand", "name logo")
+      .populate("vendorId", "businessName address")
+      .lean()
+
+    if (!car) {
+      return res.status(404).render("page-404", { message: "Car not found", error: null })
+    }
+
+    // Fetch similar cars (same carType, excluding current car)
+    const similarCars = await Car.find({
+      carType: car.carType,
+      _id: { $ne: car._id },
+      status: "approved",
+      availability: "available"
+    })
+      .limit(4)
+      .populate("brand", "name")
+      .lean()
+
+    return res.render("carDetails", { car, similarCars })
+  } catch (error) {
+    console.error("Error loading car details:", error)
+    // If invalid ID format or other error
+    res.status(500).render("page-404", { message: "Error loading car details", error: null })
   }
 }
 
@@ -655,6 +740,7 @@ module.exports = {
   profile,
   editUserProfile,
   loadListings,
+  loadCarDetails,
   loadServices,
   loadContact,
   loadAbout,

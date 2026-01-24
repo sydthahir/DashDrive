@@ -158,7 +158,7 @@
                                                     <div class="car-info">
                                                         <div class="car-image">
                                                             <% if (car.images && car.images.length> 0) { %>
-                                                                <img src="/<%= car.images[0] %>" alt="<%= car.model %>">
+                                                                <img src="<%= car.images[0] %>" alt="<%= car.model %>">
                                                                 <% } else { %>
                                                                     <div class="no-image">
                                                                         <i class="fas fa-car"></i>
@@ -178,8 +178,8 @@
                                                 <td class="px-4 py-3">
                                                     <div class="brand-info">
                                                         <% if (car.brand && car.brand.logo) { %>
-                                                            <img src="/<%= car.brand.logo %>"
-                                                                alt="<%= car.brand.name %>" class="brand-logo">
+                                                            <img src="<%= car.brand.logo %>" alt="<%= car.brand.name %>"
+                                                                class="brand-logo">
                                                             <% } %>
                                                                 <span>
                                                                     <%= car.brand ? car.brand.name : 'N/A' %>

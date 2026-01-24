@@ -1,6 +1,4 @@
-
-    
-    <div class="container-fluid">
+<div class="container-fluid">
     <!-- Stats Row -->
     <div class="row">
         <div class="col-md-3 col-sm-6">
@@ -9,7 +7,9 @@
                     <i class="fas fa-car"></i>
                 </div>
                 <div class="stat-title">Total Cars</div>
-                <div class="stat-value">12</div>
+                <div class="stat-value">
+                    <%= stats.totalCars %>
+                </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
@@ -18,7 +18,9 @@
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="stat-title">Active Bookings</div>
-                <div class="stat-value">8</div>
+                <div class="stat-value">
+                    <%= stats.activeBookings %>
+                </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
@@ -27,7 +29,8 @@
                     <i class="fas fa-wallet"></i>
                 </div>
                 <div class="stat-title">Total Earnings</div>
-                <div class="stat-value">₹45,250</div>
+                <div class="stat-value">₹<%= stats.totalEarnings.toLocaleString() %>
+                </div>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
@@ -36,7 +39,9 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <div class="stat-title">Average Rating</div>
-                <div class="stat-value">4.8</div>
+                <div class="stat-value">
+                    <%= stats.avgRating %>
+                </div>
             </div>
         </div>
     </div>
@@ -78,6 +83,5 @@
             </table>
         </div>
     </div>
-    </div>
-    </div>
- 
+</div>
+</div>
