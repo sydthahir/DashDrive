@@ -20,7 +20,7 @@ body {
     font-family: var(--font-primary);
 }
 
-/* Form Elements - Ensure they inherit the font (often missed by browsers) */
+/* Form Elements  */
 input,
 textarea,
 select,
