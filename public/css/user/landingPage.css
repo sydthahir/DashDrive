@@ -569,7 +569,7 @@
             margin: 0 0.5rem;
         }
 
-        /* Better Way to Test Your Perfect Cars Section */
+        /* Better Way  Cars Section */
         .test-drive-process {
             padding: 7rem 0;
             background-color: var(--bg-light);
@@ -845,9 +845,8 @@
             font-size: 0.9rem;
         }
 
-        /* ========================================
-           COMPREHENSIVE MOBILE RESPONSIVE STYLES
-           ======================================== */
+       
+        
 
         /* Small devices (landscape phones, 576px and up) */
         @media (max-width: 576px) {
