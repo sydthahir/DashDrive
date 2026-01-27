@@ -82,8 +82,8 @@ const signup = async (req, res) => {
     }
 
     const emailSent = await sendOtpMail(email, otp)
-    console.log(sendOtpMail)
-    console.log(typeof sendOtpMail)
+  
+  
     if (!emailSent) {
       return res.render("signup", {
         message: "Error sending verification email",
@@ -98,7 +98,7 @@ const signup = async (req, res) => {
     await TempUser.create(tempData)
 
     res.render("verify-otp", { email: tempData.email, message: null })
-    console.log("OTP sent successfully", otp)
+    console.log("OTP is:", otp)
   } catch (error) {
     console.error("Error while creating user account", error)
     res.redirect("/pageNotFound")
@@ -201,7 +201,7 @@ const resendOTP = async (req, res) => {
     tempData.expiresAt = Date.now() + 10 * 60 * 1000 // Reset expiration
     await tempData.save()
 
-    console.log("OTP resent successfully:", newOTP)
+    console.log("resent OTP is :", newOTP)
     return res.status(200).json({
       success: true,
       message: "OTP resent successfully",

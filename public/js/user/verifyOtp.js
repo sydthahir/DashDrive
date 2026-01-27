@@ -1,13 +1,11 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const otpInputs = document.querySelectorAll('.otp-input');
-    const form = document.getElementById('otpForm');
-    const errorDiv = document.getElementById('otpError');
-    const resendBtn = document.getElementById('resendBtn');
-    const timerSpan = document.getElementById('timer');
-    const countdownSpan = document.getElementById('countdown');
-    const email = document.getElementById('email').value;
-    let countdown = 15;
-    let timerInterval;
+document.addEventListener("DOMContentLoaded", function () {
+    const otpInputs = document.querySelectorAll(".otp-input");
+    const form = document.getElementById("otpForm");
+    const errorDiv = document.getElementById("otpError");
+    const resendBtn = document.getElementById("resendBtn");
+    const timerSpan = document.getElementById("timer");
+    const countdownSpan = document.getElementById("countdown");
+    const email = document.getElementById("email").value;
 
     // OTP input handling
     otpInputs.forEach((input, index) => {
@@ -27,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Form submission with AJAX
+    // Form submission
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const otp = Array.from(otpInputs)
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         $.ajax({
             type: "POST",
-            url: "/verify-passForgot-otp",
+            url: "/verify-otp",
             data: { email: email, otp: otp },
             success: function (response) {
                 if (response.success) {
@@ -52,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         showConfirmButton: false,
                         timer: 1500,
                     }).then(() => {
-                        window.location.href = `/reset-password?token=${response.resetToken}`;
+                        window.location.href = "/login";
                     });
                 } else {
                     errorDiv.style.display = "block";
@@ -66,25 +64,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Timer function
-    function startTimer() {
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (countdown > 0) {
-                countdown--;
-                countdownSpan.textContent = countdown;
-            } else {
-                clearInterval(timerInterval);
-                timerSpan.classList.add("d-none");
-                resendBtn.classList.remove("d-none");
-            }
-        }, 1000);
-    }
+    // Resend timer and functionality
+    let countdown = 15;
+    const timerInterval = setInterval(() => {
+        if (countdown > 0) {
+            countdown--;
+            countdownSpan.textContent = countdown;
+        } else {
+            clearInterval(timerInterval);
+            timerSpan.classList.add("d-none");
+            resendBtn.classList.remove("d-none");
+        }
+    }, 1000);
 
-    // Start initial timer
-    startTimer();
-
-    // Resend OTP
     resendBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
@@ -100,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         $.ajax({
             type: "POST",
-            url: "/resend-forget-otp",
+            url: "/resend-otp",
             data: { email: email },
             success: function (response) {
                 if (response.success) {
@@ -109,13 +101,25 @@ document.addEventListener('DOMContentLoaded', function () {
                         title: "OTP Resent",
                         timer: 1500,
                     });
+
                     // Timer resetting
                     countdown = 15;
                     countdownSpan.textContent = countdown;
                     timerSpan.classList.remove("d-none");
                     resendBtn.classList.add("d-none");
-                    startTimer();
-                    // Clear inputs
+
+                    const newTimer = setInterval(() => {
+                        if (countdown > 0) {
+                            countdown--;
+                            countdownSpan.textContent = countdown;
+                        } else {
+                            clearInterval(newTimer);
+                            timerSpan.classList.add("d-none");
+                            resendBtn.classList.remove("d-none");
+                        }
+                    }, 1000);
+
+                    // Clearing Inputs
                     otpInputs.forEach(input => input.value = '');
                 }
             },
