@@ -1,7 +1,7 @@
 const User = require("../../models/userSchema")
 const TempUser = require('../../models/tempUserSchema')
 const generateOTP = require('../../utils/otpGenerator');
-const sendOtpMail = require('../../utils/mailer');
+const { sendOtpMail } = require('../../utils/mailer');
 const { securePassword } = require('../../utils/hashPassword');
 
 const bcrypt = require("bcryptjs")
@@ -29,17 +29,23 @@ const forgotEmailValid = async (req, res) => {
         const { email } = req.body
         console.log("email is :", email);
 
-        const findUser = await User.findOne({ email: email })
-
+        // Email validation
         if (!email) {
             return res.render("forgot-password", { message: "Please provide an email address." });
         }
 
-        const trimmedEmail = email.trim();
-        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+        const trimmedEmail = email.trim().toLowerCase();
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
         if (!emailPattern.test(trimmedEmail)) {
             return res.render("forgot-password", { message: "Please enter a valid email address." });
         }
+
+        // Query from DB
+        const findUser = await User.findOne({ email: trimmedEmail })
+
+
 
         if (!findUser) {
             return res.render("forgot-password", { message: "User not found" });
@@ -52,15 +58,14 @@ const forgotEmailValid = async (req, res) => {
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
 
-        findUser.resetOTP = otp;
+        const hashedOtp = await bcrypt.hash(otp, 10);
+        findUser.resetOTP = hashedOtp;
         findUser.resetOTPExpiry = expiresAt;
         await findUser.save();
 
 
-
-
         // Send the OTP to the user's email
-        const emailSent = await sendOtpMail(email, otp);
+        const emailSent = await sendOtpMail(trimmedEmail, otp);
         if (!emailSent) {
             return res.render("forgot-password", { message: "Failed to send OTP" });
         }
@@ -81,6 +86,7 @@ const verifyForgotPassOTP = async (req, res) => {
 
         const { email, otp } = req.body;
 
+
         if (!otp || !email) {
             return res.status(400).json({
                 success: false,
@@ -89,7 +95,9 @@ const verifyForgotPassOTP = async (req, res) => {
         }
 
         // Find the user by email
-        const user = await User.findOne({ email });
+        const trimmedEmail = email.trim().toLowerCase();
+        const user = await User.findOne({ email: trimmedEmail });
+
 
         if (!user) {
             return res.status(400).json({
@@ -107,7 +115,7 @@ const verifyForgotPassOTP = async (req, res) => {
             });
         }
 
-
+        //Check expiry
         if (new Date() > user.resetOTPExpiry) {
             return res.status(400).json({
                 success: false,
@@ -115,14 +123,19 @@ const verifyForgotPassOTP = async (req, res) => {
             });
         }
 
-        // Compare OTP with  stored OTP in DB
-        if (user.resetOTP !== String(otp).trim()) {
+
+        // Compare OTP
+        const isOtpValid = await bcrypt.compare(
+            String(otp).trim(),
+            user.resetOTP
+        );
+
+        if (!isOtpValid) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid OTP",
             });
         }
-
 
 
 
@@ -144,14 +157,10 @@ const verifyForgotPassOTP = async (req, res) => {
             resetToken
         });
 
-
-
-
-
     } catch (error) {
 
         console.error("Error verifying OTP", error);
-        res.status(400).json({
+        res.status(500).json({
             success: false,
             message: "Server error",
         });
@@ -170,8 +179,9 @@ const resendOTP = async (req, res) => {
                 message: "Email is required"
             });
         }
-
-        const user = await User.findOne({ email });
+        // Find the user by email
+        const trimmedEmail = email.trim().toLowerCase();
+        const user = await User.findOne({ email: trimmedEmail });
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -179,12 +189,14 @@ const resendOTP = async (req, res) => {
             });
         }
 
+        // New OTP Generation
         const newOTP = generateOTP();
-        user.resetOTP = newOTP;
+        const hashedOtp = await bcrypt.hash(newOTP, 10);
+        user.resetOTP = hashedOtp;
         user.resetOTPExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiry
         await user.save();
 
-        const emailSent = await sendOtpMail(email, newOTP);
+        const emailSent = await sendOtpMail(trimmedEmail, newOTP);
         if (!emailSent) {
             return res.status(500).json({
                 success: false,
