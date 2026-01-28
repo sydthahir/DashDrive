@@ -14,7 +14,7 @@ const jwtOptions = {
 passport.use(
     new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
         try {
-            // Use userId instead of id to be consistent
+            
             const user = await User.findById(jwt_payload.userId)
             if (user) {
                 if (user.isBlocked) {
@@ -51,7 +51,7 @@ passport.use(new GoogleStrategy({
                     name: profile.displayName,
                     email: profile.emails[0].value,
                     googleId: profile.id,
-                    isVerified: true, // Google users are pre-verified
+                    isVerified: true, // Already pre-verified
                     isAdmin: 0
                 });
                 await user.save();

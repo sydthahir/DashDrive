@@ -65,4 +65,23 @@ const authenticateUser = async (req, res, next) => {
         return res.redirect("/login");
     }
 }
-module.exports = authenticateUser;
+
+//Checks user is logged in ?
+const guestOnly = (req, res, next) => {
+    const token = req.cookies.user_token
+
+    if (!token) return next()
+
+    try {
+        jwt.verify(token, process.env.JWT_SECRET)
+        return res.redirect("/home")
+    } catch (err) {
+        return next()
+    }
+}
+
+
+module.exports = {
+    authenticateUser,
+    guestOnly
+};
