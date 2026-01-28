@@ -96,7 +96,7 @@
 
 .user-icon:hover {
     background: var(--primary);
-    color: hwb(0 3% 97%);
+    color: hwb(0 32% 67%);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(31, 29, 29, 0.938);
 }
