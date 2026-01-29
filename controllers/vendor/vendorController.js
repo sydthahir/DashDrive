@@ -11,6 +11,7 @@ const { CURSOR_FLAGS } = require("mongodb");
 const { loadDashboard } = require("../admin/adminController");
 const bcrypt = require("bcrypt");
 const uploadFile = require("../../middlewares/upload");
+const TempVendor = require("../../models/tempVendor");
 
 
 
@@ -23,7 +24,7 @@ const pageError = (req, res) => {
         });
     } catch (error) {
         console.error("Error rendering 404 page:", error);
-        res.status(500).send("Internal Server Error"); // for Critical errors
+        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -60,60 +61,83 @@ const registeration = async (req, res) => {
         } = req.body;
         const fullName = `${firstName} ${lastName}`
 
+        const Email = email.trim().toLowerCase();
+
+        //Document check
+        const businessLicenseFile = req.file;
+        if (!businessLicenseFile) {
+            return res.render("vendor-signup", {
+                message: "Business License Document is required"
+            });
+        }
+        console.log(req.file);
+        
+
+        //Password matching check
         if (password !== confirmPassword) {
             return res.render("vendor-signup", { message: "Passwords does not match" });
         }
+
+        //Password hashing
+        const hashedPassword = await bcrypt.hash(password, 10)
+
 
         if (!terms) {
             return res.render("vendor-signup", { message: "You must agree to the terms and conditions" });
         }
 
-        const existingVendor = await Vendor.findOne({ email });
+        const existingVendor = await Vendor.findOne({ email: Email });
         if (existingVendor) {
             console.log("Email already registered");
             return res.render("vendor-signup", { message: "Account with this email already exists" });
         }
 
+        //Generate OTP
         const otp = generateOTP();
+        const hashedOtp = await bcrypt.hash(otp.toString(), 10)
 
 
-
-
-        const emailSent = await sendOtpMail(email, otp);
-        if (!emailSent) {
-            return res.render("vendor-signup", { message: "Error sending verification email" });
-        }
-
-
-
-        // Temporarily store registration data and OTP 
+        // Temporarily store data
         const tempData = {
             fullName,
             phone,
-            email,
-            password,
+            email: Email,
+            password: hashedPassword,
             companyName,
             businessAddress,
             businessLicense,
             taxId,
-            otp,
-            expiresAt: Date.now() + 10 * 60 * 1000 // 10-minute expiration
+            documents: {
+                businessLicense: {
+                    url: businessLicenseFile.path,
+                    public_id: businessLicenseFile.filename
+                },
+            },
+            otp: hashedOtp,
+            otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000) // 5 minute expiration
         };
 
-
         //Checks duplicate tempdata
-        const existingTempVendor = await TempData.findOne({ email });
+        const existingTempVendor = await TempData.findOne({ email: Email });
         if (existingTempVendor) {
-            await TempData.deleteOne({ email }); // 
+            await TempData.deleteOne({ email: Email }); // delete existing data
         }
         await TempData.create(tempData);
 
 
+        //Send email
+        const emailSent = await sendOtpMail(Email, otp);
+        if (!emailSent) {
+            return res.render("vendor-signup", { message: "Error sending verification email" });
+        }
 
-        res.render("enter-OTP", { email: tempData.email, message: null });
+        res.render("verify-otp", {
+            email: Email,
+            message: null,
+            userType: 'vendor',
+            redirectUrl: '/vendor/login'
+        });
         console.log("OTP sent successfully", otp);
-
-
 
     } catch (error) {
         console.error("Error while creating vendor account", error);
@@ -126,43 +150,57 @@ const registeration = async (req, res) => {
 const verifyOTP = async (req, res) => {
     try {
         const { otp, email } = req.body;
+        const Email = email.trim().toLowerCase();
 
+        console.log("Entered email:", Email);
         console.log("entered otp", otp);
 
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and OTP are required",
+            })
+        }
+
         // Find temporary data by email
-        const tempData = await TempData.findOne({ email });
+        const tempData = await TempData.findOne({ email: Email });
         if (!tempData) {
-            console.log("TempData not found for email:", email);
-            return res.render("enter-OTP", {
-                email,
+            console.log("TempData not found for email:", Email);
+            return res.status(400).json({
+                success: false,
                 message: "Invalid or expired OTP"
             });
         }
 
-        // OTP comparison
-        if (String(tempData.otp) !== String(otp) || Date.now() > tempData.expiresAt) {
+        // Expiry check
+        if (Date.now() > tempData.otpExpiresAt) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid or expired OTP",
+                message: "OTP expired"
             });
         }
 
-        //Hash password
-        const hashedPassword = await securePassword(tempData.password);
+        // OTP comparison
+        const otpCheck = await bcrypt.compare(otp.toString(), tempData.otp)
+        if (!otpCheck) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP"
+            });
+        }
 
-
-
-
+        //Create Vendor data on DB
         const newVendor = new Vendor({
             fullName: tempData.fullName,
             email: tempData.email,
             phone: tempData.phone,
-            password: hashedPassword,
+            password: tempData.password,
             companyName: tempData.companyName,
             businessAddress: tempData.businessAddress,
             businessLicense: tempData.businessLicense,
             taxId: tempData.taxId,
-            isVerified: true,
+            documents: tempData.documents,
             isApproved: false,
             status: "pending"
         });
@@ -172,20 +210,18 @@ const verifyOTP = async (req, res) => {
 
 
         // Delete temporary data
-        await TempData.deleteOne({ email });
+        await TempData.deleteOne({ email: Email });
 
-
-        // Send JSON response 
         return res.status(200).json({
             success: true,
-            message: "Registration successful, Account is under verification.Please wait for admin approval"
+            message: "Registration successful, Account is under verification."
         });
 
     } catch (error) {
         console.error("Error verifying OTP:", error.message);
         return res.status(500).json({
             success: false,
-            message: "An error occurred while verifying OTP. Please try again."
+            message: "Error while verifying OTP. Please try again."
         });
     }
 };
@@ -196,6 +232,7 @@ const resendOTP = async (req, res) => {
     try {
         const { email } = req.body;
 
+        const Email = email.trim().toLowerCase();
 
         if (!email) {
             return res.status(400).json({
@@ -204,25 +241,24 @@ const resendOTP = async (req, res) => {
             });
         }
 
-        const tempData = await TempData.findOne({ email });
+        const tempData = await TempData.findOne({ email: Email });
         if (!tempData) {
             return res.status(400).json({
                 success: false,
-                message: "No pending registration found for this email",
+                message: "No pending registration found",
             });
         }
 
         const newOTP = generateOTP();
+        const hashedOtp = await bcrypt.hash(newOTP.toString(), 10)
 
-
-
-        const emailSent = await sendOtpMail(email, newOTP);
+        const emailSent = await sendOtpMail(Email, newOTP);
         if (!emailSent) {
             return res.render("vendor-signup", { message: "Error sending verification email" });
         }
 
-        tempData.otp = newOTP;
-        tempData.expiresAt = Date.now() + 10 * 60 * 1000; // Reset expiration
+        tempData.otp = hashedOtp;
+        tempData.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // Reset expiration
         await tempData.save();
 
         console.log("OTP resent successfully:", newOTP);

@@ -9,21 +9,22 @@ const tempVendorSchema = new Schema({
     companyName: String,
     businessAddress: String,
     businessLicense: String,
+    documents: String,
     taxId: String,
-    otp: String,
-    resetOTP: String,
-    resetOTPExpiry: Date,
-    expiresAt: Date
-},
-    {
-        createdAt: {
-            type: Date,
-            default: Date.now,
-            expires: 300,
+    documents: {
+        businessLicense: {
+            url: String,
+            public_id: String
         }
+    },
+    otp: String,
+    otpExpiresAt: Date,
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 300, // 5 minutes
     }
-
-);
+});
 
 const TempVendor = mongoose.model("TempVendor", tempVendorSchema);
 module.exports = TempVendor;

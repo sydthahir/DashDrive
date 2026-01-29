@@ -3,7 +3,9 @@ const router = express.Router()
 const vendorController = require("../controllers/vendor/vendorController")
 const vendorAuth = require("../middlewares/vendorAuth")
 const carController = require("../controllers/vendor/carController")
-const upload = require("../middlewares/upload");
+const {uploadCarImages} = require("../middlewares/upload");
+const {uploadVendorDocs}= require("../middlewares/upload")
+const {uploadProfileImages} = require("../middlewares/upload")
 
 
 //Error Page
@@ -11,7 +13,7 @@ router.get("/page-error", vendorController.pageError)
 
 //Signup management
 router.get("/register", vendorAuth.checkAuth, vendorController.loadSignup)
-router.post("/register", vendorController.registeration)
+router.post("/register", uploadVendorDocs.single("businessLicense"),vendorController.registeration)
 router.post("/verify-otp", vendorController.verifyOTP)
 router.post("/resend-otp", vendorController.resendOTP);
 
@@ -27,7 +29,7 @@ router.get('/logout', vendorAuth.requireAuth, vendorController.logout);
 
 //Profile management
 router.get("/profile", vendorAuth.requireAuth, vendorController.profile)
-router.post("/profile/update", vendorAuth.requireAuth, upload.single("profileImage"), vendorController.updateProfile)
+router.post("/profile/update", vendorAuth.requireAuth, uploadProfileImages.single("profileImage"), vendorController.updateProfile)
 
 router.get("/forgot-password", vendorController.loadForgotPass)
 router.post("/forgot-password", vendorController.forgotValidation)
@@ -43,11 +45,11 @@ router.get("/earnings", vendorAuth.requireAuth, vendorController.loadEarnings)
 
 //Car Management
 router.get("/cars/register-cars", vendorAuth.requireAuth, carController.loadCarForm)
-router.post("/cars/register-cars", vendorAuth.requireAuth, upload.array("carImages", 5), carController.registerCar)
+router.post("/cars/register-cars", vendorAuth.requireAuth, uploadCarImages.array("carImages", 5), carController.registerCar)
 router.get("/cars", vendorAuth.requireAuth, carController.listCars)
 router.get("/cars/details/:id", vendorAuth.requireAuth, carController.viewCarDetails)
 router.get("/cars/edit/:id", vendorAuth.requireAuth, carController.loadEditCarForm)
-router.post("/cars/edit/:id", vendorAuth.requireAuth, upload.array("carImages", 5), carController.updateCar)
+router.post("/cars/edit/:id", vendorAuth.requireAuth, uploadCarImages.array("carImages", 5), carController.updateCar)
 router.delete("/cars/delete/:id", vendorAuth.requireAuth, carController.deleteCar)
 
 

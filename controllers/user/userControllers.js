@@ -50,7 +50,7 @@ const signup = async (req, res) => {
   try {
     const { name, email, password, confirm_password } = req.body
 
-    //Required
+    //Fields Required
     if (!name || !email || !password || !confirm_password) {
       return res.render("signup", {
         message: "All fields are required",
@@ -62,6 +62,9 @@ const signup = async (req, res) => {
       return res.render("signup", { message: "Password does not match" })
     }
 
+    //Password hashing
+    const hashedPassword = await bcrypt.hash(password, 10)
+
     const findUser = await User.findOne({ email })
     if (findUser) {
       console.log("user exists")
@@ -70,35 +73,43 @@ const signup = async (req, res) => {
       })
     }
 
+    //Generate OTP
     var otp = generateOTP()
+    const hashedOtp = await bcrypt.hash(otp.toString(), 10)
 
-    // Temporarily store registration data and OTP
+    // Temporarily store registration data
     const tempData = {
       name,
       email,
-      password,
-      otp,
-      expiresAt: Date.now() + 5 * 60 * 1000, // 5-minute expiration
+      password: hashedPassword,
+      otp: hashedOtp,
+      expiresAt: Date.now() + 5 * 60 * 1000, //5 minute expiration
     }
 
+    //Checks duplicate TempUser
+    const existingTempData = await TempUser.findOne({ email })
+    if (existingTempData) {
+      await TempUser.deleteOne({ email })
+    }
+
+    await TempUser.create(tempData)
+
+    //Send email
     const emailSent = await sendOtpMail(email, otp)
-  
-  
     if (!emailSent) {
       return res.render("signup", {
         message: "Error sending verification email",
       })
     }
 
-    //Checks duplicate TempUser
-    const existingTempData = await TempUser.findOne({ email })
-    if (existingTempData) {
-      await TempUser.deleteOne({ email }) //
-    }
-    await TempUser.create(tempData)
-
-    res.render("verify-otp", { email: tempData.email, message: null })
+    res.render("verify-otp", {
+      email: tempData.email,
+      message: null,
+      userType: 'user',
+      redirectUrl: '/login'
+    })
     console.log("OTP is:", otp)
+
   } catch (error) {
     console.error("Error while creating user account", error)
     res.redirect("/pageNotFound")
@@ -120,34 +131,37 @@ const verifyOTP = async (req, res) => {
     }
 
     // Find temporary data by email
-    const tempData = await TempUser.findOne({ email })
+    const tempData = await TempUser.findOne({ email: email.toLowerCase() })
     if (!tempData) {
       console.log("TempData not found for email:", email)
-      return res.render("enter-OTP", {
-        email,
-        message: "Invalid or expired OTP",
-      })
-    }
-
-    // OTP comparison
-    if (
-      String(tempData.otp) !== String(otp) ||
-      Date.now() > tempData.expiresAt
-    ) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired OTP",
       })
     }
+    // Expiry check
+    if (Date.now() > tempData.otpExpiresAt) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired",
+      })
+    }
 
-    //Hash password
-    const hashedPassword = await securePassword(tempData.password)
+    // OTP comparison
+    const otpCheck = await bcrypt.compare(otp.toString(), tempData.otp)
+    if (!otpCheck) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      })
+    }
+
 
     //Create new user on DB
     const newUser = new User({
       name: tempData.name,
       email: tempData.email,
-      password: hashedPassword,
+      password: tempData.password,
     })
 
     await newUser.save()

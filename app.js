@@ -37,7 +37,8 @@ app.use(passport.initialize())
 app.set("views", [
     path.join(__dirname, "views/User"),
     path.join(__dirname, "views/Admin"),
-    path.join(__dirname, "views/Vendor")
+    path.join(__dirname, "views/Vendor"),
+    path.join(__dirname, "views/partials")
 ])
 
 app.use(express.static("public"))

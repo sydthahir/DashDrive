@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const adminController = require("../controllers/admin/adminController")
 const adminAuth = require("../middlewares/adminAuth")
-const upload = require("../middlewares/upload")
+const {uploadBrandLogo} = require("../middlewares/upload")
 
 
 
@@ -37,8 +37,8 @@ router.get('/vendors/details/:id', adminAuth, adminController.getVendorDetails);
 
 //Brands management
 router.get("/brands", adminAuth, adminController.loadBrands)
-router.post("/brands/add", adminAuth, upload.single("logo"), adminController.addBrand);
-router.put("/brands/edit", adminAuth, upload.single("logo"), adminController.editBrand);
+router.post("/brands/add", adminAuth, uploadBrandLogo.single("logo"), adminController.addBrand);
+router.put("/brands/edit", adminAuth, uploadBrandLogo.single("logo"), adminController.editBrand);
 router.patch("/brands/toggle-status", adminAuth, adminController.toggleBrandStatus);
 
 //Cars management

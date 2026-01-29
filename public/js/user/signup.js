@@ -1,4 +1,4 @@
-
+//Get all form elements
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("signform");
     const name = document.getElementById("name");
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             errorConfirmPassword.style.display = "block";
             valid = false;
         } else if (passVal !== confirmVal) {
-            errorConfirmPassword.textContent = "Passwords do not match";
+            errorConfirmPassword.textContent = "Passwords does not match";
             errorConfirmPassword.style.display = "block";
             valid = false;
         }
@@ -73,9 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
-
-
 
 // Password Toggle Functionality
 function togglePassword(fieldId) {
