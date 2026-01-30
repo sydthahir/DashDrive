@@ -45,6 +45,14 @@ const loadSignup = async (req, res) => {
 const registeration = async (req, res) => {
     try {
 
+        //Document check
+        const businessLicenseFile = req.file;
+        if (!businessLicenseFile) {
+            return res.render("vendor-signup", {
+                message: "Business License Document is required"
+            });
+        }
+        console.log("FILE:", req.file);
 
         const {
             firstName,
@@ -63,15 +71,7 @@ const registeration = async (req, res) => {
 
         const Email = email.trim().toLowerCase();
 
-        //Document check
-        const businessLicenseFile = req.file;
-        if (!businessLicenseFile) {
-            return res.render("vendor-signup", {
-                message: "Business License Document is required"
-            });
-        }
-        console.log(req.file);
-        
+
 
         //Password matching check
         if (password !== confirmPassword) {
@@ -107,7 +107,7 @@ const registeration = async (req, res) => {
             businessAddress,
             businessLicense,
             taxId,
-            documents: {
+            documentUrl: {
                 businessLicense: {
                     url: businessLicenseFile.path,
                     public_id: businessLicenseFile.filename
@@ -152,7 +152,6 @@ const verifyOTP = async (req, res) => {
         const { otp, email } = req.body;
         const Email = email.trim().toLowerCase();
 
-        console.log("Entered email:", Email);
         console.log("entered otp", otp);
 
 
@@ -200,28 +199,28 @@ const verifyOTP = async (req, res) => {
             businessAddress: tempData.businessAddress,
             businessLicense: tempData.businessLicense,
             taxId: tempData.taxId,
-            documents: tempData.documents,
+            documentUrl: tempData.documentUrl.businessLicense.url,
             isApproved: false,
             status: "pending"
         });
 
         await newVendor.save();
         console.log("New vendor created");
-
+        console.log("docs:", newVendor.documentUrl);
 
         // Delete temporary data
         await TempData.deleteOne({ email: Email });
 
         return res.status(200).json({
             success: true,
-            message: "Registration successful, Account is under verification."
+            message: "Registration successful, Account is under verification.Please wait till admin approval"
         });
 
     } catch (error) {
         console.error("Error verifying OTP:", error.message);
         return res.status(500).json({
             success: false,
-            message: "Error while verifying OTP. Please try again."
+            message: "Error while verifying, Please try again."
         });
     }
 };
@@ -372,6 +371,7 @@ const getDashboard = async (req, res) => {
             stats: {
                 totalCars,
                 activeBookings: 0, // Placeholder
+                completedTestDrives: 0, // Placeholder
                 totalEarnings: 0,  // Placeholder
                 avgRating: 0       // Placeholder
             }
@@ -464,8 +464,6 @@ const verifyForgotOTP = async (req, res) => {
             });
         }
 
-
-
         // Check if OTP exists and is not expired
         if (!vendor.resetOTP || !vendor.resetOTPExpiry) {
             return res.status(400).json({
@@ -491,9 +489,6 @@ const verifyForgotOTP = async (req, res) => {
                 message: "Invalid OTP",
             });
         }
-
-
-
 
         // Clear OTP fields after verification
         vendor.resetOTP = undefined;
@@ -615,8 +610,6 @@ const resetPassword = async (req, res) => {
             return res.render("resetPassword", { email: null, message: "No reset token provided", token: null });
         }
 
-
-
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -630,8 +623,6 @@ const resetPassword = async (req, res) => {
         if (!vendor) {
             return res.render("resetPassword", { email: null, message: "Vendor not found", token: null });
         }
-
-
 
         if (password !== confirmPassword) {
             return res.render("resetPassword", { email: decoded.email, message: "Passwords do not match", token });
@@ -822,6 +813,56 @@ const loadEarnings = async (req, res) => {
     }
 };
 
+//Load Notifications
+  const loadNotifications = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+        return res.render("../partials/vendor/layout", {
+            title: "Notifications",
+            page: "../Vendor/notifications",
+            activePage: "notifications",
+            vendor: vendor,
+            earnings: null
+        });
+    } catch (error) {
+        console.error("Error loading earnings:", error);
+        res.status(500).send("Server error");
+    }
+};
+
+//Load Settings
+  const loadSettings = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+        return res.render("../partials/vendor/layout", {
+            title: "Settings",
+            page: "../Vendor/settings",
+            activePage: "settings",
+            vendor: vendor,
+            earnings: null
+        });
+    } catch (error) {
+        console.error("Error loading earnings:", error);
+        res.status(500).send("Server error");
+    }
+};
+//Load Settings
+  const loadSupport = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+        return res.render("../partials/vendor/layout", {
+            title: "Support Center",
+            page: "../Vendor/support",
+            activePage: "support",
+            vendor: vendor,
+            earnings: null
+        });
+    } catch (error) {
+        console.error("Error loading earnings:", error);
+        res.status(500).send("Server error");
+    }
+};
+
 module.exports = {
     pageError,
     loadSignup,
@@ -841,5 +882,8 @@ module.exports = {
     updateProfile,
     logout,
     loadBookings,
-    loadEarnings
+    loadEarnings,
+    loadNotifications,
+    loadSettings,
+    loadSupport
 };

@@ -132,9 +132,9 @@
                                                 <%= vendor.taxId || 'N/A' %>
                                             </div>
 
-                                            <div class="label">Business License ID</div>
+                                            <div class="label">Business License No.</div>
                                             <div class="value">
-                                                <%= vendor.businessLicense || 'N/A' %>
+                                                <%= vendor.licenseNum || 'N/A' %>
                                             </div>
 
                                             <div class="label">Business Address</div>
@@ -155,7 +155,7 @@
                                         <button class="nav-link active" id="documents-tab" data-bs-toggle="tab"
                                             data-bs-target="#documents" type="button" role="tab">Documents</button>
                                     </li>
-                                    <!-- Placeholders for future features -->
+
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="cars-tab" data-bs-toggle="tab"
                                             data-bs-target="#cars" type="button" role="tab">Cars Listed</button>
@@ -176,21 +176,18 @@
                                     <div class="tab-pane fade show active" id="documents" role="tabpanel">
                                         <div class="row g-4">
                                             <% if (vendor.documentUrl) { %>
-                                                <% const getFileType=(url)=> {
-                                                    if (!url) return 'other';
-                                                    const ext = url.split('.').pop().toLowerCase();
-                                                    if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) return 'image';
-                                                    if (['pdf'].includes(ext)) return 'pdf';
-                                                    return 'other';
-                                                    }
-                                                    const fileType = getFileType(vendor.documentUrl);
-                                                    %>
+                                                <% const ext=vendor.documentUrl.split('.').pop().toLowerCase(); const
+                                                    isImage=['jpg','jpeg','png','webp'].includes(ext); const
+                                                    isPdf=ext==='pdf' ; %>
                                                     <div class="col-12">
-                                                        <div class="card border">
+                                                        <div class="card border shadow-sm">
+
+                                                            <!-- Card Header -->
                                                             <div
                                                                 class="card-header bg-light d-flex justify-content-between align-items-center">
                                                                 <h6 class="mb-0">
                                                                     <i class="fas fa-file-contract me-2"></i>Business
+                                                                    Licenese
                                                                     Document
                                                                 </h6>
                                                                 <a href="<%= vendor.documentUrl %>" target="_blank"
@@ -199,44 +196,56 @@
                                                                     File
                                                                 </a>
                                                             </div>
+
+                                                            <!-- Card Body -->
                                                             <div class="card-body text-center p-4">
-                                                                <% if (fileType==='image' ) { %>
+                                                                <% if (isImage ) { %>
                                                                     <img src="<%= vendor.documentUrl %>"
                                                                         class="img-fluid rounded mb-3"
                                                                         style="max-height: 400px; object-fit: contain;"
                                                                         alt="Business Document">
-                                                                    <% } else if (fileType==='pdf' ) { %>
+                                                                    <% } else if (isPdf ) { %>
                                                                         <div class="py-4">
                                                                             <i
                                                                                 class="fas fa-file-pdf text-danger fa-4x mb-3"></i>
-                                                                            <h5>PDF Document</h5>
-                                                                            <p class="text-muted">Click the button above
-                                                                                to view the full PDF</p>
+                                                                            <h6>PDF Document</h6>
+                                                                            <p class="text-muted mb-0">
+                                                                                Click <strong>Open File</strong> to view
+                                                                                the document
+                                                                            </p>
                                                                         </div>
                                                                         <% } else { %>
                                                                             <div class="py-4">
                                                                                 <i
                                                                                     class="fas fa-file-alt text-secondary fa-4x mb-3"></i>
                                                                                 <h5>Document File</h5>
-                                                                                <p class="text-muted">Click the button
-                                                                                    above to download/view the file</p>
+                                                                                <p class="text-muted mb-0">
+                                                                                    Click <strong>Open File</strong> to
+                                                                                    download or view
+                                                                                </p>
                                                                             </div>
                                                                             <% } %>
                                                             </div>
-                                                            <div class="card-footer bg-transparent">
-                                                                <div
-                                                                    class="d-flex justify-content-between text-muted align-items-center">
-                                                                    <small><i
-                                                                            class="fas fa-check-circle text-success me-1"></i>Verified
-                                                                        Upload</small>
-                                                                    <small>Uploaded on <%= new
-                                                                            Date(vendor.updatedAt).toLocaleDateString()
-                                                                            %></small>
-                                                                </div>
+
+                                                            <!-- Card Footer  -->
+                                                            <div
+                                                                class="card-footer bg-transparent d-flex justify-content-between text-muted">
+                                                                <small>
+                                                                    <i class="fas fa-clock me-1"></i>
+                                                                    Uploaded on <%= new
+                                                                        Date(vendor.updatedAt).toLocaleDateString() %>
+                                                                </small>
+
+                                                                <small class="text-warning">
+                                                                    <i class="fas fa-hourglass-half me-1"></i>
+                                                                    Pending Verification
+                                                                </small>
                                                             </div>
+
                                                         </div>
                                                     </div>
                                                     <% } else { %>
+                                                        <!-- No Documents Uploaded -->
                                                         <div class="col-12 text-center py-5">
                                                             <div class="bg-light rounded-circle d-inline-flex p-4 mb-3">
                                                                 <i class="fas fa-folder-open fa-3x text-muted"></i>
@@ -371,7 +380,7 @@
                                 headers: { 'Content-Type': 'application/json' }
                             };
 
-                            // Block/Unblock endpoints expect JSON body with 'id', others use params
+                            // Block/Unblock endpoints 
                             if (action === 'block' || action === 'unblock') {
                                 options.body = JSON.stringify({ id: vendorId });
                             }

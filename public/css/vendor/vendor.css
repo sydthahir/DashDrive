@@ -20,135 +20,205 @@
 /* ===== Sidebar ===== */
 .sidebar {
     width: 280px;
-    height: calc(100vh - 85px);
+    height: calc(100vh - 70px);
     position: fixed;
     left: 0;
-    top: 85px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    top: 70px;
+    background: var(--white);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     z-index: 999;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
-    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Sidebar Logo Section */
-.sidebar-logo-section {
+
+
+
+/* Sidebar Navigation */
+.sidebar-nav {
     padding: 1.5rem 1rem;
-    text-align: center;
-    border-bottom: 1px solid #e9ecef;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    margin-bottom: 1rem;
+    flex: 1;
 }
 
-.sidebar-logo-link {
-    display: inline-block;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+.nav-section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #111213;
+    margin: 1.5rem 0 0.75rem 1rem;
+    font-weight: 600;
 }
 
-.sidebar-logo-link:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+.nav-item {
+    margin-bottom: 0.5rem;
 }
 
-.sidebar-logo-img {
-    max-width: 180px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
-
-
-/* Sidebar button */
-.toggle-sidebar {
-    position: fixed;
-    top: 109px;
-    left: 18px;
-    z-index: 1200;
-    background: #fff;
-    border: none;
-    padding: 10px 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
-    cursor: pointer;
-    display: none;
-}
-
-.logout-btn {
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1.1rem;
-    padding: 1rem 1.5rem;
+.nav-link {
     display: flex;
     align-items: center;
     gap: 12px;
-    transition: all 0.2s;
+    padding: 0.85rem 1.25rem;
+    color: #343a40;
+    font-weight: 500;
     border-radius: 12px;
-    margin: 0.25rem 1rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 0.95rem;
 }
 
-.logout-btn:hover {
-    color: #bb2d3b;
-    background: rgba(220, 53, 69, 0.05);
+.nav-link i {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+    transition: all 0.2s ease;
+    color: #8bbd76;
+}
+
+.nav-link:hover {
+    color: #8bbd76;
+    background: rgba(255, 255, 255, 0.05);
     transform: translateX(4px);
 }
 
-.logout-btn i {
-    width: 24px;
-    text-align: center;
-    font-size: 1.2rem;
-    opacity: 0.85;
+.nav-link:hover i {
+    color: #8bbd76;
 }
+
+.nav-link.active {
+    color: #8bbd76;
+    background: linear-gradient(90deg, rgba(139, 189, 118, 0.2) 0%, rgba(139, 189, 118, 0.05) 100%);
+    font-weight: 600;
+    border-left: 3px solid #8bbd76;
+    border-radius: 8px 12px 12px 8px;
+    
+}
+
+.nav-link.active i {
+    color: #8bbd76;
+
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.logout-link {
+    color: #f02d2d !important;
+    border-radius: 12px;
+}
+
+.logout-link:hover {
+    background: rgba(252, 129, 129, 0.1);
+    color: #fc8181 !important;
+}
+
+.logout-link i {
+    color: #f02d2d;
+}
+
+/* Sidebar Header (Mobile) */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Badge styling */
+.nav-link .badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.6em;
+}
+
 
 /* ===== Mobile ===== */
 @media (max-width: 991px) {
     .sidebar {
         transform: translateX(-100%);
+        top: 70px;
+        height: calc(100vh - 70px);
+        z-index: 1050;
+        width: 280px;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .toggle-sidebar {
+        display: block !important;
     }
 
     .sidebar.show {
         transform: translateX(0);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
     }
 
-    .toggle-sidebar {
-        display: block;
-    }
-
-    body.sidebar-open::after {
-        content: "";
+    .sidebar-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, .5);
-        z-index: 998;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+        backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
     }
 
     .main-content {
         margin-left: 0 !important;
+        padding-top: 85px;
+      
     }
 }
 
 /* ===== Desktop ===== */
 @media (min-width: 992px) {
     .sidebar {
-        transform: translateX(0);
+        transform: translateX(0) !important;
         left: 0;
-        top: 85px;
-        /* Matches top navbar height */
+        top: 70px;
+        height: calc(100vh - 70px);
     }
 
-    /* WE DO NOT HIDE toggle-sidebar here because some layouts might still want it, 
-       but usually we hide it. Keeping specific rules consistent. */
     .toggle-sidebar {
-        display: none;
-    }
-
-    body.sidebar-open::after {
-        display: none;
+        display: none !important;
     }
 
     .main-content {
         margin-left: 280px;
         /* Match sidebar width */
     }
+
+    .sidebar-overlay {
+        display: none;
+    }
+}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #1a202c;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #718096;
 }

@@ -42,6 +42,9 @@ router.post("/reset-password", vendorController.resetPassword)
 
 router.get("/bookings", vendorAuth.requireAuth, vendorController.loadBookings)
 router.get("/earnings", vendorAuth.requireAuth, vendorController.loadEarnings)
+router.get("/notifications", vendorAuth.requireAuth, vendorController.loadNotifications)
+router.get("/settings", vendorAuth.requireAuth, vendorController.loadSettings)
+router.get("/support", vendorAuth.requireAuth, vendorController.loadSupport)
 
 //Car Management
 router.get("/cars/register-cars", vendorAuth.requireAuth, carController.loadCarForm)

@@ -2,7 +2,7 @@
  * Vendor Sidebar Toggle Functionality
  * Handles sidebar toggle on all screen sizes
  */
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Get all sidebar toggle buttons (there may be multiple)
     const toggleButtons = document.querySelectorAll(".toggle-sidebar");
     const sidebar = document.querySelector(".sidebar");
@@ -15,16 +15,22 @@ document.addEventListener("DOMContentLoaded", function() {
     function toggleSidebar() {
         sidebar.classList.toggle("show");
         sidebar.classList.toggle("active"); // Support both class names
-        
+
         if (sidebarOverlay) {
-            sidebarOverlay.classList.toggle("active");
+            sidebarOverlay.classList.toggle("show");
         }
-        
+
         document.body.classList.toggle("sidebar-open");
-        
+
         // Update icon on toggle buttons
         toggleButtons.forEach(btn => {
             const icon = btn.querySelector("i");
+            // Optional: You can keep the icon change if you want, but Standard admin behavior often keeps the hamburger.
+            // Admin example didn't change icon, so let's keep it simple or check admin behavior.
+            // Admin JS didn't have icon toggle logic in the snippet I saw.
+            // But let's leave it as is if it looks good, or remove if it causes confusion.
+            // If the sidebar slides under the navbar, the hamburger is still visible.
+            // changing it to X is fine.
             if (icon) {
                 if (sidebar.classList.contains("show") || sidebar.classList.contains("active")) {
                     icon.classList.remove("fa-bars");
@@ -41,13 +47,13 @@ document.addEventListener("DOMContentLoaded", function() {
     function closeSidebar() {
         sidebar.classList.remove("show");
         sidebar.classList.remove("active");
-        
+
         if (sidebarOverlay) {
-            sidebarOverlay.classList.remove("active");
+            sidebarOverlay.classList.remove("show");
         }
-        
+
         document.body.classList.remove("sidebar-open");
-        
+
         // Update icon on toggle buttons
         toggleButtons.forEach(btn => {
             const icon = btn.querySelector("i");
@@ -60,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Add click event to all toggle buttons
     toggleButtons.forEach(btn => {
-        btn.addEventListener("click", function(e) {
+        btn.addEventListener("click", function (e) {
             e.stopPropagation();
             toggleSidebar();
         });
@@ -68,17 +74,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Close sidebar when clicking overlay
     if (sidebarOverlay) {
-        sidebarOverlay.addEventListener("click", function() {
+        sidebarOverlay.addEventListener("click", function () {
             closeSidebar();
         });
     }
 
     // Close sidebar when clicking outside (on mobile)
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", function (event) {
         if (window.innerWidth <= 992) {
             const isClickInsideSidebar = sidebar && sidebar.contains(event.target);
             const isClickOnToggle = Array.from(toggleButtons).some(btn => btn.contains(event.target));
-            
+
             if (!isClickInsideSidebar && !isClickOnToggle) {
                 closeSidebar();
             }
@@ -87,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Close sidebar when clicking nav links (on mobile)
     navLinks.forEach(link => {
-        link.addEventListener("click", function() {
+        link.addEventListener("click", function () {
             if (window.innerWidth <= 992) {
                 closeSidebar();
             }
@@ -97,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Close sidebar when clicking logout button (on mobile)
     const logoutBtn = document.querySelector(".logout-btn");
     if (logoutBtn) {
-        logoutBtn.addEventListener("click", function() {
+        logoutBtn.addEventListener("click", function () {
             if (window.innerWidth <= 992) {
                 closeSidebar();
             }
@@ -105,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Close sidebar on window resize if going to desktop size
-    window.addEventListener("resize", function() {
+    window.addEventListener("resize", function () {
         if (window.innerWidth > 992) {
             closeSidebar();
         }

@@ -10,7 +10,7 @@ const tempVendorSchema = new Schema({
     businessAddress: String,
     businessLicense: String,
     taxId: String,
-    businessLicense: {
+    documentUrl: {
         businessLicense: {
             url: String,
             public_id: String

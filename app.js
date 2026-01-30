@@ -41,7 +41,8 @@ app.set("views", [
     path.join(__dirname, "views/partials")
 ])
 
-app.use(express.static("public"))
+app.use(express.static("public"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.set("view engine", "ejs")
 
 // Define routes

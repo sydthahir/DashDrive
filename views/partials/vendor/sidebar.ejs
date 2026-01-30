@@ -1,35 +1,59 @@
-<!-- Sidebar Toggle Button -->
-<button class="toggle-sidebar">
-    <i class="fas fa-bars"></i>
-</button>
+<!-- Sidebar Content -->
 
-<!-- Sidebar -->
-<div class="sidebar">
-
-    <ul class="nav-menu">
+<div class="sidebar-nav">
+    <ul class="nav flex-column">
         <li class="nav-item">
-            <a href="/vendor/" class="nav-link <%= activePage === 'dashboard' ? 'active' : '' %>">
-                <i class="fas fa-home"></i>
-                Dashboard
+            <a class="nav-link <%= activePage === 'dashboard' ? 'active' : '' %>" href="/vendor/">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
             </a>
         </li>
+
+        <li class="nav-section-label">Management</li>
+
         <li class="nav-item">
-            <a href="/vendor/cars" class="nav-link <%= activePage === 'cars' ? 'active' : '' %>">
+            <a class="nav-link <%= activePage === 'cars' ? 'active' : '' %>" href="/vendor/cars">
                 <i class="fas fa-car"></i>
-                My Cars
+                <span>Car Management</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="/vendor/bookings" class="nav-link <%= activePage === 'bookings' ? 'active' : '' %>">
+            <a class="nav-link <%= activePage === 'bookings' ? 'active' : '' %>" href="/vendor/bookings">
                 <i class="fas fa-calendar-check"></i>
-                Bookings
+                <span>Bookings</span>
+            </a>
+        </li>
+
+        <li class="nav-section-label">Finance & Updates</li>
+
+        <li class="nav-item">
+            <a class="nav-link <%= activePage === 'earnings' ? 'active' : '' %>" href="/vendor/earnings">
+                <i class="fas fa-wallet"></i>
+                <span>Earnings & Wallet</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="/vendor/earnings" class="nav-link <%= activePage === 'earnings' ? 'active' : '' %>">
-                <i class="fas fa-wallet"></i>
-                Earnings
+            <a class="nav-link <%= activePage === 'notifications' ? 'active' : '' %>" href="/vendor/notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+                <span class="badge bg-danger ms-auto rounded-pill">3</span>
+            </a>
+        </li>
+
+        <li class="nav-section-label">Help</li>
+
+        <li class="nav-item">
+            <a class="nav-link <%= activePage === 'support' ? 'active' : '' %>" href="/vendor/support">
+                <i class="fas fa-headset"></i>
+                <span>Support</span>
             </a>
         </li>
     </ul>
+</div>
+
+<div class="sidebar-footer">
+    <a href="/vendor/logout" class="nav-link logout-link">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+    </a>
 </div>

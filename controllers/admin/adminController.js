@@ -350,7 +350,7 @@ const loadVendors = async (req, res) => {
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit),
-        Vendor.countDocuments(searchFilter), // Total approved vendors matching search
+        Vendor.countDocuments(searchFilter), // Total approved vendors 
         Vendor.countDocuments({ status: "approved" }), // For stats card
         Vendor.countDocuments({ status: "approved", isBlocked: false }), // Active vendors
         Vendor.countDocuments({
@@ -388,13 +388,14 @@ const getPendingVendors = async (req, res) => {
     const pendingVendors = await Vendor.find({
       status: "pending",
     })
-      .select("fullName email phone createdAt")
+      .select("fullName email phone createdAt documentUrl")
       .sort({ createdAt: -1 })
-
+    
     res.render("pendingVendors", {
       pendingVendors,
       currentPage: "pendingVendors",
     })
+      console.log("Vendor document:", pendingVendors)
   } catch (error) {
     console.error("Error fetching pending vendors:", error)
     return res.redirect("/page-error")
