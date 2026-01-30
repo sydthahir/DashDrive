@@ -459,7 +459,7 @@ const getVendorDetails = async (req, res) => {
       return res.redirect("/page-error")
     }
 
-    // Ensure admin is authenticated (though middleware handles this)
+    // Ensure admin is authenticated 
     if (!req.user || !req.user.id) {
       return res.redirect("/admin/login")
     }
@@ -676,7 +676,7 @@ const editBrand = async (req, res) => {
         .json({ success: false, message: "Brand not found" })
     }
 
-    // Check for duplicate name if name is changed
+    // Check already exists
     if (name && name.toLowerCase() !== brand.name.toLowerCase()) {
       const existingBrand = await Brand.findOne({
         name: { $regex: new RegExp(`^${name}$`, "i") },

@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmPassword: document.getElementById("confirmPassword"),
         companyName: document.getElementById("companyName"),
         businessAddress: document.getElementById("businessAddress"),
-        businessLicense: document.getElementById("businessLicense"),
+        licenseNum: document.getElementById("licenseNum"),
         taxId: document.getElementById("taxId"),
-        documents: document.getElementById("documents"),
+        businessLicense: document.getElementById("businessLicense"),
         terms: document.getElementById("terms"),
         signupForm: document.getElementById("signupForm")
     };
@@ -26,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmPassword: document.getElementById("confirmPasswordError"),
         companyName: document.getElementById("companyNameError"),
         businessAddress: document.getElementById("businessAddressError"),
-        businessLicense: document.getElementById("businessLicenseError"),
+        licenseNum: document.getElementById("licenseNumError"),
         taxId: document.getElementById("taxIdError"),
-        documents: document.getElementById("documentsError"),
+        businesslicense: document.getElementById("businessLicenseError"),
         terms: document.getElementById("termsError")
     };
 
@@ -167,17 +167,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Licene Number Validation 
     function validateBusinessLicense() {
-        const value = formElements.businessLicense.value.trim();
+        const value = formElements.licenseNum.value.trim();
 
         if (!value) {
-            errorElements.businessLicense.style.display = "block";
+            errorElements.licenseNum.style.display = "block";
             return true;
         } else if (value.length < 5) {
-            errorElements.businessLicense.style.display = "block";
-            errorElements.businessLicense.textContent = "Please enter a valid Licence No.";
+            errorElements.licenseNum.style.display = "block";
+            errorElements.licenseNum.textContent = "Please enter a valid Licence No.";
             return false;
         }
-        errorElements.businessLicense.style.display = "none";
+        errorElements.licenseNum.style.display = "none";
         return true;
     }
 
@@ -209,14 +209,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
-    // Documents Validation
+    // Business License Validation
     function validateDocuments() {
-        if (!formElements.documents.files || formElements.documents.files.length === 0) {
-            errorElements.documents.style.display = "block";
-            errorElements.documents.textContent = "Please upload at least one business document";
+        if (!formElements.businessLicense.files || formElements.businessLicense.files.length === 0) {
+            errorElements.businesslicense.style.display = "block";
+            errorElements.businesslicense.textContent = "Please upload at least one business document";
             return false;
         }
-        errorElements.documents.style.display = "none";
+        errorElements.businesslicense.style.display = "none";
         return true;
     }
 
