@@ -742,6 +742,10 @@ const updateProfile = async (req, res) => {
         vendor.taxId = sanitizeInput(gstNumber);
         vendor.businessAddress = sanitizeInput(businessAddress);
 
+        if (req.file) {
+            vendor.profileImage = req.file.path;
+        }
+
 
         await vendor.save();
 
@@ -814,7 +818,7 @@ const loadEarnings = async (req, res) => {
 };
 
 //Load Notifications
-  const loadNotifications = async (req, res) => {
+const loadNotifications = async (req, res) => {
     try {
         const vendor = req.vendor;
         return res.render("../partials/vendor/layout", {
@@ -831,7 +835,7 @@ const loadEarnings = async (req, res) => {
 };
 
 //Load Settings
-  const loadSettings = async (req, res) => {
+const loadSettings = async (req, res) => {
     try {
         const vendor = req.vendor;
         return res.render("../partials/vendor/layout", {
@@ -847,7 +851,7 @@ const loadEarnings = async (req, res) => {
     }
 };
 //Load Settings
-  const loadSupport = async (req, res) => {
+const loadSupport = async (req, res) => {
     try {
         const vendor = req.vendor;
         return res.render("../partials/vendor/layout", {

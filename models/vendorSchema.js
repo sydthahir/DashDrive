@@ -69,7 +69,7 @@ const vendorSchema = new Schema({
     },
     isBlocked: {
         type: Boolean,
-        required:false
+        required: false
     },
 
     isApproved: {

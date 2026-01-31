@@ -12,6 +12,9 @@
     const cancelBtn = document.getElementById('cancelBtn');
     const profileForm = document.getElementById('profileForm');
     const profileFields = document.querySelectorAll('.profile-field');
+    const profileImageInput = document.getElementById('profileImage');
+    const profilePreview = document.querySelector('.profile-preview');
+    const imageUploadOverlay = document.querySelector('.image-upload-overlay');
 
     // Store original values for cancel functionality
     let originalValues = {};
@@ -38,6 +41,10 @@
             profileForm.addEventListener('submit', handleFormSubmit);
         }
 
+        if (profileImageInput) {
+            profileImageInput.addEventListener('change', handleImagePreview);
+        }
+
 
         // Real-time validation
         profileFields.forEach(field => {
@@ -57,6 +64,10 @@
                 originalValues[field.id] = field.value;
             }
         });
+
+        if (profilePreview) {
+            originalValues.profileImageSrc = profilePreview.src;
+        }
     }
 
     /**
@@ -75,6 +86,11 @@
         if (editBtn) editBtn.style.display = 'none';
         if (saveBtn) saveBtn.style.display = 'inline-flex';
         if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+
+        // Show image upload overlay
+        if (imageUploadOverlay) {
+            imageUploadOverlay.style.display = 'flex';
+        }
 
 
         const firstEditable = document.querySelector('.profile-field.editable');
@@ -104,6 +120,17 @@
         if (saveBtn) saveBtn.style.display = 'none';
         if (cancelBtn) cancelBtn.style.display = 'none';
 
+        // Hide image upload overlay
+        if (imageUploadOverlay) {
+            imageUploadOverlay.style.display = 'none';
+        }
+
+        // Reset image preview if it was changed
+        if (profileImageInput) profileImageInput.value = '';
+        if (profilePreview && originalValues.profileImageSrc) {
+            profilePreview.src = originalValues.profileImageSrc;
+        }
+
         // Clear all validation errors
         clearAllErrors();
     }
@@ -130,6 +157,18 @@
             profileImageInput.value = '';
             return;
         }
+
+        // Clear any errors
+        clearFieldError({ target: profileImageInput });
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            if (profilePreview) {
+                profilePreview.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
     }
 
     /**

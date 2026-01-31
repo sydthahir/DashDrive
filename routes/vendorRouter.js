@@ -3,9 +3,9 @@ const router = express.Router()
 const vendorController = require("../controllers/vendor/vendorController")
 const vendorAuth = require("../middlewares/vendorAuth")
 const carController = require("../controllers/vendor/carController")
-const {uploadCarImages} = require("../middlewares/upload");
-const {uploadVendorDocs}= require("../middlewares/upload")
-const {uploadProfileImages} = require("../middlewares/upload")
+const { uploadCarImages } = require("../middlewares/upload");
+const { uploadVendorDocs } = require("../middlewares/upload")
+const { uploadProfileImages } = require("../middlewares/upload")
 
 
 //Error Page
@@ -13,7 +13,7 @@ router.get("/page-error", vendorController.pageError)
 
 //Signup management
 router.get("/register", vendorAuth.checkAuth, vendorController.loadSignup)
-router.post("/register", uploadVendorDocs.single("businessLicense"),vendorController.registeration)
+router.post("/register", uploadVendorDocs.single("businessLicense"), vendorController.registeration)
 router.post("/verify-otp", vendorController.verifyOTP)
 router.post("/resend-otp", vendorController.resendOTP);
 
@@ -39,12 +39,21 @@ router.get("/reset-password", vendorController.loadResetPassword)
 router.post("/reset-password", vendorController.resetPassword)
 
 
-
+//Booking Management
 router.get("/bookings", vendorAuth.requireAuth, vendorController.loadBookings)
+
+//Earnings Management
 router.get("/earnings", vendorAuth.requireAuth, vendorController.loadEarnings)
+
+//Notifications 
 router.get("/notifications", vendorAuth.requireAuth, vendorController.loadNotifications)
+
+//Settings 
 router.get("/settings", vendorAuth.requireAuth, vendorController.loadSettings)
+
+//Support
 router.get("/support", vendorAuth.requireAuth, vendorController.loadSupport)
+
 
 //Car Management
 router.get("/cars/register-cars", vendorAuth.requireAuth, carController.loadCarForm)
