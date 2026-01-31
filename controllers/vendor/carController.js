@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const loadCarForm = async (req, res) => {
   try {
     const brands = await Brand.find({ isActive: true })
-    const Features = ["SportEdition", "Automatic Transmission", "Cruise Control", "Leather Seats"]
+    const Features = ["Sport Edition", "Automatic Transmission", "Cruise Control", "Leather Seats"]
 
     res.render("registerCar", {
       title: "Register New Car",
@@ -56,7 +56,6 @@ const registerCar = async (req, res) => {
       chargePerSlot,
       securityDeposit,
       availableDays,
-      images,
       description,
     } = req.body
     let featuresString = Array.isArray(features) ? features.join(",") : features

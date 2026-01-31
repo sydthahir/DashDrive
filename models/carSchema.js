@@ -68,7 +68,7 @@ const carSchema = new Schema(
     },
     securityDeposit: {
       type: Number,
-      required: false,
+      required: true,
     },
     availableDays: {
       type: [String],

@@ -33,6 +33,15 @@ const carStorage = new CloudinaryStorage({
     }
 
 })
+
+//Only Image Files type
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true)
+  } else {
+    cb(new Error("Only image files are allowed"), false)
+  }
+}
 //Profile Image Storage
 const profileStorage = new CloudinaryStorage({
     cloudinary,
@@ -52,6 +61,7 @@ const uploadVendorDocs = multer({
 //Upload middleware for logos
 const uploadBrandLogo = multer({
   storage: carStorage,
+  fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
@@ -59,12 +69,14 @@ const uploadBrandLogo = multer({
 // Upload middleware for cars
 const uploadCarImages = multer({
   storage: carStorage,
+  fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 //Upload middleware for profile
 const uploadProfileImages = multer({
   storage: profileStorage,
+  fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
