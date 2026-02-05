@@ -1,0 +1,353 @@
+<%- include("../partials/admin/header.ejs") %>
+    <style>
+        .car-image-container {
+            height: 400px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .car-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            border: 2px solid transparent;
+            border-radius: 4px;
+        }
+
+        .thumbnail.active {
+            opacity: 1;
+            border-color: #0d6efd;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #212529;
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #343a40;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <main role="main" class="col-12 px-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a href="/admin/dashboard"
+                                class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/admin/cars-management" class="text-decoration-none">Car
+                                Management</a></li>
+                        <li class="breadcrumb-item active">Car Details</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <!-- Left Main Section -->
+                    <div class="col-lg-8">
+                        <!-- Images Section -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-body p-4">
+                                <% if (car.images && car.images.length> 0) { %>
+                                    <div class="car-image-container mb-3">
+                                        <img src="<%= car.images[0] %>" id="mainImage" alt="<%= car.model %>">
+                                    </div>
+                                    <% if (car.images.length> 1) { %>
+                                        <div class="thumbnail-container">
+                                            <% car.images.forEach((image, index)=> { %>
+                                                <img src="<%= image %>"
+                                                    class="thumbnail <%= index === 0 ? 'active' : '' %>"
+                                                    onclick="changeImage(this.src, this)"
+                                                    alt="Car view <%= index + 1 %>">
+                                                <% }); %>
+                                        </div>
+                                        <% } %>
+                                            <% } else { %>
+                                                <div class="text-center py-5">
+                                                    <i class="fas fa-car fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">No images available</p>
+                                                </div>
+                                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Car Details -->
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div>
+                                        <h4 class="mb-1">
+                                            <%= car.brand ? car.brand.name : 'Unknown Brand' %>
+                                                <%= car.model %>
+                                        </h4>
+                                        <p class="text-muted mb-0">
+                                            <%= car.year %>
+                                        </p>
+                                    </div>
+                                    <span
+                                        class="badge rounded-pill <%= car.status === 'approved' ? 'bg-success' : (car.status === 'rejected' ? 'bg-danger' : 'bg-warning text-dark') %> fs-6 px-3 py-2">
+                                        <%= car.status.charAt(0).toUpperCase() + car.status.slice(1) %>
+                                    </span>
+                                </div>
+
+                                <h5 class="section-title">Vehicle Specifications</h5>
+                                <div class="row g-4 mb-4">
+                                    <div class="col-md-4">
+                                        <div class="info-label">Registration Number</div>
+                                        <div class="info-value">
+                                            <%= car.registrationNumber %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-label">Body Type</div>
+                                        <div class="info-value">
+                                            <%= car.carType %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-label">Fuel Type</div>
+                                        <div class="info-value">
+                                            <%= car.fuelType %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-label">Color</div>
+                                        <div class="info-value">
+                                            <%= car.color %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-label">Mileage</div>
+                                        <div class="info-value">
+                                            <%= car.mileage %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="info-label">Availability</div>
+                                        <div class="info-value text-capitalize">
+                                            <%= car.availability %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h5 class="section-title">Pricing & Terms</h5>
+                                <div class="row g-4 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="info-label">Charge Per Slot</div>
+                                        <div class="info-value text-primary fs-5">₹<%= car.chargePerSlot %>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-label">Security Deposit</div>
+                                        <div class="info-value">₹<%= car.securityDeposit %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% if (car.features) { %>
+                                    <h5 class="section-title">Features</h5>
+                                    <p class="text-muted">
+                                        <%= car.features %>
+                                    </p>
+                                    <% } %>
+
+                                        <% if (car.description) { %>
+                                            <h5 class="section-title mt-4">Description</h5>
+                                            <p class="text-muted">
+                                                <%= car.description %>
+                                            </p>
+                                            <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar -->
+                    <div class="col-lg-4">
+                        <!-- Vendor Info -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-4">Vendor Information</h5>
+                                <% if (car.vendorId) { %>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center me-3"
+                                            style="width: 50px; height: 50px; font-size: 1.25rem;">
+                                            <%= car.vendorId.fullName ? car.vendorId.fullName.charAt(0).toUpperCase()
+                                                : 'V' %>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <%= car.vendorId.fullName || 'N/A' %>
+                                            </h6>
+                                            <small class="text-muted">
+                                                <%= car.vendorId.companyName || 'N/A' %>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="info-list">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Email:</span>
+                                            <span>
+                                                <%= car.vendorId.email %>
+                                            </span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="text-muted">Phone:</span>
+                                            <span>
+                                                <%= car.vendorId.phone %>
+                                            </span>
+                                        </div>
+                                        <div class="d-grid">
+                                            <a href="/admin/vendors/details/<%= car.vendorId._id %>"
+                                                class="btn btn-outline-primary btn-sm">
+                                                View Vendor Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <% } else { %>
+                                        <p class="text-muted">Vendor information not available</p>
+                                        <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-4">Admin Actions</h5>
+                                <div class="d-grid gap-3">
+                                    <% if (car.status==='pending' ) { %>
+                                        <button class="btn btn-success action-btn" data-action="approve"
+                                            data-id="<%= car._id %>">
+                                            <i class="fas fa-check-circle me-2"></i>Approve Car
+                                        </button>
+                                        <button class="btn btn-danger action-btn" data-action="reject"
+                                            data-id="<%= car._id %>">
+                                            <i class="fas fa-times-circle me-2"></i>Reject Car
+                                        </button>
+                                        <% } else if (car.status==='approved' ) { %>
+                                            <div class="alert alert-success d-flex align-items-center" role="alert">
+                                                <i class="fas fa-check-circle me-2"></i>
+                                                <div>Car is currently approved</div>
+                                            </div>
+                                            <!-- Optional: Add block/suspend button if needed later -->
+                                            <% } else if (car.status==='rejected' ) { %>
+                                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                                    <i class="fas fa-times-circle me-2"></i>
+                                                    <div>Car has been rejected</div>
+                                                </div>
+                                                <% } %>
+                                                    <button class="btn btn-secondary" onclick="window.history.back()">
+                                                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function changeImage(src, element) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const actionButtons = document.querySelectorAll('.action-btn');
+
+            actionButtons.forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const action = btn.dataset.action;
+                    const carId = btn.dataset.id;
+
+                    let url, title, text, confirmBtnColor;
+
+                    switch (action) {
+                        case 'approve':
+                            url = `/admin/cars/approve/${carId}`;
+                            title = 'Approve Car?';
+                            text = 'This car will be listed for booking.';
+                            confirmBtnColor = '#198754';
+                            break;
+                        case 'reject':
+                            url = `/admin/cars/reject/${carId}`;
+                            title = 'Reject Car?';
+                            text = 'This car will not be listed.';
+                            confirmBtnColor = '#dc3545';
+                            break;
+                    }
+
+                    const result = await Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: confirmBtnColor,
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, proceed!'
+                    });
+
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            const data = await response.json();
+
+                            if (response.ok && data.success) {
+                                await Swal.fire('Success', data.message, 'success');
+                                window.location.reload();
+                            } else {
+                                throw new Error(data.message || 'Action failed');
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            Swal.fire('Error', error.message, 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <%- include("../partials/admin/footer.ejs") %>

@@ -1,0 +1,355 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-bottom p-4">
+                <h4 class="fw-bold mb-0 text-secondary">Edit Car - <%= car.model %>
+                </h4>
+                <p class="text-muted mb-0 small">Update your vehicle information</p>
+            </div>
+            <div class="card-body p-4">
+                <!-- Success/Error Messages -->
+                <% if (typeof query !=='undefined' && query.success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <%= query.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
+
+                        <% if (typeof query !=='undefined' && query.error) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <%= query.error %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <% } %>
+
+                                <form action="/vendor/cars/edit/<%= car._id %>" method="POST"
+                                    enctype="multipart/form-data" class="needs-validation" novalidate>
+                                    <!-- Basic Details -->
+                                    <div class="mb-5">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary rounded-pill"
+                                                style="width: 4px; height: 24px; margin-right: 12px;"></div>
+                                            <h5 class="fw-bold m-0">Basic Details</h5>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="brand">Brand</label>
+                                                <select name="brand" id="brand" required class="form-select">
+                                                    <option value="">Select Brand</option>
+                                                    <% brands.forEach(brand=> { %>
+                                                        <option value="<%= brand._id %>"
+                                                            <%=String(car.brand._id)===String(brand._id) ? 'selected'
+                                                            : '' %>>
+                                                            <%= brand.name %>
+                                                        </option>
+                                                        <% }); %>
+                                                </select>
+                                                <div class="invalid-feedback">Please select a brand.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="model">Model</label>
+                                                <input type="text" name="model" id="model" value="<%= car.model %>"
+                                                    required class="form-control" placeholder="e.g. M5, A-Class">
+                                                <div class="invalid-feedback">Please enter the car model.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="year">Year</label>
+                                                <input type="number" name="year" id="year" value="<%= car.year %>"
+                                                    min="2000" max="2025" required class="form-control"
+                                                    placeholder="Vehicle Year">
+                                                <div class="invalid-feedback">Please enter a valid year (2000-2025).
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="registrationNumber">Registration Number</label>
+                                                <input type="text" name="registrationNumber" id="registrationNumber"
+                                                    value="<%= car.registrationNumber %>" required class="form-control"
+                                                    placeholder="e.g. KL07AB1234">
+                                                <div class="invalid-feedback">Please enter the registration number.
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="color">Color</label>
+                                                <input type="text" name="color" id="color" value="<%= car.color %>"
+                                                    required class="form-control" placeholder="e.g. White, Black">
+                                                <div class="invalid-feedback">Please enter the car color.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted" for="mileage">Mileage
+                                                    (kmpl)</label>
+                                                <input type="number" name="mileage" id="mileage"
+                                                    value="<%= car.mileage %>" min="0" required class="form-control"
+                                                    placeholder="e.g. 15">
+                                                <div class="invalid-feedback">Please enter a valid mileage.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted" for="carType">Car
+                                                    Type / Body Style</label>
+                                                <select name="carType" id="carType" required class="form-select">
+                                                    <option value="">Select Car Type</option>
+                                                    <option value="Sedan" <%=car.carType==='Sedan' ? 'selected' : '' %>
+                                                        >Sedan</option>
+                                                    <option value="SUV" <%=car.carType==='SUV' ? 'selected' : '' %>>SUV
+                                                    </option>
+                                                    <option value="Hatchback" <%=car.carType==='Hatchback' ? 'selected'
+                                                        : '' %>>Hatchback</option>
+                                                    <option value="Coupe" <%=car.carType==='Coupe' ? 'selected' : '' %>
+                                                        >Coupe</option>
+                                                </select>
+                                                <div class="invalid-feedback">Please select a car type.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted" for="fuelType">Fuel
+                                                    Type</label>
+                                                <select name="fuelType" id="fuelType" required class="form-select">
+                                                    <option value="">Select Fuel Type</option>
+                                                    <option value="Petrol" <%=car.fuelType==='Petrol' ? 'selected' : ''
+                                                        %>>Petrol</option>
+                                                    <option value="Diesel" <%=car.fuelType==='Diesel' ? 'selected' : ''
+                                                        %>>Diesel</option>
+                                                    <option value="Electric" <%=car.fuelType==='Electric' ? 'selected'
+                                                        : '' %>>Electric</option>
+                                                    <option value="Hybrid" <%=car.fuelType==='Hybrid' ? 'selected' : ''
+                                                        %>>Hybrid</option>
+                                                </select>
+                                                <div class="invalid-feedback">Please select a fuel type.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Car Images -->
+                                    <div class="mb-5">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary rounded-pill"
+                                                style="width: 4px; height: 24px; margin-right: 12px;"></div>
+                                            <h5 class="fw-bold m-0">Car Images</h5>
+                                        </div>
+
+                                        <div class="bg-light p-4 rounded border border-dashed">
+                                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                                <label class="form-label fw-bold small text-muted m-0">Upload Images
+                                                    (Max 5)</label>
+                                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i> First
+                                                    image is the cover</small>
+                                            </div>
+
+                                            <div class="image-upload-grid">
+                                                <% for(let i=0; i<5; i++) { %>
+                                                    <% const existingImage=car.images && car.images[i] ? car.images[i] :
+                                                        null; %>
+                                                        <div class="image-upload-box <%= existingImage ? 'has-image' : '' %>"
+                                                            id="uploadBox<%= i %>">
+                                                            <input type="file" name="carImages" id="carImage<%= i %>"
+                                                                accept="image/*" class="car-image-input"
+                                                                data-index="<%= i %>"
+                                                                data-existing="<%= existingImage || '' %>">
+                                                            <!-- Hidden input to track existing images to keep -->
+                                                            <input type="hidden" name="existingImages"
+                                                                class="existing-image-input"
+                                                                value="<%= existingImage || '' %>">
+                                                            <div class="upload-placeholder">
+                                                                <i class="fas fa-cloud-upload-alt"></i>
+                                                                <span>
+                                                                    <%= i===0 ? 'Main Image' : 'Image ' + (i+1) %>
+                                                                </span>
+                                                                <small>Click to upload</small>
+                                                            </div>
+                                                            <img src="<%= existingImage || '' %>" alt="Preview"
+                                                                class="image-preview">
+                                                            <button type="button" class="remove-image-btn">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+                                            <div class="form-text text-muted mt-3">
+                                                Supported formats: JPG, PNG, AVIF, webp. Click the X button to remove
+                                                existing images. New images will be added (max 5 total).
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Features -->
+                                    <div class="mb-5">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary rounded-pill"
+                                                style="width: 4px; height: 24px; margin-right: 12px;"></div>
+                                            <h5 class="fw-bold m-0">Features</h5>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <% features.forEach(feature=> { %>
+                                                <% const isChecked=car.features &&
+                                                    car.features.split(',').includes(feature); %>
+                                                    <div class="col-6 col-md-3">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="<%= feature %>" name="features"
+                                                                value="<%= feature %>" <%=isChecked ? 'checked' : '' %>>
+                                                            <label class="form-check-label" for="<%= feature %>">
+                                                                <%= feature %>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <% }); %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Test Drive Details -->
+                                    <div class="mb-5">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary rounded-pill"
+                                                style="width: 4px; height: 24px; margin-right: 12px;"></div>
+                                            <h5 class="fw-bold m-0">Test Drive Details</h5>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="chargePerSlot">Test Drive Charge (Per Hour)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-white">₹</span>
+                                                    <input type="number" name="chargePerSlot" id="chargePerSlot"
+                                                        value="<%= car.chargePerSlot %>" min="0" step="0.01" required
+                                                        class="form-control">
+                                                    <div class="invalid-feedback">Please enter a valid charge.</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold small text-muted"
+                                                    for="securityDeposit">Security Deposit</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-white">₹</span>
+                                                    <input type="number" name="securityDeposit" id="securityDeposit"
+                                                        value="<%= car.securityDeposit %>" min="0" step="0.01" required
+                                                        class="form-control">
+                                                    <div class="invalid-feedback">Please enter a valid deposit.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Test Drive Availability -->
+                                    <div class="mb-5">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary rounded-pill"
+                                                style="width: 4px; height: 24px; margin-right: 12px;"></div>
+                                            <h5 class="fw-bold m-0">Availability</h5>
+                                        </div>
+
+                                        <div class="row g-4">
+                                            <div class="col-md-12">
+                                                <label class="form-label fw-bold small text-muted mb-2">Available
+                                                    Days</label>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    <% daysOfWeek.forEach(day=> { %>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                id="<%= day.toLowerCase() %>" name="availableDays"
+                                                                value="<%= day %>" <%=car.availableDays.includes(day)
+                                                                ? 'checked' : '' %>>
+                                                            <label class="form-check-label"
+                                                                for="<%= day.toLowerCase() %>">
+                                                                <%= day %>
+                                                            </label>
+                                                        </div>
+                                                        <% }); %>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Additional Notes -->
+                                    <div class="mb-5">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary rounded-pill"
+                                                style="width: 4px; height: 24px; margin-right: 12px;"></div>
+                                            <h5 class="fw-bold m-0">Additional Notes</h5>
+                                        </div>
+                                        <textarea name="description" id="description" class="form-control" rows="4"
+                                            placeholder="Any additional information about the car..."><%= car.description %></textarea>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <a href="/vendor/cars" class="btn btn-light border px-4">Cancel</a>
+                                        <button type="submit" class="btn btn-primary px-5">Update Car</button>
+                                    </div>
+                                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form Validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle file selection
+        const imageInputs = document.querySelectorAll('.car-image-input');
+
+        imageInputs.forEach(input => {
+            input.addEventListener('change', function (e) {
+                const file = this.files[0];
+                const box = this.closest('.image-upload-box');
+                const preview = box.querySelector('.image-preview');
+                const removeBtn = box.querySelector('.remove-image-btn');
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        box.classList.add('has-image');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Handle image removal
+        const removeButtons = document.querySelectorAll('.remove-image-btn');
+        removeButtons.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent triggering the file input
+
+                const box = this.closest('.image-upload-box');
+                const input = box.querySelector('.car-image-input');
+                const preview = box.querySelector('.image-preview');
+                const existingImageInput = box.querySelector('.existing-image-input');
+
+                input.value = '';
+                preview.src = '';
+                box.classList.remove('has-image');
+
+                // Clear the hidden input to mark this image for removal
+                if (existingImageInput) {
+                    existingImageInput.value = '';
+                }
+            });
+        });
+    });
+</script>

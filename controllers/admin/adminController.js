@@ -29,8 +29,8 @@ const pageError = (req, res) => {
 const loadLogin = (req, res) => {
   const error = req.query.error || null
 
-  if(req.cookies.admin_token){
- return res.redirect("/admin/")
+  if (req.cookies.admin_token) {
+    return res.redirect("/admin/")
   }
   res.render("admin-login", { message: error, error: error })
 }
@@ -88,7 +88,7 @@ const login = async (req, res) => {
   }
 }
 
-//loading of Dashboard
+//Loading of Dashboard
 const loadDashboard = async (req, res) => {
   try {
     const adminId = req.user.id
@@ -390,12 +390,12 @@ const getPendingVendors = async (req, res) => {
     })
       .select("fullName email phone createdAt documentUrl")
       .sort({ createdAt: -1 })
-    
+
     res.render("pendingVendors", {
       pendingVendors,
       currentPage: "pendingVendors",
     })
-      console.log("Vendor document:", pendingVendors)
+    console.log("Vendor document:", pendingVendors)
   } catch (error) {
     console.error("Error fetching pending vendors:", error)
     return res.redirect("/page-error")
@@ -744,7 +744,7 @@ const loadCarManagement = async (req, res) => {
     }
 
     const search = req.query.search || ""
-    const status = req.query.status || "pending"
+    const status = req.query.status || "approved"
     const page = parseInt(req.query.page) || 1
     const limit = 10
     const skip = (page - 1) * limit
@@ -754,7 +754,7 @@ const loadCarManagement = async (req, res) => {
       status: status,
     }
 
-    // If search query exists, search by model or registration number
+    // search
     if (search) {
       searchFilter.$or = [
         { model: { $regex: search, $options: "i" } },
@@ -823,11 +823,7 @@ const getCarDetails = async (req, res) => {
       return res.status(404).json({ success: false, message: "Car not found" })
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Car details retrieved successfully",
-      car,
-    })
+    res.render("carDetailsView", { car })
   } catch (error) {
     console.error("Error fetching car details:", error)
     return res.status(500).json({ success: false, message: "Server error" })
@@ -908,8 +904,8 @@ const rejectCar = async (req, res) => {
 
     const Car = require("../../models/carSchema")
     const car = await Car.findById(carId)
-    .populate("vendorId", "fullName email")
-    .populate("brand", "name")
+      .populate("vendorId", "fullName email")
+      .populate("brand", "name")
 
     if (!car) {
       return res.status(404).json({
@@ -928,7 +924,7 @@ const rejectCar = async (req, res) => {
     car.status = "rejected"
     await car.save()
 
-//Send rejection mail
+    //Send rejection mail
     await sendCarRejectionMail(
       car.vendorId.email,
       car.vendorId.fullName,

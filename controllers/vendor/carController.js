@@ -22,7 +22,7 @@ const loadCarForm = async (req, res) => {
         "Saturday",
         "Sunday",
       ],
-     
+
       activePage: "cars",
       vendor: req.vendor,
     })
@@ -99,7 +99,7 @@ const listCars = async (req, res) => {
   try {
     const vendorId = new mongoose.Types.ObjectId(req.vendor._id);
 
-    // Find cars belonging to this vendor that are not marked as deleted
+    // Find cars belonging to this vendor
     const cars = await car.find({
       vendorId: vendorId,
       isDeleted: { $ne: true }
@@ -236,10 +236,19 @@ const updateCar = async (req, res) => {
       description,
     };
 
-    // If new images are uploaded
-    if (req.files && req.files.length > 0) {
-      updateData.images = req.files.map((file) => file.path);
-    }
+    // Handle images - combine existing (not removed) with new uploads
+    const existingImagesToKeep = req.body.existingImages
+      ? (Array.isArray(req.body.existingImages)
+        ? req.body.existingImages.filter(img => img && img.trim() !== '')
+        : [req.body.existingImages].filter(img => img && img.trim() !== ''))
+      : [];
+
+    const newImages = req.files && req.files.length > 0
+      ? req.files.map((file) => file.path)
+      : [];
+
+    // Combine existing images (that weren't removed) with new uploads (max 5 total)
+    updateData.images = [...existingImagesToKeep, ...newImages].slice(0, 5);
 
     const updatedCar = await car.findOneAndUpdate(
       { _id: carId, vendorId: vendorId },

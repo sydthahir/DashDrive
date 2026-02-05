@@ -48,7 +48,7 @@ const vendorSchema = new Schema({
     },
     documentUrl: {
         type: String,
-        required: true
+        required: false
 
     },
     profileImage: {
