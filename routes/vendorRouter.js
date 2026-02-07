@@ -65,6 +65,9 @@ router.post("/cars/edit/:id", vendorAuth.requireAuth, uploadCarImages.array("car
 router.delete("/cars/delete/:id", vendorAuth.requireAuth, carController.deleteCar)
 
 
+//Slot management
+router.post("/cars/:carId/slots/init",vendorAuth.requireAuth,)
+
 
 router.use((req, res) => vendorController.pageError(req, res));
 

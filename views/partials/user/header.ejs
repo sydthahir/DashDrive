@@ -49,11 +49,10 @@
         const navLinks = document.querySelectorAll('.nav-link');
 
         navLinks.forEach(link => {
-            // Remove active class initially
+          
             link.classList.remove('active');
 
-            // Exact match or sub-path match (e.g. /cars matches /cars/123)
-            // But avoid Home matching everything if path is just /
+        
             if (link.getAttribute('href') === '/home' && (currentPath === '/home' || currentPath === '/')) {
                 link.classList.add('active');
             } else if (link.getAttribute('href') !== '/home' && currentPath.startsWith(link.getAttribute('href'))) {

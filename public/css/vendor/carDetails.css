@@ -1,0 +1,417 @@
+:root {
+    --primary-color: #8bbd76;
+    --primary-hover: #7aa865;
+    --text-dark: #333;
+    --text-medium: #4b5563;
+    --text-light: #666;
+    --white: #ffffff;
+    --bg-lighter: #fafbfc;
+    --danger: #dc3545;
+    --success: #28a745;
+    --border-light: #e5e7eb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Main Layout */
+.details-container {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* Car Info Card */
+.car-info-card {
+    background: var(--white);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 20px;
+}
+
+.car-main-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.car-details-body {
+    padding: 1.25rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.info-row:last-of-type {
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+/* Calendar Card */
+.calendar-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.warning-block {
+    background: #fff3cd;
+    color: #856404;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Compact Calendar */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-header h5 {
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+.calendar-header .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-light);
+    background: var(--white);
+    color: var(--text-medium);
+    transition: all 0.2s;
+}
+
+.calendar-header .btn:hover {
+    background: var(--bg-lighter);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    padding: 0.5rem 0;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--white);
+    position: relative;
+    padding: 0.25rem;
+}
+
+.calendar-day:hover:not(.disabled) {
+    border-color: var(--primary-color);
+    background: var(--bg-lighter);
+    transform: scale(1.05);
+}
+
+.calendar-day.selected {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white);
+}
+
+.calendar-day.disabled {
+    background: #f9fafb;
+    color: #d1d5db;
+    cursor: not-allowed;
+    border-color: transparent;
+}
+
+.day-number {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.slot-dot-container {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.slot-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--success);
+}
+
+.slot-dot.blocked {
+    background: var(--danger);
+}
+
+.slot-dot.booked {
+    background: #fbbf24;
+}
+
+/* Slot Management Panel */
+.slot-management-panel {
+    border-top: 2px solid var(--border-light);
+    padding-top: 1.25rem;
+}
+
+.slot-management-panel h6 {
+    font-size: 0.95rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Add Slot Form */
+#addSlotForm label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+#addSlotForm .form-control {
+    border: 1px solid var(--border-light);
+    font-size: 0.875rem;
+    padding: 0.5rem;
+}
+
+#addSlotForm .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.15rem rgba(139, 189, 118, 0.15);
+}
+
+#addSlotForm .btn-primary {
+    background: var(--primary-color);
+    border: none;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    transition: all 0.2s;
+}
+
+#addSlotForm .btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+#addSlotForm .btn-primary:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+/* Slot List */
+.slot-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.slot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    background: var(--white);
+    transition: all 0.2s;
+}
+
+.slot-item:hover {
+    border-color: var(--primary-color);
+    background: var(--bg-lighter);
+}
+
+.slot-time {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.slot-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.slot-status.available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.slot-status.blocked {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.slot-status.booked {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.btn-delete-slot,
+.btn-block-slot,
+.btn-unblock-slot {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.btn-delete-slot {
+    color: var(--danger);
+}
+
+.btn-delete-slot:hover {
+    background: #f8d7da;
+}
+
+.btn-block-slot {
+    color: #f59e0b;
+}
+
+.btn-block-slot:hover {
+    background: #fef3c7;
+}
+
+.btn-unblock-slot {
+    color: var(--success);
+}
+
+.btn-unblock-slot:hover {
+    background: #d4edda;
+}
+
+/* Scrollbar */
+.slot-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.slot-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.slot-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .details-container {
+        grid-template-columns: 1fr;
+    }
+
+    .car-info-card {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-card {
+        padding: 1rem;
+    }
+
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        border-radius: 4px;
+    }
+
+    .day-number {
+        font-size: 0.8rem;
+    }
+
+    .slot-dot {
+        width: 3px;
+        height: 3px;
+    }
+
+    #addSlotForm .col-4 {
+        width: 100%;
+    }
+
+    .slot-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .details-container {
+        gap: 1rem;
+    }
+
+    .calendar-day-header {
+        font-size: 0.7rem;
+    }
+
+    .day-number {
+        font-size: 0.75rem;
+    }
+
+    .slot-management-panel h6 {
+        font-size: 0.875rem;
+    }
+}

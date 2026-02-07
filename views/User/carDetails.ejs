@@ -31,15 +31,28 @@
     <%- include('../partials/user/header.ejs') %>
 
         <div class="container py-4">
+            <!-- Listings Grid -->
+
             <!-- Breadcrumb -->
-            <nav class="breadcrumb-nav">
-                <a href="/home">Home</a> &nbsp;/&nbsp;
-                <a href="/cars">Cars</a> &nbsp;/&nbsp;
-                <span>
-                    <%= car.brand.name %>
-                        <%= car.model %>
-                </span>
+            <nav aria-label="breadcrumb" class="premium-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <i class="fas fa-home-alt"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/cars">
+                            <span>Listings</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <span>Car Details</span>
+                    </li>
+                </ol>
             </nav>
+
 
             <main class="details-grid">
                 <!-- Left Column: Content -->
@@ -49,7 +62,6 @@
                     <section class="gallery-container">
                         <div class="main-image-wrapper">
                             <div class="overlay-badges">
-                                <span class="badge badge-success px-3 py-2 rounded-pill">VERIFIED</span>
                                 <% if(car.createdAt> new Date(Date.now() - 30*24*60*60*1000)) { %>
                                     <span class="badge badge-primary px-3 py-2 rounded-pill">NEW ARRIVAL</span>
                                     <% } %>
@@ -174,8 +186,7 @@
                                 <h5 style="font-weight: 700; margin-bottom: 1rem;">Amenities</h5>
                                 <div class="features-grid" style="grid-template-columns: 1fr;">
                                     <% const featuresList=car.features ? car.features.split(',').map(f=> f.trim()) :
-                                        ['Air Conditioning', 'Power Steering', 'Power Windows', 'ABS', 'Airbags'];
-                                        %>
+                                        ['Air Conditioning', 'Power Steering', 'Power Windows', 'ABS', 'Airbags']; %>
                                         <% featuresList.forEach(feature=> { %>
                                             <div class="feature-item">
                                                 <i class="fas fa-check-circle feature-check"></i>

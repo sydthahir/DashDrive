@@ -9,7 +9,7 @@ const requireAuth = async (req, res, next) => {
         if (!token) {
             console.log("no token  for login");
 
-            return res.redirect('/vendor/login?error=Please login to continue');
+            return res.redirect('/vendor/login?message=Please login to continue');
 
         }
 
@@ -26,7 +26,7 @@ const requireAuth = async (req, res, next) => {
             res.clearCookie('vendor_token');
             console.log("no vendor found");
 
-            return res.redirect('/vendor/login?error=Invalid session');
+            return res.redirect('/vendor/login?message=Invalid session');
         }
 
 

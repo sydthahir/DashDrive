@@ -8,13 +8,13 @@ const authenticateUser = async (req, res, next) => {
 
         if (!token) {
             console.log("No token found");
-            return res.redirect("/login");
+            return res.redirect("/login?message=Please login to access this page");
         }
 
         // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Check if token is expired
+        // Check token is expired
         if (Date.now() >= decoded.exp * 1000) {
             console.log("Token expired");
             res.clearCookie("user_token", {
@@ -23,10 +23,10 @@ const authenticateUser = async (req, res, next) => {
                 sameSite: "strict",
                 path: "/"
             });
-            return res.redirect("/login");
+            return res.redirect("/login?message=Please login to access this page");
         }
 
-        // Find user and check if exists
+        // Find user 
         const user = await User.findById(decoded.userId);
         if (!user) {
             console.log("User not found in database for ID:", decoded.userId);
@@ -39,7 +39,7 @@ const authenticateUser = async (req, res, next) => {
             return res.redirect("/login");
         }
 
-        // Check if user is blocked
+        // Check user is blocked
         if (user.isBlocked) {
             console.log("User is blocked");
             res.clearCookie("user_token", {

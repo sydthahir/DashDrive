@@ -33,6 +33,8 @@
     <!-- Navigation Bar -->
     <%- include('../partials/user/header.ejs') %>
 
+
+
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="container-fluid px-0">
@@ -138,8 +140,29 @@
         </form>
         </section>
 
-        <!-- Listings Grid -->
+
+
+      <!-- Listings Grid -->
         <main class="listing-grid-wrapper">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="premium-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/">
+                            <i class="fas fa-home-alt"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Listings
+                    </li>
+                </ol>
+            </nav>
+
+
+
+
+  
             <div class="results-meta">
                 <div class="result-count">
                     Showing <%= (cars && cars.length) || 0 %> Results
@@ -149,7 +172,7 @@
             <div class="car-grid">
                 <% if (cars && cars.length> 0) { %>
                     <% cars.forEach(car=> { %>
-                        
+
                         <article class="car-card">
                             <!-- Image Container-->
                             <div class="card-image-wrapper">
@@ -175,7 +198,7 @@
 
                                 <div class="card-rating">
                                     <i class="fas fa-star star-icon"></i>
-                                    <span>4.8</span> 
+                                    <span>4.8</span>
                                 </div>
 
                                 <div class="specs-grid">

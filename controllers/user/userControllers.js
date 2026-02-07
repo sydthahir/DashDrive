@@ -232,7 +232,7 @@ const resendOTP = async (req, res) => {
 //loading of Login page
 const loadLogin = (req, res) => {
   try {
-    const message = req.query.message || null
+    const message = req.query.message || ''
     if (req.cookies.user_token) {
       return res.redirect("/home")
     }

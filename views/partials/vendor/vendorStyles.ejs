@@ -1,37 +1,43 @@
 <link rel="stylesheet" href="/css/vendor/vendor.css">
 
 <!-- Page specific -->
-<% if (page==="../Vendor/carList" || page==="../Vendor/carDetails" ) { %>
-    <link rel="stylesheet" href="/css/vendor-carList.css">
+<% if (page==="../Vendor/carList" ) { %>
+    <link rel="stylesheet" href="/css/vendor/vendor-carList.css">
     <% } %>
 
-
-        <% if (page==="../Vendor/dashboardContent" ) { %>
-            <link rel="stylesheet" href="/css/vendor-dashboard.css">
+        <% if (page==="../Vendor/carDetails" ) { %>
+            <link rel="stylesheet" href="/css/vendor/carDetails.css">
             <% } %>
 
-                <% if (page==="../Vendor/profile" ) { %>
-                    <link rel="stylesheet" href="/css/vendor-profile.css">
+
+                <% if (page==="../Vendor/dashboardContent" ) { %>
+                    <link rel="stylesheet" href="/css/vendor-dashboard.css">
                     <% } %>
-                        <% if (page==="../Vendor/bookings" ) { %>
+
+                        <% if (page==="../Vendor/profile" ) { %>
                             <link rel="stylesheet" href="/css/vendor-profile.css">
                             <% } %>
-                                <% if (page==="../Vendor/earnings" ) { %>
+                                <% if (page==="../Vendor/bookings" ) { %>
                                     <link rel="stylesheet" href="/css/vendor-profile.css">
                                     <% } %>
+                                        <% if (page==="../Vendor/earnings" ) { %>
+                                            <link rel="stylesheet" href="/css/vendor-profile.css">
+                                            <% } %>
 
-                                       <% if (page==="../vendor/cars/register-cars" ) { %>
-                                    <link rel="stylesheet" href="/css/vendor/vendor-registerCar.css">
-                                    <% } %>
+                                                <% if (page==="../vendor/cars/register-cars" ) { %>
+                                                    <link rel="stylesheet" href="/css/vendor/vendor-registerCar.css">
+                                                    <% } %>
 
-                                      <% if (page==="../vendor/cars/edit" ) { %>
-                                    <link rel="stylesheet" href="/css/vendor/editCar.css">
-                                    <% } %>
-                                   
-                                       <% if (page==="../vendor/notifications" ) { %>
-                                    <link rel="stylesheet" href="/css/vendor/vendor-profile.css">
-                                    <% } %>
+                                                        <% if (page==="../vendor/cars/edit" ) { %>
+                                                            <link rel="stylesheet" href="/css/vendor/editCar.css">
+                                                            <% } %>
 
-                                        <% if (page==="../vendor/settings" ) { %>
-                                    <link rel="stylesheet" href="/css/vendor/vendor-profile.css">
-                                    <% } %>
+                                                                <% if (page==="../vendor/notifications" ) { %>
+                                                                    <link rel="stylesheet"
+                                                                        href="/css/vendor/vendor-profile.css">
+                                                                    <% } %>
+
+                                                                        <% if (page==="../vendor/settings" ) { %>
+                                                                            <link rel="stylesheet"
+                                                                                href="/css/vendor/vendor-profile.css">
+                                                                            <% } %>

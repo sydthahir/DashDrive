@@ -16,23 +16,13 @@ const slotSchema = new Schema({
         type: Date,
         required: true,
     },
-    startTime: {
-        type: String, // e.g., "10:00"
-        required: true,
-    },
-    endTime: {
-        type: String, // e.g., "11:00"
-        required: true,
-    },
-    isBooked: {
-        type: Boolean,
-        default: false,
-    },
+    startTime: String, // "10:00"
+    endTime: String,   // "12:00"
     status: {
         type: String,
         enum: ["available", "maintenance", "booked"],
-        default: "available",
-    },
+        default: "available"
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Slot", slotSchema);

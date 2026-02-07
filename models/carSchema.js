@@ -48,7 +48,7 @@ const carSchema = new Schema(
       required: false,
     },
     chargePerSlot: {
-      type: String,
+      type: Number,
       required: true,
     },
     description: {
@@ -69,10 +69,6 @@ const carSchema = new Schema(
     securityDeposit: {
       type: Number,
       required: true,
-    },
-    availableDays: {
-      type: [String],
-      required: false,
     },
 
     images: {

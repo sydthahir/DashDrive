@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="/css/modern-style.css">
     <link rel="stylesheet" href="/css/user/login.css">
 
-   
+
 </head>
 
 <body>
@@ -80,12 +80,13 @@
                                 Password?</a>
                         </div>
 
-                        <% if ( message) { %>
-                            <div class="alert alert-danger text-center"></div>
-                            <p style="color: red">
+                        <% if (message) { %>
+                            <div class="text-danger text-center mb-4 fw-semibold">
+                                <i class="fas fa-exclamation-circle me-1"></i>
                                 <%= message %>
-                            </p>
+                            </div>
                             <% } %>
+
 
                                 <button type="submit" class="btn btn-login mb-4">Login</button>
 
