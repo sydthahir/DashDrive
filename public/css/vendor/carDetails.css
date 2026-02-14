@@ -28,6 +28,33 @@ body {
     grid-template-columns: 350px 1fr;
     gap: 1.5rem;
     margin-top: 1rem;
+    height: calc(100vh - 140px);
+    overflow: hidden;
+}
+
+.details-container>aside {
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.details-container>main {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.details-container>main::-webkit-scrollbar {
+    width: 6px;
+}
+
+.details-container>main::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.details-container>main::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
 }
 
 /* Car Info Card */
@@ -357,6 +384,14 @@ body {
 @media (max-width: 992px) {
     .details-container {
         grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+    }
+
+    .details-container>aside,
+    .details-container>main {
+        height: auto;
+        overflow: visible;
     }
 
     .car-info-card {

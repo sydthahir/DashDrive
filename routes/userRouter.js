@@ -4,7 +4,9 @@ const jwt = require("jsonwebtoken")
 const env = require("dotenv").config()
 const router = express.Router()
 const userController = require("../controllers/user/userControllers")
-const {authenticateUser, guestOnly} = require("../middlewares/userAuth")
+const slotController = require("../controllers/vendor/slotController")
+// const bookingController = require("../controllers/user/bookingController")
+const { authenticateUser, guestOnly } = require("../middlewares/userAuth")
 const profileControllers = require("../controllers/user/profileControllers")
 const noCache = require("../middlewares/noCache")
 
@@ -23,7 +25,7 @@ router.post("/resend-otp", userController.resendOTP)
 
 
 //Login Management
-router.get("/login",  noCache, guestOnly,  userController.loadLogin)
+router.get("/login", noCache, guestOnly, userController.loadLogin)
 router.post("/login", userController.login)
 
 
@@ -32,8 +34,15 @@ router.post("/login", userController.login)
 router.get("/home", authenticateUser, userController.loadHomepage)
 
 router.get("/avail-soon", authenticateUser, userController.loadCarsPage)
+
+// Cars page 
 router.get("/cars", userController.loadListings)
 router.get("/cars/:id", userController.loadCarDetails)
+
+// Booking management 
+router.get("/cars/:carId/available-slots", slotController.getUserSlots);
+
+
 router.get("/services", userController.loadServices)
 router.get("/contact", userController.loadContact)
 router.get("/about", userController.loadAbout)
@@ -43,7 +52,7 @@ router.get("/logout", userController.logout)
 //Profile management
 router.get("/profile", authenticateUser, userController.profile)
 router.post("/profile/edit", authenticateUser, userController.editUserProfile)
-router.get("/forgot-password", noCache, guestOnly,profileControllers.loadForgotPassPage)
+router.get("/forgot-password", noCache, guestOnly, profileControllers.loadForgotPassPage)
 router.post("/forgot-email-valid", profileControllers.forgotEmailValid)
 router.post("/verify-passForgot-otp", profileControllers.verifyForgotPassOTP)
 router.get("/reset-password", profileControllers.loadResetPassPage)
@@ -52,8 +61,7 @@ router.post("/reset-password", profileControllers.postNewPassword)
 
 
 //Google auth routes
-
-router.get('/auth/google',guestOnly, passport.authenticate('google', { scope: ['profile', 'email'] }))
+router.get('/auth/google', guestOnly, passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 router.get('/auth/google/callback',
     passport.authenticate("google", { session: false, failureRedirect: '/login' }),

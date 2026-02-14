@@ -24,5 +24,10 @@ const slotSchema = new Schema({
         default: "available"
     }
 }, { timestamps: true });
+slotSchema.index(
+  { carId: 1, date: 1, startTime: 1, endTime: 1 },
+  { unique: true }
+);
+
 
 module.exports = mongoose.model("Slot", slotSchema);

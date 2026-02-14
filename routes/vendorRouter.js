@@ -6,7 +6,7 @@ const carController = require("../controllers/vendor/carController")
 const { uploadCarImages } = require("../middlewares/upload");
 const { uploadVendorDocs } = require("../middlewares/upload")
 const { uploadProfileImages } = require("../middlewares/upload")
-
+const addSlotController = require("../controllers/vendor/slotController")
 
 //Error Page
 router.get("/page-error", vendorController.pageError)
@@ -66,7 +66,11 @@ router.delete("/cars/delete/:id", vendorAuth.requireAuth, carController.deleteCa
 
 
 //Slot management
-router.post("/cars/:carId/slots/init",vendorAuth.requireAuth,)
+router.post("/cars/:carId/add-slot", vendorAuth.requireAuth, addSlotController.addSlot)
+router.get("/cars/:carId/slots", vendorAuth.requireAuth, addSlotController.getSlots);
+router.patch("/slots/:slotId/toggle", vendorAuth.requireAuth, addSlotController.toggleSlot);
+router.post("/cars/:carId/toggle-date", vendorAuth.requireAuth, addSlotController.toggleDateSlots);
+router.post("/slots/create-maintenance",vendorAuth.requireAuth,addSlotController.createMaintenanceSlot);
 
 
 router.use((req, res) => vendorController.pageError(req, res));

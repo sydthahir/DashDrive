@@ -53,6 +53,7 @@ const authenticateUser = async (req, res, next) => {
 
         // Attach user to request
         req.user = user;
+        req.userId = decoded.userId;
         next();
     } catch (error) {
         console.error("Auth error:", error);

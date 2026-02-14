@@ -63,7 +63,8 @@ const signup = async (req, res) => {
     }
 
     //Password hashing
-    const hashedPassword = await bcrypt.hash(password, 10)
+   const hashedPassword = await securePassword(password)
+
 
     const findUser = await User.findOne({ email })
     if (findUser) {
@@ -629,6 +630,7 @@ const loadListings = async (req, res) => {
         { brand: { $in: matchedBrandIds } }
       ]
     }
+
 
     // Determine sort order
     let sortOptions = { createdAt: -1 } // Default: Newest

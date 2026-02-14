@@ -34,24 +34,29 @@
             <!-- Listings Grid -->
 
             <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" class="premium-breadcrumb">
-                <ol class="breadcrumb">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb" style="background: transparent;">
                     <li class="breadcrumb-item">
                         <a href="/">
-                            <i class="fas fa-home-alt"></i>
-                            <span>Home</span>
+                            <i class="fas fa-home-alt"></i> Home
                         </a>
                     </li>
+
                     <li class="breadcrumb-item">
-                        <a href="/cars">
-                            <span>Listings</span>
-                        </a>
+                        <a href="/cars">Listings</a>
                     </li>
+
                     <li class="breadcrumb-item active" aria-current="page">
-                        <span>Car Details</span>
+                        <span>
+                            <%= car.brand?.name %>
+                                <%= car.model %>
+                        </span>
                     </li>
+
                 </ol>
             </nav>
+
+
 
 
             <main class="details-grid">
@@ -260,7 +265,7 @@
                         </div>
 
                         <form action="/bookings/new/<%= car._id %>" method="GET" class="booking-form">
-                            <!-- Changed to GET to pass data to booking page if needed, or POST if direct booking -->
+
                             <div class="form-group">
                                 <label>Select Date</label>
                                 <input type="date" name="date" class="booking-input" required
@@ -269,12 +274,10 @@
 
                             <div class="form-group">
                                 <label>Preferred Time</label>
-                                <select name="time" class="booking-input">
-                                    <option>09:00 AM</option>
-                                    <option>11:00 AM</option>
-                                    <option>02:00 PM</option>
-                                    <option>04:00 PM</option>
+                                <select name="time" id="timeSelect" class="booking-input" required>
+                                    <option value="">Select time</option>
                                 </select>
+
                             </div>
 
                             <button type="submit" class="btn-primary-lg">
@@ -335,6 +338,99 @@
                     thumb.classList.add('active');
                 }
             </script>
+
+
+            <script>
+                const dateInput = document.querySelector('input[name="date"]');
+                const timeSelect = document.getElementById("timeSelect");
+                const carId = "<%= car._id %>";
+
+                // Add ID to date input for better targeting
+                if (!dateInput.id) {
+                    dateInput.id = "dateInput";
+                }
+
+                dateInput.addEventListener("change", async function () {
+                    const selectedDate = this.value;
+
+                    console.log("Date selected:", selectedDate);
+
+                    if (!selectedDate) {
+                        timeSelect.innerHTML = '<option value="">Select time</option>';
+                        return;
+                    }
+
+                    // Show loading state
+                    timeSelect.innerHTML = '<option value="">Loading slots...</option>';
+                    timeSelect.disabled = true;
+
+                    try {
+                        console.log("Fetching slots for car:", carId, "date:", selectedDate);
+
+                        const res = await fetch(`/cars/${carId}/available-slots?date=${selectedDate}`);
+
+                        console.log("Response status:", res.status);
+
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+
+                        const slots = await res.json();
+                        console.log("Received slots:", slots);
+
+                        // Reset select
+                        timeSelect.innerHTML = '<option value="">Select time</option>';
+                        timeSelect.disabled = false;
+
+                        // Filter available slots
+                        const availableSlots = slots.filter(s => s.status === "available");
+
+                        console.log("Available slots:", availableSlots);
+
+                        if (availableSlots.length === 0) {
+                            timeSelect.innerHTML = '<option value="">No available slots for this date</option>';
+                            timeSelect.disabled = true;
+
+                            // Show user-friendly message
+                            alert('No available time slots for the selected date. Please choose another date.');
+                            return;
+                        }
+
+                        // Add available slots to dropdown
+                        availableSlots.forEach(slot => {
+                            const option = document.createElement("option");
+                            option.value = `${slot.startTime}-${slot.endTime}`;
+                            option.textContent = formatTime(slot.startTime) + " - " + formatTime(slot.endTime);
+                            timeSelect.appendChild(option);
+                        });
+
+                        console.log("Slots loaded successfully");
+
+                    } catch (err) {
+                        console.error("Error loading slots:", err);
+
+                        timeSelect.innerHTML = '<option value="">Error loading slots</option>';
+                        timeSelect.disabled = true;
+
+                        // Show user-friendly error message
+                        alert('Unable to load available time slots. Please try again or contact support.');
+                    }
+                });
+
+                function formatTime(time) {
+                    const [h, m] = time.split(":");
+                    const hour = parseInt(h);
+                    const ampm = hour >= 12 ? "PM" : "AM";
+                    const display = hour % 12 || 12;
+                    return `${display}:${m} ${ampm}`;
+                }
+
+                // Enable date input on page load
+                console.log("Car details page loaded. Car ID:", carId);
+                console.log("Date input element:", dateInput);
+                console.log("Time select element:", timeSelect);
+            </script>
+
 </body>
 
 </html>

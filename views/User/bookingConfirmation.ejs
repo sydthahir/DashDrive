@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed | DashDrive</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/user/booking-confirmation.css">
+</head>
+
+<body>
+    <%- include('../partials/user/header.ejs') %>
+
+        <div class="confirmation-page">
+            <div class="container">
+                <div class="confirmation-container">
+                    <!-- Success Animation -->
+                    <div class="success-animation">
+                        <div class="checkmark-circle">
+                            <div class="checkmark-background"></div>
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none" />
+                                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div class="success-message">
+                        <h1 class="success-title">Booking Confirmed!</h1>
+                        <p class="success-subtitle">
+                            Your test drive has been successfully scheduled. Get ready for an amazing experience!
+                        </p>
+                        <div class="booking-reference">
+                            <span class="reference-label">Booking Reference:</span>
+                            <span class="reference-code">
+                                <%= booking._id.toString().slice(-8).toUpperCase() %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Details Card -->
+                    <div class="booking-details-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-calendar-check"></i>
+                                Your Test Drive Details
+                            </h2>
+                        </div>
+
+                        <div class="card-body">
+                            <!-- Car Information -->
+                            <div class="info-section">
+                                <h3 class="section-title">Vehicle Information</h3>
+                                <div class="car-info-grid">
+                                    <div class="car-image-container">
+                                        <img src="<%= (booking.carId.images && booking.carId.images.length > 0) ? booking.carId.images[0] : 'https://via.placeholder.com/400x250' %>"
+                                            alt="<%= booking.carId.model %>" class="car-image">
+                                    </div>
+                                    <div class="car-details">
+                                        <h4 class="car-name">
+                                            <%= booking.carId.brand.name %>
+                                                <%= booking.carId.model %>
+                                        </h4>
+                                        <div class="car-specs">
+                                            <span class="spec-item">
+                                                <i class="fas fa-calendar"></i>
+                                                <%= booking.carId.year %>
+                                            </span>
+                                            <span class="spec-item">
+                                                <i class="fas fa-gas-pump"></i>
+                                                <%= booking.carId.fuelType %>
+                                            </span>
+                                            <span class="spec-item">
+                                                <i class="fas fa-cogs"></i>
+                                                <%= booking.carId.transmission || 'Automatic' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Schedule Information -->
+                            <div class="info-section">
+                                <h3 class="section-title">Schedule</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-calendar-day"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Date</span>
+                                            <span class="info-value">
+                                                <%= new Date(booking.bookingDate).toLocaleDateString('en-US', {
+                                                    weekday: 'long' , year: 'numeric' , month: 'long' , day: 'numeric'
+                                                    }) %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Time</span>
+                                            <span class="info-value">
+                                                <%= formatTime(booking.startTime) %> - <%= formatTime(booking.endTime)
+                                                        %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Contact & Location -->
+                            <div class="info-section">
+                                <h3 class="section-title">Contact & Location</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-phone"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Contact Number</span>
+                                            <span class="info-value">
+                                                <%= booking.contactNumber %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Pickup Location</span>
+                                            <span class="info-value">
+                                                <%= booking.pickupLocation %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <% if (booking.specialRequests) { %>
+                                <div class="section-divider"></div>
+                                <div class="info-section">
+                                    <h3 class="section-title">Special Requests</h3>
+                                    <p class="special-requests">
+                                        <%= booking.specialRequests %>
+                                    </p>
+                                </div>
+                                <% } %>
+
+                                    <div class="section-divider"></div>
+
+                                    <!-- Payment Information -->
+                                    <div class="info-section">
+                                        <h3 class="section-title">Payment Details</h3>
+                                        <div class="payment-summary">
+                                            <div class="payment-item">
+                                                <span class="payment-label">Test Drive Fee</span>
+                                                <span class="payment-value">₹<%= booking.amount %></span>
+                                            </div>
+                                            <div class="payment-item total">
+                                                <span class="payment-label">Total Amount</span>
+                                                <span class="payment-value">₹<%= booking.amount %></span>
+                                            </div>
+                                            <div class="payment-status <%= booking.paymentStatus %>">
+                                                <i class="fas fa-info-circle"></i>
+                                                Payment Status: <strong>
+                                                    <%= booking.paymentStatus.toUpperCase() %>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Information -->
+                    <div class="important-info">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>Important Information</h3>
+                            </div>
+                            <ul class="info-list">
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    Please arrive 10 minutes before your scheduled time
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    Bring a valid driver's license for verification
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    Free cancellation available up to 2 hours before the test drive
+                                </li>
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    A confirmation email has been sent to your registered email
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="/my-bookings" class="btn btn-outline">
+                            <i class="fas fa-list"></i>
+                            View My Bookings
+                        </a>
+                        <a href="/cars" class="btn btn-primary">
+                            <i class="fas fa-car"></i>
+                            Browse More Cars
+                        </a>
+                        <a href="/" class="btn btn-outline">
+                            <i class="fas fa-home"></i>
+                            Back to Home
+                        </a>
+                    </div>
+
+                    <!-- Download Booking -->
+                    <div class="download-section">
+                        <button class="btn-download" onclick="window.print()">
+                            <i class="fas fa-download"></i>
+                            Download Booking Confirmation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('../partials/user/footer.ejs') %>
+
+            <script>
+                // Confetti animation on page load
+                window.addEventListener('load', function () {
+                    createConfetti();
+                });
+
+                function createConfetti() {
+                    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c'];
+                    const confettiCount = 50;
+
+                    for (let i = 0; i < confettiCount; i++) {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.animationDelay = Math.random() * 3 + 's';
+                        confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                        document.body.appendChild(confetti);
+
+                        setTimeout(() => confetti.remove(), 5000);
+                    }
+                }
+            </script>
+</body>
+
+</html>
+
+<% function formatTime(time) { const [h, m]=time.split(":"); const hour=parseInt(h); const ampm=hour>= 12 ? "PM" : "AM";
+    const display = hour % 12 || 12;
+    return `${display}:${m} ${ampm}`;
+    }
+    %>

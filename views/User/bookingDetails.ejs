@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Test Drive | <%= car.brand.name %>
+            <%= car.model %>
+    </title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Book a test drive for <%= car.brand.name %> <%= car.model %>. Complete your booking details and confirm your preferred date and time.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/user/booking-details.css">
+</head>
+
+<body>
+    <%- include('../partials/user/header.ejs') %>
+
+        <div class="booking-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Almost There!</span>
+                    </div>
+                    <h1 class="hero-title">Complete Your Booking</h1>
+                    <p class="hero-subtitle">Just a few more details and you're all set for an amazing test drive
+                        experience</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container booking-container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/"><i class="fas fa-home-alt"></i> Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/cars">Listings</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/cars/<%= car._id %>">
+                            <%= car.brand?.name %>
+                                <%= car.model %>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <span>Booking Details</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <div class="booking-layout">
+                <!-- Left Side: Booking Form -->
+                <div class="booking-form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2 class="form-title">
+                                <i class="fas fa-clipboard-list"></i>
+                                Booking Information
+                            </h2>
+                            <p class="form-description">Please provide your details for the test drive</p>
+                        </div>
+
+                        <form id="bookingForm" action="/bookings/create" method="POST" class="booking-form">
+                            <input type="hidden" name="carId" value="<%= car._id %>">
+                            <input type="hidden" name="vendorId" value="<%= car.vendorId._id %>">
+                            <input type="hidden" name="date" value="<%= selectedDate %>">
+                            <input type="hidden" name="startTime" value="<%= startTime %>">
+                            <input type="hidden" name="endTime" value="<%= endTime %>">
+                            <input type="hidden" name="amount" value="<%= car.chargePerSlot %>">
+
+                            <!-- User Details Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-user-circle"></i>
+                                    Personal Details
+                                </h3>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="fullName" class="form-label">
+                                            Full Name <span class="required">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-icon">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <input type="text" class="form-control" id="fullName" name="fullName"
+                                                value="<%= user.name %>" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="email" class="form-label">
+                                            Email Address <span class="required">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-icon">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <input type="email" class="form-control" id="email" name="email"
+                                                value="<%= user.email %>" required readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="phone" class="form-label">
+                                            Phone Number <span class="required">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-icon">
+                                                <i class="fas fa-phone"></i>
+                                            </div>
+                                            <input type="tel" class="form-control" id="phone" name="phone"
+                                                pattern="[0-9]{10}" placeholder="10-digit mobile number" required>
+                                        </div>
+                                        <small class="form-text">We'll call you to confirm the booking</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="altPhone" class="form-label">
+                                            Alternate Number <span class="optional">(Optional)</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-icon">
+                                                <i class="fas fa-phone-alt"></i>
+                                            </div>
+                                            <input type="tel" class="form-control" id="altPhone" name="altPhone"
+                                                pattern="[0-9]{10}" placeholder="Optional">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pickup Details Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Pickup Location
+                                </h3>
+
+                                <div class="form-group">
+                                    <label for="pickupLocation" class="form-label">
+                                        Preferred Pickup Point <span class="required">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-icon">
+                                            <i class="fas fa-location-dot"></i>
+                                        </div>
+                                        <input type="text" class="form-control" id="pickupLocation"
+                                            name="pickupLocation"
+                                            value="<%= car.vendorId.address ? (car.vendorId.address.street + ', ' + car.vendorId.address.city) : '' %>"
+                                            required>
+                                    </div>
+                                    <small class="form-text">Default vendor location is pre-filled. You can modify if
+                                        needed.</small>
+                                </div>
+                            </div>
+
+                            <!-- Additional Requests Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-comment-dots"></i>
+                                    Additional Information
+                                </h3>
+
+                                <div class="form-group">
+                                    <label for="specialRequests" class="form-label">
+                                        Special Requests <span class="optional">(Optional)</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-icon">
+                                            <i class="fas fa-pen"></i>
+                                        </div>
+                                        <textarea class="form-control" id="specialRequests" name="specialRequests"
+                                            rows="4"
+                                            placeholder="Any special requirements or questions? (e.g., accessibility needs, specific features to test)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Terms & Conditions -->
+                            <div class="form-section">
+                                <div class="terms-box">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="termsCheck" required>
+                                        <label class="custom-control-label" for="termsCheck">
+                                            I agree to the <a href="#" class="terms-link">Terms & Conditions</a> and
+                                            <a href="#" class="terms-link">Cancellation Policy</a>
+                                        </label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox mt-2">
+                                        <input type="checkbox" class="custom-control-input" id="communicationCheck">
+                                        <label class="custom-control-label" for="communicationCheck">
+                                            I'd like to receive updates and offers via email/SMS
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" onclick="history.back()">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Go Back
+                                </button>
+                                <button type="submit" class="btn-primary" id="confirmBookingBtn">
+                                    <i class="fas fa-check-circle"></i>
+                                    Confirm Booking
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Side: Booking Summary -->
+                <div class="booking-summary-container">
+                    <div class="summary-card sticky-summary">
+                        <div class="summary-header">
+                            <h3 class="summary-title">
+                                <i class="fas fa-receipt"></i>
+                                Booking Summary
+                            </h3>
+                        </div>
+
+                        <!-- Car Details -->
+                        <div class="car-summary">
+                            <div class="car-image-wrapper">
+                                <img src="<%= (car.images && car.images.length > 0) ? car.images[0] : 'https://via.placeholder.com/400x250' %>"
+                                    alt="<%= car.model %>" class="car-image">
+                                <div class="image-overlay">
+                                    <span class="badge-verified">
+                                        <i class="fas fa-shield-check"></i> Verified
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="car-info">
+                                <h4 class="car-name">
+                                    <%= car.brand.name %>
+                                        <%= car.model %>
+                                </h4>
+                                <p class="car-year">
+                                    <%= car.year %> • <%= car.fuelType %> • <%= car.transmission || 'Automatic' %>
+                                </p>
+
+                                <div class="car-highlights">
+                                    <div class="highlight-item">
+                                        <i class="fas fa-star"></i>
+                                        <span>4.8 Rating</span>
+                                    </div>
+                                    <div class="highlight-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>
+                                            <%= car.mileage %>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Booking Details -->
+                        <div class="booking-details">
+                            <h4 class="details-title">Test Drive Details</h4>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <span>Date</span>
+                                </div>
+                                <div class="detail-value">
+                                    <%= new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'short' ,
+                                        year: 'numeric' , month: 'short' , day: 'numeric' }) %>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Time Slot</span>
+                                </div>
+                                <div class="detail-value">
+                                    <%= formatTime(startTime) %> - <%= formatTime(endTime) %>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <span>Duration</span>
+                                </div>
+                                <div class="detail-value">
+                                    <%= calculateDuration(startTime, endTime) %> hours
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-map-pin"></i>
+                                    <span>Location</span>
+                                </div>
+                                <div class="detail-value">
+                                    <%= car.vendorId.address ? car.vendorId.address.city : 'Vendor Location' %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown">
+                            <h4 class="details-title">Price Details</h4>
+
+                            <div class="price-item">
+                                <span class="price-label">Test Drive Fee</span>
+                                <span class="price-value">₹<%= car.chargePerSlot %></span>
+                            </div>
+
+                            <div class="price-item">
+                                <span class="price-label">Service Fee</span>
+                                <span class="price-value text-success">FREE</span>
+                            </div>
+
+                            <div class="price-item">
+                                <span class="price-label">Taxes & Charges</span>
+                                <span class="price-value">₹0</span>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="price-item total-price">
+                                <span class="price-label">Total Amount</span>
+                                <span class="price-value">₹<%= car.chargePerSlot %></span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Benefits -->
+                        <div class="booking-benefits">
+                            <h4 class="details-title">What's Included</h4>
+
+                            <div class="benefit-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Free cancellation up to 2 hours before</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Professional assistance during test drive</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Comprehensive vehicle demonstration</span>
+                            </div>
+                            <div class="benefit-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Fuel included for test drive</span>
+                            </div>
+                        </div>
+
+                        <!-- Trust Badges -->
+                        <div class="trust-badges">
+                            <div class="trust-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure Booking</span>
+                            </div>
+                            <div class="trust-badge">
+                                <i class="fas fa-headset"></i>
+                                <span>24/7 Support</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('../partials/user/footer.ejs') %>
+
+            <!-- Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+            <script>
+                // Enhanced Form Validation
+                const bookingForm = document.getElementById('bookingForm');
+                const fullNameInput = document.getElementById('fullName');
+                const emailInput = document.getElementById('email');
+                const phoneInput = document.getElementById('phone');
+                const altPhoneInput = document.getElementById('altPhone');
+                const pickupLocationInput = document.getElementById('pickupLocation');
+                const termsCheck = document.getElementById('termsCheck');
+                const submitBtn = document.getElementById('confirmBookingBtn');
+
+                // Validation functions
+                function showError(input, message) {
+                    const formGroup = input.closest('.form-group');
+                    let errorDiv = formGroup.querySelector('.error-message');
+
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message';
+                        formGroup.appendChild(errorDiv);
+                    }
+
+                    errorDiv.textContent = message;
+                    errorDiv.style.color = '#ef4444';
+                    errorDiv.style.fontSize = '13px';
+                    errorDiv.style.marginTop = '6px';
+                    input.style.borderColor = '#ef4444';
+                }
+
+                function clearError(input) {
+                    const formGroup = input.closest('.form-group');
+                    const errorDiv = formGroup.querySelector('.error-message');
+
+                    if (errorDiv) {
+                        errorDiv.remove();
+                    }
+
+                    input.style.borderColor = '';
+                }
+
+                function validateFullName() {
+                    const name = fullNameInput.value.trim();
+
+                    if (name === '') {
+                        showError(fullNameInput, 'Full name is required');
+                        return false;
+                    }
+
+                    if (name.length < 2) {
+                        showError(fullNameInput, 'Name must be at least 2 characters long');
+                        return false;
+                    }
+
+                    if (!/^[a-zA-Z\s]+$/.test(name)) {
+                        showError(fullNameInput, 'Name should only contain letters and spaces');
+                        return false;
+                    }
+
+                    clearError(fullNameInput);
+                    return true;
+                }
+
+                function validatePhone() {
+                    const phone = phoneInput.value.trim();
+
+                    if (phone === '') {
+                        showError(phoneInput, 'Phone number is required');
+                        return false;
+                    }
+
+                    if (!/^[0-9]{10}$/.test(phone)) {
+                        showError(phoneInput, 'Please enter a valid 10-digit phone number');
+                        return false;
+                    }
+
+                    clearError(phoneInput);
+                    return true;
+                }
+
+                function validateAltPhone() {
+                    const altPhone = altPhoneInput.value.trim();
+
+                    // Alt phone is optional
+                    if (altPhone === '') {
+                        clearError(altPhoneInput);
+                        return true;
+                    }
+
+                    if (!/^[0-9]{10}$/.test(altPhone)) {
+                        showError(altPhoneInput, 'Please enter a valid 10-digit phone number');
+                        return false;
+                    }
+
+                    // Check if alt phone is same as primary phone
+                    if (altPhone === phoneInput.value.trim()) {
+                        showError(altPhoneInput, 'Alternate number cannot be same as primary number');
+                        return false;
+                    }
+
+                    clearError(altPhoneInput);
+                    return true;
+                }
+
+                function validatePickupLocation() {
+                    const location = pickupLocationInput.value.trim();
+
+                    if (location === '') {
+                        showError(pickupLocationInput, 'Pickup location is required');
+                        return false;
+                    }
+
+                    if (location.length < 5) {
+                        showError(pickupLocationInput, 'Please enter a valid address');
+                        return false;
+                    }
+
+                    clearError(pickupLocationInput);
+                    return true;
+                }
+
+                function validateTerms() {
+                    if (!termsCheck.checked) {
+                        const formGroup = termsCheck.closest('.form-section');
+                        let errorDiv = formGroup.querySelector('.terms-error');
+
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'terms-error';
+                            errorDiv.style.color = '#ef4444';
+                            errorDiv.style.fontSize = '13px';
+                            errorDiv.style.marginTop = '10px';
+                            errorDiv.style.fontWeight = '600';
+                            formGroup.appendChild(errorDiv);
+                        }
+
+                        errorDiv.textContent = '✗ You must accept the Terms & Conditions to proceed';
+                        return false;
+                    }
+
+                    const errorDiv = document.querySelector('.terms-error');
+                    if (errorDiv) {
+                        errorDiv.remove();
+                    }
+
+                    return true;
+                }
+
+                // Real-time validation
+                fullNameInput.addEventListener('blur', validateFullName);
+                fullNameInput.addEventListener('input', function () {
+                    if (this.value.trim() !== '') {
+                        validateFullName();
+                    }
+                });
+
+                phoneInput.addEventListener('blur', validatePhone);
+                phoneInput.addEventListener('input', function (e) {
+                    // Only allow numbers and limit to 10 digits
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+
+                    if (this.value.trim() !== '') {
+                        validatePhone();
+                    }
+                });
+
+                altPhoneInput.addEventListener('blur', validateAltPhone);
+                altPhoneInput.addEventListener('input', function (e) {
+                    // Only allow numbers and limit to 10 digits
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+
+                    if (this.value.trim() !== '') {
+                        validateAltPhone();
+                    }
+                });
+
+                pickupLocationInput.addEventListener('blur', validatePickupLocation);
+                pickupLocationInput.addEventListener('input', function () {
+                    if (this.value.trim() !== '') {
+                        validatePickupLocation();
+                    }
+                });
+
+                termsCheck.addEventListener('change', validateTerms);
+
+                // Form submission
+                bookingForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Validate all fields
+                    const isNameValid = validateFullName();
+                    const isPhoneValid = validatePhone();
+                    const isAltPhoneValid = validateAltPhone();
+                    const isLocationValid = validatePickupLocation();
+                    const isTermsValid = validateTerms();
+
+                    // If all validations pass
+                    if (isNameValid && isPhoneValid && isAltPhoneValid && isLocationValid && isTermsValid) {
+                        // Show loading state
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                        submitBtn.disabled = true;
+                        submitBtn.style.opacity = '0.7';
+                        submitBtn.style.cursor = 'not-allowed';
+
+                        // Submit the form
+                        this.submit();
+                    } else {
+                        // Scroll to first error
+                        const firstError = document.querySelector('.error-message, .terms-error');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+
+                        // Show alert
+                        alert('Please fix all errors before submitting the form');
+                    }
+                });
+
+                // Smooth scroll to form errors on invalid
+                const inputs = document.querySelectorAll('.form-control');
+                inputs.forEach(input => {
+                    input.addEventListener('invalid', function (e) {
+                        e.preventDefault();
+                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        this.focus();
+                    });
+                });
+            </script>
+</body>
+
+</html>
+
+<% function formatTime(time) { const [h, m]=time.split(":"); const hour=parseInt(h); const ampm=hour>= 12 ? "PM" : "AM";
+    const display = hour % 12 || 12;
+    return `${display}:${m} ${ampm}`;
+    }
+
+    function calculateDuration(startTime, endTime) {
+    const [startH, startM] = startTime.split(":").map(Number);
+    const [endH, endM] = endTime.split(":").map(Number);
+    const duration = (endH * 60 + endM - (startH * 60 + startM)) / 60;
+    return duration.toFixed(1);
+    }
+    %>

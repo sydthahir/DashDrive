@@ -1,13 +1,16 @@
 /* Navbar Styles */
+
+
 .navbar {
     padding: 1.2rem 5%;
-
+    height: 90px;
     position: fixed;
     width: 100%;
     z-index: 1000;
     transition: all 0.3s ease;
     /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
 }
+
 
 .navbar.scrolled {
     background: rgba(255, 255, 255, 0.95);
