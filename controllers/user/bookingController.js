@@ -104,7 +104,7 @@ const createBooking = async (req, res) => {
             return res.redirect("/cars");
         }
 
-        
+
 
         //Create Booking
         const newBooking = await Booking.create({
@@ -176,8 +176,93 @@ const loadBookingConfirmation = async (req, res) => {
 }
 
 
+//View booking details
+const viewBooking = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.bookingId)
+            .populate("carId")
+            .populate("vendorId")
+            .populate({
+                path: "carId",
+                populate: {
+                    path: "brand",
+                    model: "Brand"
+                }
+            })
+            .populate("userId")
+
+        if (!booking) {
+            return res.redirect("/pageNotFound");
+        }
+
+        // Check if the booking belongs to the logged-in user
+        if (booking.userId._id.toString() !== req.user._id.toString()) {
+            return res.redirect("/pageNotFound");
+        }
+
+        res.render("bookingDetailsView", { booking });
+
+    } catch (error) {
+        console.error("View Booking Error:", error);
+        res.redirect("/pageNotFound");
+    }
+}
+
+// Cancel booking
+const cancelBooking = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const booking = await Booking.findById(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({ success: false, message: "Booking not found" });
+        }
+
+        // Check if user is authorized
+        if (booking.userId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Unauthorized" });
+        }
+
+        // Check if booking is already cancelled
+        if (booking.status === "cancelled") {
+            return res.status(400).json({ success: false, message: "Booking is already cancelled" });
+        }
+
+        // Cannot cancel if completed
+        if (booking.status === "completed") {
+            return res.status(400).json({ success: false, message: "Cannot cancel a completed booking" });
+        }
+
+        // Update booking status
+        booking.status = "cancelled";
+        await booking.save();
+
+        // Release the slot if applicable (optional, depending on business logic)
+        await Slot.findOneAndUpdate(
+            {
+                carId: booking.carId,
+                date: booking.bookingDate,
+                startTime: booking.startTime
+            },
+            {
+                $set: { status: "available" },
+                $unset: { vendorId: "" }
+            }
+        );
+
+        return res.json({ success: true, message: "Booking cancelled successfully" });
+
+    } catch (error) {
+        console.error("Cancel Booking Error:", error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+}
+
+
 module.exports = {
     loadBookingDetails,
     createBooking,
-    loadBookingConfirmation
+    loadBookingConfirmation,
+    viewBooking,
+    cancelBooking
 }

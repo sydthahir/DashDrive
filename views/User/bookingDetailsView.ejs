@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details | DashDrive</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/user/booking-confirmation.css">
+    <style>
+        .confirmation-page {
+            padding-top: 2rem;
+        }
+
+        .success-animation {
+            display: none;
+        }
+
+        .success-message {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .success-title {
+            color: #1a202c;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-subtitle {
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+
+        .booking-status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: capitalize;
+            margin-bottom: 1rem;
+        }
+
+        .status-confirmed {
+            background-color: #def7ec;
+            color: #03543f;
+        }
+
+        .status-pending,
+        .status-initiated {
+            background-color: #feecdc;
+            color: #9c4221;
+        }
+
+        .status-cancelled {
+            background-color: #fde8e8;
+            color: #9b1c1c;
+        }
+
+        .status-completed {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/user/header.ejs') %>
+
+        <div class="confirmation-page">
+            <div class="container">
+                <div class="confirmation-container">
+
+                    <!-- Header Section -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span class="booking-status-badge status-<%= booking.status %>">
+                                <i class="fas fa-circle mr-2" style="font-size: 0.5rem;"></i>
+                                <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+                            </span>
+                            <h1 class="success-title">Booking Details</h1>
+                            <p class="success-subtitle">
+                                Reference ID: <%= booking._id.toString().toUpperCase() %>
+                            </p>
+                        </div>
+                        <a href="/profile" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Profile
+                        </a>
+                    </div>
+
+                    <!-- Booking Details Card -->
+                    <div class="booking-details-card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-car"></i>
+                                Vehicle & Schedule
+                            </h2>
+                        </div>
+
+                        <div class="card-body">
+                            <!-- Car Information -->
+                            <div class="info-section">
+                                <h3 class="section-title">Vehicle Information</h3>
+                                <div class="car-info-grid">
+                                    <div class="car-image-container">
+                                        <img src="<%= (booking.carId && booking.carId.images && booking.carId.images.length > 0) ? booking.carId.images[0] : 'https://via.placeholder.com/400x250' %>"
+                                            alt="<%= (booking.carId && booking.carId.model) ? booking.carId.model : 'Car' %>"
+                                            class="car-image">
+                                    </div>
+                                    <div class="car-details">
+                                        <h4 class="car-name">
+                                            <%= (booking.carId && booking.carId.brand) ? booking.carId.brand.name : ''
+                                                %>
+                                                <%= (booking.carId && booking.carId.model) ? booking.carId.model
+                                                    : 'Unavailable' %>
+                                        </h4>
+                                        <div class="car-specs">
+                                            <span class="spec-item">
+                                                <i class="fas fa-calendar"></i>
+                                                <%= (booking.carId && booking.carId.year) ? booking.carId.year : 'N/A'
+                                                    %>
+                                            </span>
+                                            <span class="spec-item">
+                                                <i class="fas fa-gas-pump"></i>
+                                                <%= (booking.carId && booking.carId.fuelType) ? booking.carId.fuelType
+                                                    : 'N/A' %>
+                                            </span>
+                                            <span class="spec-item">
+                                                <i class="fas fa-cogs"></i>
+                                                <%= (booking.carId && booking.carId.transmission) ?
+                                                    booking.carId.transmission : 'Automatic' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Schedule Information -->
+                            <div class="info-section">
+                                <h3 class="section-title">Schedule</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-calendar-day"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Date</span>
+                                            <span class="info-value">
+                                                <%= new Date(booking.bookingDate).toLocaleDateString('en-US', {
+                                                    weekday: 'long' , year: 'numeric' , month: 'long' , day: 'numeric'
+                                                    }) %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Time</span>
+                                            <span class="info-value">
+                                                <%= booking.startTime %> - <%= booking.endTime %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Contact & Location -->
+                            <div class="info-section">
+                                <h3 class="section-title">Contact & Location</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-phone"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Contact Number</span>
+                                            <span class="info-value">
+                                                <%= booking.contactNumber %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <span class="info-label">Pickup Location</span>
+                                            <span class="info-value">
+                                                <%= booking.pickupLocation %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <% if (booking.specialRequests) { %>
+                                <div class="section-divider"></div>
+                                <div class="info-section">
+                                    <h3 class="section-title">Special Requests</h3>
+                                    <p class="special-requests">
+                                        <%= booking.specialRequests %>
+                                    </p>
+                                </div>
+                                <% } %>
+
+                                    <div class="section-divider"></div>
+
+                                    <!-- Payment Information -->
+                                    <div class="info-section">
+                                        <h3 class="section-title">Payment Details</h3>
+                                        <div class="payment-summary">
+                                            <div class="payment-item total">
+                                                <span class="payment-label">Total Amount</span>
+                                                <span class="payment-value">₹<%= booking.amount ?
+                                                        booking.amount.toFixed(2) : '0.00' %></span>
+                                            </div>
+                                            <div class="payment-status <%= booking.paymentStatus %>">
+                                                <i class="fas fa-info-circle"></i>
+                                                Payment Status: <strong>
+                                                    <%= booking.paymentStatus ? booking.paymentStatus.toUpperCase()
+                                                        : 'PENDING' %>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                        </div>
+                    </div>
+
+                    <!-- Cancel Button -->
+                    <% if (booking.status==='confirmed' || booking.status==='pending' || booking.status==='initiated' )
+                        { %>
+                        <div class="text-center mt-4 mb-4">
+                            <button class="btn btn-outline-danger" onclick="cancelBooking('<%= booking._id %>')">
+                                <i class="fas fa-times mr-2"></i>Cancel Booking
+                            </button>
+                        </div>
+                        <% } %>
+
+                            <!-- Download Booking -->
+                            <div class="download-section">
+                                <button class="btn-download" onclick="window.print()">
+                                    <i class="fas fa-download"></i>
+                                    Download Booking Details
+                                </button>
+                            </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('../partials/user/footer.ejs') %>
+
+            <script>
+                // Cancel booking function
+                function cancelBooking(bookingId) {
+                    if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                        fetch(`/booking/cancel/${bookingId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Booking cancelled successfully');
+                                    window.location.reload();
+                                } else {
+                                    alert('Failed to cancel booking: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred while cancelling the booking');
+                            });
+                    }
+                }
+            </script>
+</body>
+
+</html>

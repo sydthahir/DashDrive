@@ -44,8 +44,10 @@ router.get("/cars/:carId/available-slots", slotController.getUserSlots);
 
 //Booking management
 router.get("/bookings/new/:carId", authenticateUser, bookingController.loadBookingDetails);
-router.post("/booking/create",authenticateUser,bookingController.createBooking)
-router.get("/bookings/confirmation/:bookingId", authenticateUser,bookingController.loadBookingConfirmation)
+router.post("/booking/create", authenticateUser, bookingController.createBooking)
+router.get("/bookings/confirmation/:bookingId", authenticateUser, bookingController.loadBookingConfirmation)
+router.get("/booking/:bookingId", authenticateUser, bookingController.viewBooking)
+router.post("/booking/cancel/:bookingId", authenticateUser, bookingController.cancelBooking)
 
 router.get("/services", userController.loadServices)
 router.get("/contact", userController.loadContact)

@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile-Management</title>
-</head>
-
-<body>
+    <title>Profile - DashDrive</title>
 
     <!-- Google Fonts -->
     <link rel="stylesheet" href="/css/global-fonts.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,208 +22,300 @@
     <link rel="stylesheet" href="/css/modern-style.css">
     <link rel="stylesheet" href="/css/user/user-navbar.css">
     <link rel="stylesheet" href="/css/user/profile.css">
+</head>
 
+<body>
 
-
-    </head>
-
-    <body>
-
-        <!-- Navigation Bar -->
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <div class="container-fluid">
-                <a class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav align-items-center">
-                        <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/cars">Cars</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
-                        <li class="nav-item ms-3"><a href="/logout" class="btn btn-outline-danger px-4 py-2">Logout</a>
-</li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Edit Profile Modal -->
-        <div class="modal fade" id="editProfileModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Profile</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editProfileForm" action="/profile/edit" method="POST">
-                            <div class="mb-3">
-                                <label for="editName" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="editName" name="name"
-                                    value="<%= user.name %>" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editEmail" name="email"
-                                    value="<%= user.email %>" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editPhone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="editPhone" name="phone"
-                                    value="<%= user.phone %>" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editStreet" class="form-label">Street Address</label>
-                                <input type="text" class="form-control" id="editStreet" name="address[street]"
-                                    value="<%= user.address.street %>" required>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="editCity" class="form-label">City</label>
-                                    <input type="text" class="form-control" id="editCity" name="address[city]"
-                                        value="<%= user.address.city %>" required>
-                                </div>
-                                <div class="col">
-                                    <label for="editState" class="form-label">State</label>
-                                    <input type="text" class="form-control" id="editState" name="address[state]"
-                                        value="<%= user.address.state %>" required>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <label for="editPincode" class="form-label">Pincode</label>
-                                    <input type="text" class="form-control" id="editPincode" name="address[pincode]"
-                                        value="<%= user.address.pincode %>" required>
-                                </div>
-                                <div class="col">
-                                    <label for="editCountry" class="form-label">Country</label>
-                                    <input type="text" class="form-control" id="editCountry" name="address[country]"
-                                        value="<%= user.address.country %>" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary" id="saveProfileChanges">Save Changes</button>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="main-logo text-dark text-decoration-none">Dash<span>Drive</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/cars">Cars</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                    <li class="nav-item ms-3"><a href="/logout" class="btn btn-outline-danger px-4 py-2">Logout</a></li>
+                </ul>
             </div>
         </div>
+    </nav>
 
-        <!-- Profile Header -->
-        <div class="profile-header">
-            <div class="container text-center">
-                <div class="profile-img mx-auto">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h2 class="mb-1" id="userName">
-                    <%= user.name %>
-                </h2>
-                <p class="mb-0 opacity-75" id="userEmail">
-                    <%= user.email %>
-                </p>
+    <!-- Message Alert -->
+    <% if (typeof message !=='undefined' && message) { %>
+        <div class="container mt-3">
+            <div class="alert <%= message.includes('successfully') ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show"
+                role="alert">
+                <i
+                    class="fas <%= message.includes('successfully') ? 'fa-check-circle' : 'fa-exclamation-triangle' %> me-2"></i>
+                <%= message %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
+        <% } %>
 
-        <!-- Message Alert -->
-        <% if (typeof message !=='undefined' && message) { %>
-            <div class="container mt-3">
-                <div class="alert <%= message.includes('successfully') ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show"
-                    role="alert">
-                    <i
-                        class="fas <%= message.includes('successfully') ? 'fa-check-circle' : 'fa-exclamation-triangle' %> me-2"></i>
-                    <%= message %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
-            <% } %>
+            <!-- Profile Container -->
+            <div class="profile-container">
+                <div class="container py-5">
 
-                <div class="container py-4">
-                    <div class="row">
-                        <!-- Wallet Section -->
-                        <div class="col-md-4 mb-4">
-                            <div class="wallet-card shadow">
-                                <h5 class="mb-3">My Wallet</h5>
-                                <div class="wallet-balance mb-3" id="walletBalance">₹<%= wallet.balance.toFixed(2) %>
+                    <!-- Profile Header Card -->
+                    <div class="profile-header-card">
+                        <div class="profile-avatar">
+                            <div class="avatar-circle">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="avatar-status"></div>
+                        </div>
+                        <h1 class="profile-name">
+                            <%= user.name %>
+                        </h1>
+                        <p class="profile-email">
+                            <%= user.email %>
+                        </p>
+                        <div class="profile-meta">
+                            <span class="meta-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                Member since <%= user.memberSince %>
+                            </span>
+                            <span class="meta-divider">•</span>
+                            <span class="meta-item">
+                                <i class="fas fa-car"></i>
+                                <%= totalBookings %> Bookings
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Main Content Grid -->
+                    <div class="profile-grid">
+
+                        <!-- Left Column -->
+                        <div class="profile-sidebar">
+
+                            <!-- Wallet Card -->
+                            <div class="wallet-card-modern">
+                                <div class="wallet-header">
+                                    <div class="wallet-icon">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <h3>Wallet Balance</h3>
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-light" data-bs-toggle="modal"
+                                <div class="wallet-amount">₹<%= wallet.balance.toFixed(2) %>
+                                </div>
+                                <div class="wallet-actions">
+                                    <button class="wallet-btn primary" data-bs-toggle="modal"
                                         data-bs-target="#addFundsModal">
-                                        <i class="fas fa-plus me-2"></i>Add Funds
+                                        <i class="fas fa-plus"></i>
+                                        Add Funds
                                     </button>
-                                    <a href="#" class="btn btn-light">
-                                        <i class="fas fa-wallet me-2"></i>Manage Wallet
-                                    </a>
+                                    <button class="wallet-btn secondary">
+                                        <i class="fas fa-history"></i>
+                                        History
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Profile Information Card -->
-                            <div class="card shadow-sm">
-                                <div
-                                    class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">Profile Information</h5>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#editProfileModal">
-                                        <i class="fas fa-edit me-1"></i>Edit Profile
-                                    </button>
+                            <!-- Quick Stats -->
+                            <div class="stats-card">
+                                <h3 class="stats-title">Quick Stats</h3>
+                                <div class="stat-item">
+                                    <div class="stat-icon blue">
+                                        <i class="fas fa-car-side"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Total Bookings</span>
+                                        <span class="stat-value">
+                                            <%= totalBookings %>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="text-muted small">Phone Number</label>
-                                        <div id="userPhone">
-                                            <%= user.phone %>
-                                        </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon green">
+                                        <i class="fas fa-check-circle"></i>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="text-muted small">Address</label>
-                                        <div id="userAddress">
-                                            <div>
-                                                <%= user.address.street %>
-                                            </div>
-                                            <div>
-                                                <%= user.address.city %>, <%= user.address.state %>, <%=
-                                                            user.address.pincode %>
-                                            </div>
-                                            <div>
-                                                <%= user.address.country %>
-                                            </div>
-                                        </div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Completed</span>
+                                        <span class="stat-value">0</span>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="text-muted small">Member Since</label>
-                                        <div id="memberSince">
-                                            <%= user.memberSince %>
-                                        </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon orange">
+                                        <i class="fas fa-clock"></i>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <label class="text-muted small">Total Bookings</label>
-                                            <div id="totalBookings">
-                                                <%= totalBookings %>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#bookingsModal">
-                                            <i class="fas fa-car me-1"></i>View Bookings
-                                        </button>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Pending</span>
+                                        <span class="stat-value">0</span>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
-                        <!-- Transaction History -->
-                        <div class="col-md-8">
-                            <div class="card shadow-sm">
-                                <div
-                                    class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">Transaction History</h5>
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
-                                            id="filterDropdown" data-bs-toggle="dropdown">
+                        <!-- Right Column -->
+                        <div class="profile-main">
+
+                            <!-- Profile Information -->
+                            <div class="info-card">
+                                <div class="card-header-modern">
+                                    <h3>Profile Information</h3>
+                                    <button class="btn-edit" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                        <i class="fas fa-edit"></i>
+                                        Edit Profile
+                                    </button>
+                                </div>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label class="info-label">
+                                            <i class="fas fa-user"></i>
+                                            Full Name
+                                        </label>
+                                        <p class="info-value">
+                                            <%= user.name %>
+                                        </p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label class="info-label">
+                                            <i class="fas fa-envelope"></i>
+                                            Email Address
+                                        </label>
+                                        <p class="info-value">
+                                            <%= user.email %>
+                                        </p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label class="info-label">
+                                            <i class="fas fa-phone"></i>
+                                            Phone Number
+                                        </label>
+                                        <p class="info-value">
+                                            <%= user.phone %>
+                                        </p>
+                                    </div>
+                                    <div class="info-item full-width">
+                                        <label class="info-label">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            Address
+                                        </label>
+                                        <p class="info-value">
+                                            <%= user.address.street %><br>
+                                                <%= user.address.city %>, <%= user.address.state %>
+                                                        <%= user.address.pincode %><br>
+                                                            <%= user.address.country %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- My Bookings -->
+                            <div class="bookings-card">
+                                <div class="card-header-modern">
+                                    <h3>Recent Bookings</h3>
+                                    <% if (bookings.length> 3) { %>
+                                        <button class="btn-view-all" data-bs-toggle="modal"
+                                            data-bs-target="#bookingsModal">
+                                            View All
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                        <% } %>
+                                </div>
+                                <% if (bookings.length===0) { %>
+                                    <div class="bookings-empty">
+                                        <i class="fas fa-car"></i>
+                                        <p>No bookings yet</p>
+                                        <a href="/cars" class="btn-primary-custom">Browse Cars</a>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="bookings-list-profile">
+                                            <% bookings.slice(0, 3).forEach(booking=> { %>
+                                                <div class="booking-card-profile">
+                                                    <div class="booking-image">
+                                                        <% if (booking.carId && booking.carId.images &&
+                                                            booking.carId.images.length> 0) { %>
+                                                            <img src="<%= booking.carId.images[0] %>"
+                                                                alt="<%= booking.carId.model %>">
+                                                            <% } else { %>
+                                                                <div class="no-image">
+                                                                    <i class="fas fa-car"></i>
+                                                                </div>
+                                                                <% } %>
+                                                                    <span class="booking-status <%= booking.status %>">
+                                                                        <%= booking.status.charAt(0).toUpperCase() +
+                                                                            booking.status.slice(1) %>
+                                                                    </span>
+                                                    </div>
+                                                    <div class="booking-details-profile">
+                                                        <h4 class="booking-car-name">
+                                                            <% if (booking.carId && booking.carId.brand) { %>
+                                                                <%= booking.carId.brand.name %>
+                                                                    <%= booking.carId.model %>
+                                                                        <% } else { %>
+                                                                            Car Details Unavailable
+                                                                            <% } %>
+                                                        </h4>
+                                                        <div class="booking-info-grid">
+                                                            <div class="booking-info-item">
+                                                                <i class="fas fa-calendar"></i>
+                                                                <span>
+                                                                    <%= new
+                                                                        Date(booking.bookingDate).toLocaleDateString('en-US',
+                                                                        { month: 'short' , day: 'numeric' ,
+                                                                        year: 'numeric' }) %>
+                                                                </span>
+                                                            </div>
+                                                            <div class="booking-info-item">
+                                                                <i class="fas fa-clock"></i>
+                                                                <span>
+                                                                    <%= booking.startTime %> - <%= booking.endTime %>
+                                                                </span>
+                                                            </div>
+                                                            <div class="booking-info-item">
+                                                                <i class="fas fa-map-marker-alt"></i>
+                                                                <span>
+                                                                    <%= booking.pickupLocation %>
+                                                                </span>
+                                                            </div>
+                                                            <div class="booking-info-item">
+                                                                <i class="fas fa-rupee-sign"></i>
+                                                                <span>₹<%= booking.amount ? booking.amount.toFixed(2)
+                                                                        : '0.00' %></span>
+                                                            </div>
+                                                        </div>
+                                                        <% if (booking.status==='confirmed' ||
+                                                            booking.status==='initiated' ) { %>
+                                                            <div class="booking-actions">
+                                                                <button class="btn-action view"
+                                                                    onclick="viewBookingDetails('<%= booking._id %>')">
+                                                                    <i class="fas fa-eye"></i>
+                                                                    View Details
+                                                                </button>
+                                                                <% if (booking.status==='confirmed' ) { %>
+                                                                    <button class="btn-action cancel"
+                                                                        onclick="cancelBooking('<%= booking._id %>')">
+                                                                        <i class="fas fa-times"></i>
+                                                                        Cancel
+                                                                    </button>
+                                                                    <% } %>
+                                                            </div>
+                                                            <% } %>
+                                                    </div>
+                                                </div>
+                                                <% }) %>
+                                        </div>
+                                        <% } %>
+                            </div>
+
+                            <!-- Transaction History -->
+                            <div class="transactions-card">
+                                <div class="card-header-modern">
+                                    <h3>Transaction History</h3>
+                                    <div class="filter-dropdown">
+                                        <button class="btn-filter dropdown-toggle" type="button" id="filterDropdown"
+                                            data-bs-toggle="dropdown">
+                                            <i class="fas fa-filter"></i>
                                             Filter
                                         </button>
                                         <ul class="dropdown-menu">
@@ -236,116 +328,331 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <div id="transactionList">
-                                        <% if (transactions.length===0) { %>
-                                            <p>No transactions available.</p>
-                                            <% } else { %>
+                                <div class="transactions-list">
+                                    <% if (transactions.length===0) { %>
+                                        <div class="transactions-empty">
+                                            <i class="fas fa-receipt"></i>
+                                            <p>No transactions yet</p>
+                                        </div>
+                                        <% } else { %>
+                                            <!-- Transaction items will be rendered here -->
+                                            <% } %>
+                                </div>
+                            </div>
 
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Modal -->
+            <div class="modal fade" id="editProfileModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modern-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Profile</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProfileForm" action="/profile/edit" method="POST">
+                                <div class="mb-3">
+                                    <label for="editName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control modern-input" id="editName" name="name"
+                                        value="<%= user.name %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control modern-input" id="editEmail" name="email"
+                                        value="<%= user.email %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editPhone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control modern-input" id="editPhone" name="phone"
+                                        value="<%= user.phone %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editStreet" class="form-label">Street Address</label>
+                                    <input type="text" class="form-control modern-input" id="editStreet"
+                                        name="address[street]" value="<%= user.address.street %>" required>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="editCity" class="form-label">City</label>
+                                        <input type="text" class="form-control modern-input" id="editCity"
+                                            name="address[city]" value="<%= user.address.city %>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="editState" class="form-label">State</label>
+                                        <input type="text" class="form-control modern-input" id="editState"
+                                            name="address[state]" value="<%= user.address.state %>" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="editPincode" class="form-label">Pincode</label>
+                                        <input type="text" class="form-control modern-input" id="editPincode"
+                                            name="address[pincode]" value="<%= user.address.pincode %>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="editCountry" class="form-label">Country</label>
+                                        <input type="text" class="form-control modern-input" id="editCountry"
+                                            name="address[country]" value="<%= user.address.country %>" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer-custom">
+                                    <button type="button" class="btn-secondary-custom"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn-primary-custom">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Modal -->
+            <div class="modal fade" id="bookingsModal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content modern-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title">My Bookings</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" class="search-input" id="searchBooking"
+                                        placeholder="Search bookings...">
+                                </div>
+                            </div>
+                            <div class="filter-tabs mb-3">
+                                <button class="filter-tab active" data-filter="all">All</button>
+                                <button class="filter-tab" data-filter="confirmed">Confirmed</button>
+                                <button class="filter-tab" data-filter="pending">Pending</button>
+                                <button class="filter-tab" data-filter="cancelled">Cancelled</button>
+                            </div>
+                            <div id="bookingsList" class="bookings-list-modal">
+                                <% if (bookings.length===0) { %>
+                                    <div class="bookings-empty">
+                                        <i class="fas fa-car"></i>
+                                        <p>No bookings available yet</p>
+                                    </div>
+                                    <% } else { %>
+                                        <% bookings.forEach(booking=> { %>
+                                            <div class="booking-card-modal" data-status="<%= booking.status %>">
+                                                <div class="booking-modal-left">
+                                                    <div class="booking-modal-image">
+                                                        <% if (booking.carId && booking.carId.images &&
+                                                            booking.carId.images.length> 0) { %>
+                                                            <img src="<%= booking.carId.images[0] %>"
+                                                                alt="<%= booking.carId.model %>">
+                                                            <% } else { %>
+                                                                <div class="no-image-modal">
+                                                                    <i class="fas fa-car"></i>
+                                                                </div>
+                                                                <% } %>
+                                                    </div>
+                                                    <div class="booking-modal-info">
+                                                        <h5 class="booking-modal-title">
+                                                            <% if (booking.carId && booking.carId.brand) { %>
+                                                                <%= booking.carId.brand.name %>
+                                                                    <%= booking.carId.model %>
+                                                                        <% } else { %>
+                                                                            Car Details Unavailable
+                                                                            <% } %>
+                                                        </h5>
+                                                        <div class="booking-modal-meta">
+                                                            <span><i class="fas fa-calendar"></i>
+                                                                <%= new
+                                                                    Date(booking.bookingDate).toLocaleDateString('en-US',
+                                                                    { month: 'short' , day: 'numeric' , year: 'numeric'
+                                                                    }) %>
+                                                            </span>
+                                                            <span><i class="fas fa-clock"></i>
+                                                                <%= booking.startTime %> - <%= booking.endTime %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="booking-modal-location">
+                                                            <i class="fas fa-map-marker-alt"></i>
+                                                            <%= booking.pickupLocation %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="booking-modal-right">
+                                                    <span class="booking-status-badge <%= booking.status %>">
+                                                        <%= booking.status.charAt(0).toUpperCase() +
+                                                            booking.status.slice(1) %>
+                                                    </span>
+                                                    <div class="booking-modal-amount">
+                                                        ₹<%= booking.amount ? booking.amount.toFixed(2) : '0.00' %>
+                                                    </div>
+                                                    <div class="booking-modal-actions">
+                                                        <button class="btn-modal-action view"
+                                                            onclick="viewBookingDetails('<%= booking._id %>')">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <% if (booking.status==='confirmed' ) { %>
+                                                            <button class="btn-modal-action cancel"
+                                                                onclick="cancelBooking('<%= booking._id %>')">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                            <% } %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
                                                 <% } %>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Bookings Modal -->
-                <div class="modal fade" id="bookingsModal" tabindex="-1">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">My Bookings</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="searchBooking"
-                                            placeholder="Search bookings...">
-                                        <button class="btn btn-outline-secondary" type="button">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="btn-group mb-3" role="group">
-                                    <button type="button" class="btn btn-outline-primary filter-btn active"
-                                        data-filter="all">All</button>
-                                    <button type="button" class="btn btn-outline-primary filter-btn"
-                                        data-filter="confirmed">Confirmed</button>
-                                    <button type="button" class="btn btn-outline-primary filter-btn"
-                                        data-filter="pending">Pending</button>
-                                    <button type="button" class="btn btn-outline-primary filter-btn"
-                                        data-filter="cancelled">Cancelled</button>
-                                </div>
-                                <div id="bookingsList" class="row g-3">
-
-                                    <p>No bookings available yet.</p>
+            <!-- Add Funds Modal -->
+            <div class="modal fade" id="addFundsModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modern-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Funds to Wallet</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <label for="amount" class="form-label">Amount</label>
+                                <div class="amount-input-wrapper">
+                                    <span class="currency-symbol">₹</span>
+                                    <input type="number" class="form-control modern-input amount-input" id="amount"
+                                        min="1" step="0.01" placeholder="Enter amount">
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <div class="quick-amounts mb-4">
+                                <button class="quick-amount-btn" data-amount="500">₹500</button>
+                                <button class="quick-amount-btn" data-amount="1000">₹1000</button>
+                                <button class="quick-amount-btn" data-amount="2000">₹2000</button>
+                                <button class="quick-amount-btn" data-amount="5000">₹5000</button>
+                            </div>
+                            <div class="mb-4">
+                                <label for="paymentMethod" class="form-label">Payment Method</label>
+                                <select class="form-select modern-input" id="paymentMethod">
+                                    <option value="credit">Credit Card</option>
+                                    <option value="debit">Debit Card</option>
+                                    <option value="netbanking">Net Banking</option>
+                                    <option value="upi">UPI</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer-custom">
+                                <button type="button" class="btn-secondary-custom"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn-primary-custom" id="confirmAddFunds">Add Funds</button>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Add Funds Modal -->
-                <div class="modal fade" id="addFundsModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Funds to Wallet</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="amount" class="form-label">Amount</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">₹</span>
-                                        <input type="number" class="form-control" id="amount" min="1" step="0.01"
-                                            placeholder="Enter amount">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="paymentMethod" class="form-label">Payment Method</label>
-                                    <select class="form-select" id="paymentMethod">
-                                        <option value="credit">Credit Card</option>
-                                        <option value="debit">Debit Card</option>
-                                        <option value="netbanking">Net Banking</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" id="confirmAddFunds">Add Funds</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Scripts -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/js/user/user-navbar.js"></script>
 
-                <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-                <script src="/js/user/user-navbar.js"></script>
-
-                <script>
-                    // Add Funds Button Click Handler
-                    document.querySelector('.wallet-btn').addEventListener('click', function () {
-                       
+            <script>
+                // Quick amount buttons
+                document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        document.getElementById('amount').value = this.dataset.amount;
+                        document.querySelectorAll('.quick-amount-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
                     });
+                });
 
-                    // Edit Profile Button Click Handler
-                    document.querySelector('.edit-profile').addEventListener('click', function (e) {
-                        e.preventDefault();
+                // Add Funds functionality
+                document.getElementById('confirmAddFunds')?.addEventListener('click', function () {
+                    const amount = document.getElementById('amount').value;
+                    const paymentMethod = document.getElementById('paymentMethod').value;
 
+                    if (!amount || amount <= 0) {
+                        alert('Please enter a valid amount');
+                        return;
+                    }
+
+                    // Add your wallet funding logic here
+                    console.log('Adding funds:', amount, paymentMethod);
+                });
+
+                // Filter tabs
+                document.querySelectorAll('.filter-tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+
+                        const filter = this.dataset.filter;
+                        const bookingCards = document.querySelectorAll('.booking-card-modal');
+
+                        bookingCards.forEach(card => {
+                            const status = card.dataset.status;
+                            if (filter === 'all' || status === filter) {
+                                card.style.display = 'flex';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
                     });
+                });
 
-                    // View Bookings Button Click Handler
-                    document.querySelector('.view-bookings').addEventListener('click', function (e) {
-                        e.preventDefault();
+                // Search bookings
+                const searchInput = document.getElementById('searchBooking');
+                if (searchInput) {
+                    searchInput.addEventListener('input', function () {
+                        const searchTerm = this.value.toLowerCase();
+                        const bookingCards = document.querySelectorAll('.booking-card-modal');
 
+                        bookingCards.forEach(card => {
+                            const title = card.querySelector('.booking-modal-title')?.textContent.toLowerCase() || '';
+                            const location = card.querySelector('.booking-modal-location')?.textContent.toLowerCase() || '';
+
+                            if (title.includes(searchTerm) || location.includes(searchTerm)) {
+                                card.style.display = 'flex';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
                     });
-                </script>
-    </body>
+                }
+
+                // View booking details function
+                function viewBookingDetails(bookingId) {
+                    // Redirect to booking details page or show details modal
+                    window.location.href = `/booking/${bookingId}`;
+                }
+
+                // Cancel booking function
+                function cancelBooking(bookingId) {
+                    if (confirm('Are you sure you want to cancel this booking?')) {
+                        // Add your cancel booking logic here
+                        fetch(`/booking/cancel/${bookingId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Booking cancelled successfully');
+                                    location.reload();
+                                } else {
+                                    alert('Failed to cancel booking: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred while cancelling the booking');
+                            });
+                    }
+                }
+            </script>
+
+</body>
 
 </html>

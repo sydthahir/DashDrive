@@ -312,6 +312,7 @@ const loadHomepage = async (req, res) => {
 const profile = async (req, res) => {
   try {
     const user = req.user
+    const Booking = require("../../models/bookingSchema")
 
     if (!user) {
       console.log("User not found in database")
@@ -320,9 +321,23 @@ const profile = async (req, res) => {
         .redirect("/login?message=Please log in to view your profile")
     }
 
+    // Fetch user bookings with car and vendor details
+    const bookings = await Booking.find({ userId: user._id })
+      .populate({
+        path: "carId",
+        select: "model brand images carType",
+        populate: {
+          path: "brand",
+          select: "name"
+        }
+      })
+      .populate("vendorId", "businessName")
+      .sort({ createdAt: -1 })
+      .lean()
+
     const wallet = { balance: user.walletBalance || 0 }
     const transactions = []
-    const totalBookings = 0
+    const totalBookings = bookings.length
 
     return res.render("profile", {
       user: {
@@ -347,6 +362,7 @@ const profile = async (req, res) => {
       wallet,
       transactions,
       totalBookings,
+      bookings,
     })
   } catch (error) {
     console.error("Error loading profile:", error)
@@ -404,6 +420,7 @@ const editUserProfile = async (req, res) => {
         wallet: { balance: req.user.walletBalance || 0 },
         transactions: [],
         totalBookings: 0,
+        bookings: [],
         message: "All fields are required",
       })
     }
@@ -437,6 +454,7 @@ const editUserProfile = async (req, res) => {
         wallet: { balance: req.user.walletBalance || 0 },
         transactions: [],
         totalBookings: 0,
+        bookings: [],
         message,
       })
     }
@@ -484,6 +502,7 @@ const editUserProfile = async (req, res) => {
         wallet: { balance: req.user.walletBalance || 0 },
         transactions: [],
         totalBookings: 0,
+        bookings: [],
         message: "User not found",
       })
     }
@@ -512,6 +531,7 @@ const editUserProfile = async (req, res) => {
       wallet: { balance: updatedUser.walletBalance || 0 },
       transactions: [],
       totalBookings: 0,
+      bookings: [],
       message: "Profile updated successfully",
     })
   } catch (error) {
@@ -541,6 +561,7 @@ const editUserProfile = async (req, res) => {
         wallet: { balance: req.user.walletBalance || 0 },
         transactions: [],
         totalBookings: 0,
+        bookings: [],
         message: "Email is already in use",
       })
     }
@@ -567,6 +588,7 @@ const editUserProfile = async (req, res) => {
       wallet: { balance: req.user.walletBalance || 0 },
       transactions: [],
       totalBookings: 0,
+      bookings: [],
       message: "Server error: Unable to update profile",
     })
   }
