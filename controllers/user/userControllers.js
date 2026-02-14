@@ -63,7 +63,7 @@ const signup = async (req, res) => {
     }
 
     //Password hashing
-   const hashedPassword = await securePassword(password)
+    const hashedPassword = await securePassword(password)
 
 
     const findUser = await User.findOne({ email })
@@ -600,6 +600,13 @@ const loadListings = async (req, res) => {
 
     const { search, brand, fuel, sort, category } = req.query
 
+
+    // Pagination Setup
+    const page = parseInt(req.query.page) || 1
+    const limit = 6
+    const skip = (page - 1) * limit
+
+
     // Build query object
     const query = {
       status: "approved",
@@ -654,15 +661,24 @@ const loadListings = async (req, res) => {
       carsQuery = carsQuery.collation(collation)
     }
 
-    const cars = await carsQuery.sort(sortOptions).lean()
+    // Count total results
+    const totalCars = await Car.countDocuments(query)
+    const totalPages = Math.ceil(totalCars / limit)
 
-    // Get all active brands for the filter dropdown
+    const cars = await carsQuery
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .lean()
+    // Get all active brands
     const brands = await Brand.find({ isActive: true }).sort({ name: 1 }).lean()
 
     return res.render("listings", {
       cars,
       brands,
-      query: req.query // Pass current filters back to view
+      query: req.query,
+      currentPage: page,
+      totalPages
     })
   } catch (error) {
     console.log("Error loading listings page:", error)

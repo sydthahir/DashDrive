@@ -311,7 +311,87 @@ const loadBookings = async (req, res) => {
       return res.redirect("/admin/login")
     }
 
-    res.render("bookings")
+    const Booking = require("../../models/bookingSchema")
+    const Car = require("../../models/carSchema")
+
+    // Search and filter parameters
+    const search = req.query.search || ""
+    const status = req.query.status || "all"
+    const paymentStatus = req.query.paymentStatus || "all"
+
+    // Pagination
+    const page = parseInt(req.query.page) || 1
+    const limit = 10
+    const skip = (page - 1) * limit
+
+    // Build query
+    const query = {}
+
+    // Status filter
+    if (status !== "all") {
+      query.status = status
+    }
+
+    // Payment status filter
+    if (paymentStatus !== "all") {
+      query.paymentStatus = paymentStatus
+    }
+
+    // Fetch bookings with populated data
+    const [bookings, totalCount, pendingCount, confirmedCount, completedCount, cancelledCount, paidCount, pendingPaymentCount] = await Promise.all([
+      Booking.find(query)
+        .populate("userId", "name email phone")
+        .populate({
+          path: "carId",
+          select: "model brand images registrationNumber",
+          populate: {
+            path: "brand",
+            select: "name"
+          }
+        })
+        .populate("vendorId", "fullName email phone companyName")
+        .populate("slotId", "date startTime endTime")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Booking.countDocuments(query),
+      Booking.countDocuments({ status: "pending" }),
+      Booking.countDocuments({ status: "confirmed" }),
+      Booking.countDocuments({ status: "completed" }),
+      Booking.countDocuments({ status: "cancelled" }),
+      Booking.countDocuments({ paymentStatus: "paid" }),
+      Booking.countDocuments({ paymentStatus: "pending" })
+    ])
+
+    const totalPages = Math.ceil(totalCount / limit)
+
+    // Calculate total revenue (only paid bookings)
+    const revenueData = await Booking.aggregate([
+      { $match: { paymentStatus: "paid" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ])
+    const totalRevenue = revenueData.length > 0 ? revenueData[0].total : 0
+
+    res.render("bookings", {
+      admin,
+      bookings,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      search,
+      status,
+      paymentStatus,
+      totalCount,
+      pendingCount,
+      confirmedCount,
+      completedCount,
+      cancelledCount,
+      paidCount,
+      pendingPaymentCount,
+      totalRevenue
+    })
   } catch (error) {
     console.error("Bookings page error:", error)
     return res.redirect("/page-error")

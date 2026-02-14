@@ -65,7 +65,7 @@
 
                     <!-- Gallery Section -->
                     <section class="gallery-container">
-                        <div class="main-image-wrapper">
+                        <div class="main-image-wrapper zoom-container">
                             <div class="overlay-badges">
                                 <% if(car.createdAt> new Date(Date.now() - 30*24*60*60*1000)) { %>
                                     <span class="badge badge-primary px-3 py-2 rounded-pill">NEW ARRIVAL</span>
@@ -191,7 +191,8 @@
                                 <h5 style="font-weight: 700; margin-bottom: 1rem;">Amenities</h5>
                                 <div class="features-grid" style="grid-template-columns: 1fr;">
                                     <% const featuresList=car.features ? car.features.split(',').map(f=> f.trim()) :
-                                        ['Air Conditioning', 'Power Steering', 'Power Windows', 'ABS', 'Airbags']; %>
+                                        ['Air Conditioning', 'Power Steering', 'Power Windows', 'ABS', 'Airbags'];
+                                        %>
                                         <% featuresList.forEach(feature=> { %>
                                             <div class="feature-item">
                                                 <i class="fas fa-check-circle feature-check"></i>
@@ -331,13 +332,8 @@
 
         <%- include('../partials/user/footer.ejs') %>
 
-            <script>
-                function changeImage(thumb, src) {
-                    document.getElementById('mainImage').src = src;
-                    document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active'));
-                    thumb.classList.add('active');
-                }
-            </script>
+
+
 
 
             <script>
@@ -430,6 +426,11 @@
                 console.log("Date input element:", dateInput);
                 console.log("Time select element:", timeSelect);
             </script>
+
+            <!-- Image Zoom Functionality -->
+            <script src="/js/user/user-carDetails.js"></script>
+
+
 
 </body>
 
