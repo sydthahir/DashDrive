@@ -1,9 +1,350 @@
-<div class="container-fluid px-4 mt-4 text-center"
-    style="min-height: 50vh; display: flex; flex-direction: column; justify-content: center;">
-    <div class="empty-state">
-        <div class="mb-4">
-            <i class="fas fa-calendar-times text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+<link rel="stylesheet" href="/css/vendor/vendor-bookings.css">
+
+<div class="bookings-wrapper">
+    <!-- Page Header -->
+    <div class="bookings-header">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-calendar-check"></i>
+                Booking Management
+            </h1>
+            <p class="page-subtitle">View and manage all test drive bookings for your cars</p>
         </div>
-        <h3 class="text-muted fw-light">No booking details available</h3>
+        <div class="header-actions">
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span class="stat-label">Total Bookings</span>
+                    <span class="stat-value">
+                        <%= bookings.length %>
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Confirmed</span>
+                    <span class="stat-value stat-confirmed">
+                        <%= bookings.filter(b=> b.status === 'confirmed').length %>
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pending</span>
+                    <span class="stat-value stat-pending">
+                        <%= bookings.filter(b=> b.status === 'initiated').length %>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="bookings-controls">
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchBookings" placeholder="Search by customer name, car model, or booking ID...">
+        </div>
+        <div class="filter-controls">
+            <select id="statusFilter" class="filter-select">
+                <option value="all">All Status</option>
+                <option value="initiated">Initiated</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="no-show">No Show</option>
+            </select>
+            <select id="paymentFilter" class="filter-select">
+                <option value="all">All Payments</option>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="failed">Failed</option>
+            </select>
+            <button class="btn-export">
+                <i class="fas fa-download"></i>
+                Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Bookings Content -->
+    <% if (bookings && bookings.length> 0) { %>
+        <div class="bookings-grid">
+            <% bookings.forEach((booking, index)=> { %>
+                <div class="booking-card" data-status="<%= booking.status %>"
+                    data-payment="<%= booking.paymentStatus %>">
+                    <!-- Card Header -->
+                    <div class="booking-card-header">
+                        <div class="booking-id-section">
+                            <span class="booking-id">#<%= booking._id.toString().slice(-8).toUpperCase() %></span>
+                            <span class="booking-date-badge">
+                                <i class="far fa-calendar"></i>
+                                <%= new Date(booking.bookingDate).toLocaleDateString('en-US', { month: 'short' ,
+                                    day: 'numeric' , year: 'numeric' }) %>
+                            </span>
+                        </div>
+                        <div class="status-badges">
+                            <span class="status-badge status-<%= booking.status %>">
+                                <% if (booking.status==='confirmed' ) { %>
+                                    <i class="fas fa-check-circle"></i>
+                                    <% } else if (booking.status==='initiated' ) { %>
+                                        <i class="fas fa-clock"></i>
+                                        <% } else if (booking.status==='completed' ) { %>
+                                            <i class="fas fa-check-double"></i>
+                                            <% } else if (booking.status==='cancelled' ) { %>
+                                                <i class="fas fa-times-circle"></i>
+                                                <% } else if (booking.status==='no-show' ) { %>
+                                                    <i class="fas fa-user-slash"></i>
+                                                    <% } %>
+                                                        <%= booking.status.charAt(0).toUpperCase() +
+                                                            booking.status.slice(1) %>
+                            </span>
+                            <span class="payment-badge payment-<%= booking.paymentStatus %>">
+                                <% if (booking.paymentStatus==='paid' ) { %>
+                                    <i class="fas fa-check"></i>
+                                    <% } else if (booking.paymentStatus==='pending' ) { %>
+                                        <i class="fas fa-hourglass-half"></i>
+                                        <% } else { %>
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <% } %>
+                                                <%= booking.paymentStatus.charAt(0).toUpperCase() +
+                                                    booking.paymentStatus.slice(1) %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Car Information -->
+                    <div class="booking-car-info">
+                        <div class="car-image-wrapper">
+                            <% if (booking.carId && booking.carId.images && booking.carId.images.length> 0) { %>
+                                <img src="<%= booking.carId.images[0] %>" alt="<%= booking.carId.model %>"
+                                    class="car-image">
+                                <% } else { %>
+                                    <div class="car-image-placeholder">
+                                        <i class="fas fa-car"></i>
+                                    </div>
+                                    <% } %>
+                        </div>
+                        <div class="car-details">
+                            <h3 class="car-name">
+                                <% if (booking.carId) { %>
+                                    <%= booking.carId.brand ? booking.carId.brand.name : 'Unknown Brand' %>
+                                        <%= booking.carId.model %>
+                                            <% } else { %>
+                                                Car Details Unavailable
+                                                <% } %>
+                            </h3>
+                            <p class="car-year">
+                                <% if (booking.carId) { %>
+                                    <%= booking.carId.year || 'N/A' %>
+                                        <% } %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Customer Information -->
+                    <div class="booking-customer-info">
+                        <div class="info-row">
+                            <div class="info-item">
+                                <i class="fas fa-user"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Customer</span>
+                                    <span class="info-value">
+                                        <%= booking.userId ? booking.userId.name : 'N/A' %>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-envelope"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Email</span>
+                                    <span class="info-value">
+                                        <%= booking.userId ? booking.userId.email : 'N/A' %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-item">
+                                <i class="fas fa-phone"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Contact</span>
+                                    <span class="info-value">
+                                        <%= booking.contactNumber || 'N/A' %>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <div class="info-content">
+                                    <span class="info-label">Time Slot</span>
+                                    <span class="info-value">
+                                        <%= booking.startTime %> - <%= booking.endTime %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Location -->
+                    <div class="booking-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="location-content">
+                            <span class="location-label">Pickup Location</span>
+                            <span class="location-value">
+                                <%= booking.pickupLocation || 'Not specified' %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Special Requests (if any) -->
+                    <% if (booking.specialRequests && booking.specialRequests.trim() !=='' ) { %>
+                        <div class="booking-special-requests">
+                            <i class="fas fa-comment-dots"></i>
+                            <div class="requests-content">
+                                <span class="requests-label">Special Requests</span>
+                                <p class="requests-value">
+                                    <%= booking.specialRequests %>
+                                </p>
+                            </div>
+                        </div>
+                        <% } %>
+
+                            <!-- Amount -->
+                            <div class="booking-amount">
+                                <span class="amount-label">Booking Amount</span>
+                                <span class="amount-value">₹<%= booking.amount ? booking.amount.toLocaleString() : '0'
+                                        %></span>
+                            </div>
+
+                            <!-- Card Footer with Actions -->
+                            <div class="booking-card-footer">
+                                <div class="booking-meta">
+                                    <span class="meta-item">
+                                        <i class="far fa-clock"></i>
+                                        Booked <%= new Date(booking.createdAt).toLocaleDateString('en-US', {
+                                            month: 'short' , day: 'numeric' }) %>
+                                    </span>
+                                </div>
+                                <div class="booking-actions">
+                                    <button class="btn-action btn-view"
+                                        onclick="viewBookingDetails('<%= booking._id %>')">
+                                        <i class="fas fa-eye"></i>
+                                        View Details
+                                    </button>
+                                    <% if (booking.status==='initiated' || booking.status==='confirmed' ) { %>
+                                        <button class="btn-action btn-contact"
+                                            onclick="contactCustomer('<%= booking.contactNumber %>')">
+                                            <i class="fas fa-phone"></i>
+                                            Contact
+                                        </button>
+                                        <% } %>
+                                </div>
+                            </div>
+                </div>
+                <% }); %>
+        </div>
+
+        <!-- Pagination (if needed) -->
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing <strong>
+                    <%= bookings.length %>
+                </strong> booking<%= bookings.length !==1 ? 's' : '' %>
+            </div>
+        </div>
+        <% } else { %>
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h3 class="empty-state-title">No Bookings Yet</h3>
+                <p class="empty-state-message">You don't have any bookings at the moment. When customers book test
+                    drives for your cars, they will appear here.</p>
+                <a href="/vendor/cars" class="btn-primary">
+                    <i class="fas fa-car"></i>
+                    View Your Cars
+                </a>
+            </div>
+            <% } %>
+</div>
+
+<!-- Booking Details Modal -->
+<div id="bookingDetailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Booking Details</h2>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Details will be loaded here -->
+        </div>
     </div>
 </div>
+
+<script>
+    // Search functionality
+    const searchInput = document.getElementById('searchBookings');
+    const statusFilter = document.getElementById('statusFilter');
+    const paymentFilter = document.getElementById('paymentFilter');
+    const bookingCards = document.querySelectorAll('.booking-card');
+
+    function filterBookings() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const paymentValue = paymentFilter.value;
+
+        bookingCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const cardStatus = card.getAttribute('data-status');
+            const cardPayment = card.getAttribute('data-payment');
+
+            const matchesSearch = text.includes(searchTerm);
+            const matchesStatus = statusValue === 'all' || cardStatus === statusValue;
+            const matchesPayment = paymentValue === 'all' || cardPayment === paymentValue;
+
+            if (matchesSearch && matchesStatus && matchesPayment) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterBookings);
+    statusFilter.addEventListener('change', filterBookings);
+    paymentFilter.addEventListener('change', filterBookings);
+
+    // View booking details
+    function viewBookingDetails(bookingId) {
+        // This would typically fetch details via AJAX
+        alert('Viewing details for booking: ' + bookingId);
+        // You can implement a modal or redirect to a details page
+    }
+
+    // Contact customer
+    function contactCustomer(phoneNumber) {
+        if (phoneNumber && phoneNumber !== 'N/A') {
+            window.location.href = 'tel:' + phoneNumber;
+        } else {
+            alert('Phone number not available');
+        }
+    }
+
+    // Modal functions
+    function closeModal() {
+        document.getElementById('bookingDetailsModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+        const modal = document.getElementById('bookingDetailsModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // Export functionality
+    document.querySelector('.btn-export')?.addEventListener('click', function () {
+        alert('Export functionality would be implemented here');
+        // Implement CSV/PDF export
+    });
+</script>

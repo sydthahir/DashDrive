@@ -2,6 +2,8 @@ const slotService = require("../../services/slotService")
 const Car = require("../../models/carSchema")
 const Slot = require("../../models/slotSchema")
 
+
+//Slot adding
 const addSlot = async (req, res) => {
   try {
     const { date, startTime, endTime } = req.body;
@@ -45,6 +47,7 @@ const addSlot = async (req, res) => {
   }
 };
 
+//Slot accessing
 const getSlots = async (req, res) => {
   try {
     const { carId } = req.params;
@@ -111,6 +114,7 @@ const getSlots = async (req, res) => {
   }
 };
 
+//Slot managing
 const toggleSlot = async (req, res) => {
   try {
     const { slotId } = req.params;

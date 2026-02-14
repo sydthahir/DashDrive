@@ -1,5 +1,5 @@
 const car = require("../../models/carSchema")
-const Brand = require("../../models/brandModel")
+const Brand = require("../../models/brandSchema")
 const uploadFile = require("../../middlewares/upload")
 const mongoose = require("mongoose");
 

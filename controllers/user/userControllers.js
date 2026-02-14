@@ -596,7 +596,7 @@ const loadServices = async (req, res) => {
 const loadListings = async (req, res) => {
   try {
     const Car = require("../../models/carSchema")
-    const Brand = require("../../models/brandModel")
+    const Brand = require("../../models/brandSchema")
 
     const { search, brand, fuel, sort, category } = req.query
 

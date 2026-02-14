@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 require("dotenv").config()
 const Vendor = require("../../models/vendorSchema")
-const Brand = require("../../models/brandModel")
+const Brand = require("../../models/brandSchema")
 const {
   sendVendorApprovalMail,
   sendVendorRejectionMail,

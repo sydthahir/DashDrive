@@ -20,7 +20,7 @@ const bookingSchema = new Schema({
     slotId: {
         type: Schema.Types.ObjectId,
         ref: "Slot",
-        required: true,
+        required: false,
     },
     bookingDate: {
         type: Date,
@@ -36,16 +36,16 @@ const bookingSchema = new Schema({
     },
     amount: {
         type: Number,
-        required: true,
+        required: false,
     },
     status: {
         type: String,
-        enum: ["pending", "confirmed", "cancelled", "completed"],
-        default: "pending"
+        enum: ["initiated", "confirmed", "cancelled", "completed", "no-show"],
+        default: "initiated"
     },
     paymentStatus: {
         type: String,
-        enum: ["pending", "paid", "refunded"],
+        enum: ["pending", "paid", "failed"],
         default: "pending"
     },
     pickupLocation: {
@@ -59,7 +59,18 @@ const bookingSchema = new Schema({
     specialRequests: {
         type: String,
         default: ""
+    },
+     cancellationReason: {
+        type: String,
+        default: ""
     }
+
 }, { timestamps: true });
+
+bookingSchema.index(
+    { slotId: 1, bookingDate: 1 },
+    { unique: true }
+);
+
 
 module.exports = mongoose.model("Booking", bookingSchema);

@@ -5,7 +5,7 @@ const env = require("dotenv").config()
 const router = express.Router()
 const userController = require("../controllers/user/userControllers")
 const slotController = require("../controllers/vendor/slotController")
-// const bookingController = require("../controllers/user/bookingController")
+const bookingController = require("../controllers/user/bookingController")
 const { authenticateUser, guestOnly } = require("../middlewares/userAuth")
 const profileControllers = require("../controllers/user/profileControllers")
 const noCache = require("../middlewares/noCache")
@@ -39,9 +39,13 @@ router.get("/avail-soon", authenticateUser, userController.loadCarsPage)
 router.get("/cars", userController.loadListings)
 router.get("/cars/:id", userController.loadCarDetails)
 
-// Booking management 
+// Slot Selction 
 router.get("/cars/:carId/available-slots", slotController.getUserSlots);
 
+//Booking management
+router.get("/bookings/new/:carId", authenticateUser, bookingController.loadBookingDetails);
+router.post("/booking/create",authenticateUser,bookingController.createBooking)
+router.get("/bookings/confirmation/:bookingId", authenticateUser,bookingController.loadBookingConfirmation)
 
 router.get("/services", userController.loadServices)
 router.get("/contact", userController.loadContact)

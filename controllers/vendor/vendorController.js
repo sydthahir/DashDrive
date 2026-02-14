@@ -787,12 +787,28 @@ const logout = async (req, res) => {
 const loadBookings = async (req, res) => {
     try {
         const vendor = req.vendor;
+        const Booking = require("../../models/bookingSchema");
+
+        // Fetch all bookings for this vendor's cars
+        const bookings = await Booking.find({ vendorId: vendor._id })
+            .populate('userId', 'name email')
+            .populate('carId', 'model year images')
+            .populate({
+                path: 'carId',
+                populate: {
+                    path: 'brand',
+                    select: 'name'
+                }
+            })
+            .sort({ bookingDate: -1, createdAt: -1 })
+            .lean();
+
         return res.render("../partials/vendor/layout", {
             title: "Bookings",
             page: "../Vendor/bookings",
             activePage: "bookings",
             vendor: vendor,
-            bookings: []
+            bookings: bookings
         });
     } catch (error) {
         console.error("Error loading bookings:", error);

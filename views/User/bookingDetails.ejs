@@ -80,7 +80,7 @@
                             <p class="form-description">Please provide your details for the test drive</p>
                         </div>
 
-                        <form id="bookingForm" action="/bookings/create" method="POST" class="booking-form">
+                        <form id="bookingForm" action="/booking/create" method="POST" class="booking-form">
                             <input type="hidden" name="carId" value="<%= car._id %>">
                             <input type="hidden" name="vendorId" value="<%= car.vendorId._id %>">
                             <input type="hidden" name="date" value="<%= selectedDate %>">
