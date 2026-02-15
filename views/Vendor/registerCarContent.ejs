@@ -148,7 +148,9 @@
                                                     <% } %>
                                             </div>
                                             <div class="form-text text-muted mt-3">
-                                                Supported formats: JPG, PNG, AVIF,webp The first selected image will be the
+                                                Supported formats: JPG, PNG, AVIF, WebP. The first selected image will
+                                                be
+                                                the
                                                 main display image.
                                             </div>
                                         </div>
@@ -256,6 +258,34 @@
                                         <button type="submit" class="btn btn-primary px-5">Register Car</button>
                                     </div>
                                 </form>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Cropper Modal -->
+<div class="modal fade" id="cropperModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crop Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="cropperImage" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="cropImageBtn">
+                    Crop & Save
+                </button>
             </div>
         </div>
     </div>
@@ -279,28 +309,7 @@
     })()
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Handle file selection
-        const imageInputs = document.querySelectorAll('.car-image-input');
-
-        imageInputs.forEach(input => {
-            input.addEventListener('change', function (e) {
-                const file = this.files[0];
-                const box = this.closest('.image-upload-box');
-                const preview = box.querySelector('.image-preview');
-                const removeBtn = box.querySelector('.remove-image-btn');
-
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        preview.src = e.target.result;
-                        box.classList.add('has-image');
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
-
-        // Handle image removal
+        // Handle image removal only (image preview is handled by cropper)
         const removeButtons = document.querySelectorAll('.remove-image-btn');
         removeButtons.forEach(btn => {
             btn.addEventListener('click', function (e) {
