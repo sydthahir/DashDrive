@@ -882,6 +882,104 @@ const loadSupport = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
+// Change Password
+const changePassword = async (req, res) => {
+    try {
+        const vendor = req.vendor;
+
+        if (!vendor) {
+            return res.status(404).json({ success: false, message: "Vendor not found" });
+        }
+
+        const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+        // Validate all fields are present
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        // Trim whitespace
+        const trimmedCurrentPassword = currentPassword.trim();
+        const trimmedNewPassword = newPassword.trim();
+        const trimmedConfirmNewPassword = confirmNewPassword.trim();
+
+        // Validate passwords are not empty after trimming
+        if (!trimmedCurrentPassword || !trimmedNewPassword || !trimmedConfirmNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords cannot be empty or contain only whitespace"
+            });
+        }
+
+        // Validate new password length
+        if (trimmedNewPassword.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be at least 8 characters long"
+            });
+        }
+
+        // Validate password strength (uppercase, lowercase, number, special character)
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{8,}$/;
+        if (!passwordPattern.test(trimmedNewPassword)) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character"
+            });
+        }
+
+        // Validate new passwords match
+        if (trimmedNewPassword !== trimmedConfirmNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New passwords do not match"
+            });
+        }
+
+        // Validate new password is different from current password
+        if (trimmedCurrentPassword === trimmedNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be different from current password"
+            });
+        }
+
+        // Compare current password with stored password
+        const isMatch = await bcrypt.compare(
+            trimmedCurrentPassword,
+            vendor.password
+        );
+
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        // Hash new password
+        const hashedPassword = await securePassword(trimmedNewPassword);
+
+        vendor.password = hashedPassword;
+        await vendor.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password updated successfully"
+        });
+
+    } catch (error) {
+        console.error("Change password error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
+    }
+};
+
 
 module.exports = {
     pageError,
@@ -905,5 +1003,6 @@ module.exports = {
     loadEarnings,
     loadNotifications,
     loadSettings,
-    loadSupport
+    loadSupport,
+    changePassword
 };

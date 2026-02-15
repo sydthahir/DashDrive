@@ -50,6 +50,7 @@ router.get("/notifications", vendorAuth.requireAuth, vendorController.loadNotifi
 
 //Settings 
 router.get("/settings", vendorAuth.requireAuth, vendorController.loadSettings)
+router.post("/change-password", vendorAuth.requireAuth, vendorController.changePassword)
 
 //Support
 router.get("/support", vendorAuth.requireAuth, vendorController.loadSupport)
@@ -70,7 +71,7 @@ router.post("/cars/:carId/add-slot", vendorAuth.requireAuth, addSlotController.a
 router.get("/cars/:carId/slots", vendorAuth.requireAuth, addSlotController.getSlots);
 router.patch("/slots/:slotId/toggle", vendorAuth.requireAuth, addSlotController.toggleSlot);
 router.post("/cars/:carId/toggle-date", vendorAuth.requireAuth, addSlotController.toggleDateSlots);
-router.post("/slots/create-maintenance",vendorAuth.requireAuth,addSlotController.createMaintenanceSlot);
+router.post("/slots/create-maintenance", vendorAuth.requireAuth, addSlotController.createMaintenanceSlot);
 
 
 router.use((req, res) => vendorController.pageError(req, res));

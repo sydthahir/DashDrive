@@ -1,5 +1,7 @@
 const User = require("../../models/userSchema")
 const TempUser = require("../../models/tempUserSchema")
+const Car = require("../../models/carSchema")
+const Brand = require("../../models/brandSchema")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const env = require("dotenv").config()
@@ -621,6 +623,15 @@ const loadListings = async (req, res) => {
     const Brand = require("../../models/brandSchema")
 
     const { search, brand, fuel, sort, category } = req.query
+    const userId = req.userId
+
+    let favorites = []
+    if (userId) {
+      const user = await User.findById(userId).select("favorites")
+      if (user) {
+        favorites = user.favorites.map(f => f.toString())
+      }
+    }
 
 
     // Pagination Setup
@@ -700,7 +711,8 @@ const loadListings = async (req, res) => {
       brands,
       query: req.query,
       currentPage: page,
-      totalPages
+      totalPages,
+      favorites
     })
   } catch (error) {
     console.log("Error loading listings page:", error)
@@ -734,11 +746,82 @@ const loadCarDetails = async (req, res) => {
       .populate("brand", "name")
       .lean()
 
-    return res.render("carDetails", { car, similarCars })
+    let favorites = []
+    const userId = req.userId
+    if (userId) {
+      const user = await User.findById(userId).select("favorites")
+      if (user) {
+        favorites = user.favorites.map(f => f.toString())
+      }
+    }
+
+    return res.render("carDetails", { car, similarCars, favorites })
   } catch (error) {
     console.error("Error loading car details:", error)
     // If invalid ID format or other error
     res.status(500).render("page-404", { message: "Error loading car details", error: null })
+  }
+}
+
+// Toggle Favourite
+const toggleFavourite = async (req, res) => {
+  try {
+    const userId = req.userId
+    const { carId } = req.body
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Please login to manage favorites" })
+    }
+
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" })
+    }
+
+    const index = user.favorites.indexOf(carId)
+    let action = ""
+
+    if (index === -1) {
+      user.favorites.push(carId)
+      action = "added"
+    } else {
+      user.favorites.splice(index, 1)
+      action = "removed"
+    }
+
+    await user.save()
+    res.status(200).json({ success: true, action, message: action === "added" ? "Added to favorites" : "Removed from favorites" })
+
+  } catch (error) {
+    console.error("Toggle favorite error:", error)
+    res.status(500).json({ success: false, message: "Server error" })
+  }
+}
+
+// Load Favourites Page
+const loadFavourites = async (req, res) => {
+  try {
+    const userId = req.userId
+    if (!userId) {
+      return res.redirect("/login")
+    }
+
+    const user = await User.findById(userId).populate({
+      path: "favorites",
+      populate: { path: "brand" }
+    })
+
+    // Filter out deleted/non-existent cars just in case
+    const favoriteCars = user.favorites.filter(car => car != null)
+
+    res.render("favourites", {
+      cars: favoriteCars,
+      user
+    })
+
+  } catch (error) {
+    console.log("Error loading favorites:", error)
+    res.status(500).render("page-404", { message: "Error loading favorites", error: null })
   }
 }
 
@@ -799,4 +882,6 @@ module.exports = {
   loadContact,
   loadAbout,
   logout,
+  toggleFavourite,
+  loadFavourites
 }

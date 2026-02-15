@@ -182,8 +182,11 @@
 
 
 
-                                <button class="like-btn" title="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
+                                <button class="like-btn"
+                                    title="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'Remove from Wishlist' : 'Add to Wishlist' %>"
+                                    onclick="toggleFavorite(this, '<%= car._id %>')">
+                                    <i
+                                        class="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'fas fa-heart text-danger' : 'far fa-heart' %>"></i>
                                 </button>
                             </div>
 
@@ -304,6 +307,47 @@
             <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
             <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
             <script src="/js/user/landingPage.js"></script>
+            <script>
+                async function toggleFavorite(btn, carId) {
+                    // Prevent default behavior if inside a link (though here it's a button, but just in case)
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    try {
+                        const response = await fetch('/toggle-favourite', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ carId })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+
+                        if (data.success) {
+                            const icon = btn.querySelector('i');
+                            if (data.action === 'added') {
+                                icon.classList.remove('far');
+                                icon.classList.add('fas', 'text-danger');
+                                btn.title = "Remove from Wishlist";
+                            } else {
+                                icon.classList.remove('fas', 'text-danger');
+                                icon.classList.add('far');
+                                btn.title = "Add to Wishlist";
+                            }
+                        } else {
+                            console.error('Failed to toggle favorite:', data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error toggling favorite:', error);
+                    }
+                }
+            </script>
 
 </body>
 

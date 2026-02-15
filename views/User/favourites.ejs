@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favourites | DashDrive</title>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="/css/global-fonts.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Reuse Listings CSS for Cards -->
+    <link rel="stylesheet" href="/css/user/listings.css">
+
+    <style>
+        :root {
+            --page-bg: #f8fafc;
+        }
+
+        body {
+            background-color: var(--page-bg);
+            /* Ensure footer stays at bottom */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Adjust for fixed navbar */
+        .page-header-wrapper {
+            margin-top: 90px;
+            /* Height of navbar */
+            background: #fff;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .page-header {
+            padding: 4rem 0 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .page-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 3rem;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .favourites-grid-container {
+            padding: 3rem 0;
+            flex-grow: 1;
+        }
+
+        /* Refined Empty State */
+        .empty-state-modern {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .empty-icon-circle {
+            width: 100px;
+            height: 100px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .empty-icon-circle i {
+            font-size: 3rem;
+            color: #94a3b8;
+        }
+
+        .empty-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-browse {
+            background: #0f172a;
+            color: #fff;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-browse:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+            color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+        }
+
+        /* Breadcrumb Refinement */
+        .breadcrumb-modern {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .breadcrumb-item+.breadcrumb-item::before {
+            content: "›";
+            font-size: 1.2rem;
+            line-height: 1;
+            vertical-align: middle;
+            color: #cbd5e1;
+        }
+
+        /* Card Overlay override specifically for favorites page if needed */
+        .car-card .like-btn {
+            background: #fff;
+            color: #dc3545;
+            /* Red heart by default here */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .car-card .like-btn:hover {
+            transform: scale(1.1);
+            background: #fee2e2;
+            /* Light red bg on hover */
+        }
+
+        /* Responsive Overrides */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.25rem;
+            }
+
+            .page-header {
+                padding: 3rem 1rem 2rem;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <%- include('../partials/user/header.ejs') %>
+
+        <!-- Page Header -->
+        <section class="page-header-wrapper">
+            <div class="container">
+                <header class="page-header">
+                    <h1 class="page-title">My Favourites</h1>
+                    <p class="page-subtitle">Your personal collection of dream machines. Details, specs, and booking
+                        availability at a glance.</p>
+                </header>
+            </div>
+        </section>
+
+        <main class="container favourites-grid-container">
+
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-modern">
+                    <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/profile">Profile</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Favourites</li>
+                </ol>
+            </nav>
+
+            <% if (cars && cars.length> 0) { %>
+                <div class="row align-items-center mb-4">
+                    <div class="col">
+                        <div class="result-count text-secondary font-weight-bold">
+                            Found <%= cars.length %> saved vehicle<%= cars.length !==1 ? 's' : '' %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-grid">
+                    <% cars.forEach(car=> { %>
+                        <article class="car-card" id="card-<%= car._id %>">
+                            <!-- Image Container-->
+                            <div class="card-image-wrapper">
+                                <img src="<%= (car.images && car.images.length > 0) ? car.images[0] : 'https://via.placeholder.com/400x300?text=Premium+Car' %>"
+                                    alt="<%= car.brand ? car.brand.name : '' %> <%= car.model %>" class="card-img"
+                                    loading="lazy">
+
+                                <!-- Heart button -->
+                                <button class="like-btn" title="Remove from Favourites"
+                                    onclick="toggleFavorite(this, '<%= car._id %>', true)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+
+                                <!-- Badge overlap possibility -->
+                                <% if (car.status==='pending' ) { %>
+                                    <div class="badge-overlay">
+                                        <span class="badge-item badge-warning">Under Review</span>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <!-- Content Container -->
+                            <div class="card-content">
+                                <div class="card-brand">
+                                    <%= car.brand ? car.brand.name : 'Unknown' %>
+                                </div>
+                                <h3 class="card-title">
+                                    <%= car.model %>
+                                </h3>
+
+                                <div class="card-rating">
+                                    <i class="fas fa-star star-icon"></i>
+                                    <span>4.8</span>
+                                    <span class="text-muted small ml-1">(User Rating)</span>
+                                </div>
+
+                                <div class="specs-grid">
+                                    <div class="spec-item">
+                                        <span class="spec-icon"><i class="fas fa-gas-pump"></i></span>
+                                        <span>
+                                            <%= car.fuelType %>
+                                        </span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-icon"><i class="fas fa-car-side"></i></span>
+                                        <span>
+                                            <%= car.carType || 'Sedan' %>
+                                        </span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                        <span>
+                                            <%= car.mileage || 'N/A' %>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer">
+                                    <div class="price-block">
+                                        <span class="price-label">Per Slot</span>
+                                        <span class="price-amount">₹<%= car.chargePerSlot %></span>
+                                    </div>
+
+                                    <div class="action-group">
+                                        <a href="/cars/<%= car._id %>" class="btn-book text-white"
+                                            style="width: 100%; justify-content: center;">
+                                            View Details <i class="fas fa-arrow-right ml-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <% }); %>
+                </div>
+                <% } else { %>
+                    <!-- Modern Empty State -->
+                    <div class="empty-state-modern">
+                        <div class="empty-icon-circle">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <h3 class="empty-title">No Favourites Yet</h3>
+                        <p class="empty-text">Used up all your likes? Start exploring our premium collection and save
+                            your dream cars here for quick access.</p>
+                        <a href="/cars" class="btn-browse">Explore Collection</a>
+                    </div>
+                    <% } %>
+
+        </main>
+
+        <!-- Footer -->
+        <%- include('../partials/user/footer.ejs') %>
+
+            <!-- Bootstrap JS and Dependencies -->
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+            <script>
+                // Force navbar style to be 'scrolled' (solid background) so it's visible on white page
+                document.addEventListener('DOMContentLoaded', () => {
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar) {
+                        navbar.classList.add('scrolled');
+                        navbar.style.borderBottom = '1px solid rgba(0,0,0,0.05)';
+                    }
+                });
+
+                async function toggleFavorite(btn, carId, removeOnSuccess = false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const icon = btn.querySelector('i');
+
+                    try {
+                        const response = await fetch('/toggle-favourite', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ carId })
+                        });
+
+                        if (response.status === 401) return window.location.href = '/login';
+
+                        const data = await response.json();
+                        if (data.success && data.action === 'removed' && removeOnSuccess) {
+                            const card = document.getElementById(`card-${carId}`);
+                            if (card) {
+                                // Smooth fade out
+                                card.style.transition = 'all 0.4s ease';
+                                card.style.opacity = '0';
+                                card.style.transform = 'translateY(20px)';
+
+                                setTimeout(() => {
+                                    card.remove();
+                                    // Update count text
+                                    const countEl = document.querySelector('.result-count');
+                                    if (countEl) {
+                                        // Extract number and decrement
+                                        const match = countEl.innerText.match(/\d+/);
+                                        if (match) {
+                                            const newCount = parseInt(match[0]) - 1;
+                                            if (newCount <= 0) {
+                                                location.reload(); // Reload to show empty state
+                                            } else {
+                                                countEl.innerText = `Found ${newCount} saved vehicle${newCount !== 1 ? 's' : ''}`;
+                                            }
+                                        }
+                                    }
+                                }, 400);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            </script>
+
+</body>
+
+</html>

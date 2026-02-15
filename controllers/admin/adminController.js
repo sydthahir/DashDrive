@@ -321,7 +321,7 @@ const loadBookings = async (req, res) => {
 
     // Pagination
     const page = parseInt(req.query.page) || 1
-    const limit = 10
+    const limit = 2
     const skip = (page - 1) * limit
 
     // Build query
@@ -826,7 +826,7 @@ const loadCarManagement = async (req, res) => {
     const search = req.query.search || ""
     const status = req.query.status || "approved"
     const page = parseInt(req.query.page) || 1
-    const limit = 10
+    const limit = 5
     const skip = (page - 1) * limit
 
     // Build search filter

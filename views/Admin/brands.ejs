@@ -277,7 +277,7 @@
                 const id = document.getElementById('brandId').value;
                 const isEdit = !!id;
 
-                
+
                 const formData = new FormData(brandForm);
 
                 // Show Loading
@@ -290,7 +290,7 @@
                     const url = isEdit ? '/admin/brands/edit' : '/admin/brands/add';
                     const method = isEdit ? 'PUT' : 'POST';
 
-                 
+
                     const res = await fetch(url, {
                         method: method,
                         body: formData

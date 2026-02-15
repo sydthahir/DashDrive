@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const cropperImage = document.getElementById("cropperImage");
   const cropImageBtn = document.getElementById("cropImageBtn");
 
-  // Move modal to body to prevent z-index issues
+ 
   document.body.appendChild(cropperModalEl);
 
   const cropperModal = new bootstrap.Modal(cropperModalEl);
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     cropper = new Cropper(cropperImage, {
-      aspectRatio: 4 / 3,
+      aspectRatio: 16 / 9,
       viewMode: 1,
       autoCropArea: 1,
       responsive: true

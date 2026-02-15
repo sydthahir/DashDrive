@@ -214,6 +214,57 @@
         margin-bottom: 1.5rem;
         color: #cbd5e0;
     }
+
+    /* Pagination Styles */
+    .pagination {
+        gap: 0.5rem;
+    }
+
+    .page-item .page-link {
+        border: none;
+        border-radius: 8px;
+        color: #718096;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        transition: all 0.2s;
+        background: #f7fafc;
+        margin: 0;
+    }
+
+    .page-item.active .page-link {
+        background: #3182ce;
+        color: white;
+        box-shadow: 0 4px 12px rgba(49, 130, 206, 0.2);
+    }
+
+    .page-item:not(.active) .page-link:hover {
+        background: #edf2f7;
+        color: #2d3748;
+        transform: translateY(-2px);
+    }
+
+    .page-item.disabled .page-link {
+        background: #f7fafc;
+        color: #cbd5e0;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .page-link:focus {
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+    }
+
+    .page-item:first-child .page-link,
+    .page-item:last-child .page-link {
+        width: auto;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+        border-radius: 8px;
+    }
 </style>
 
 <!-- Dashboard Header -->
@@ -378,11 +429,46 @@
             </table>
         </div>
 
-        <!-- Pagination (Simple Implementation) -->
+        <!-- Pagination -->
         <div class="p-3 border-top d-flex justify-content-between align-items-center">
-            <small class="text-muted">Showing <%= cars.length %> vehicles</small>
-            <!-- Add pagination logic here if needed later -->
+
+            <small class="text-muted">
+                Showing <%= cars.length %> vehicles
+            </small>
+
+            <% if (totalPages> 1) { %>
+                <nav aria-label="Pagination">
+                    <ul class="pagination justify-content-center mt-4">
+
+                        <!-- Previous -->
+                        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                                <i class="fas fa-long-arrow-alt-left me-2"></i> Previous
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                            <% } %>
+
+                                <!-- Next -->
+                                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                                        Next <i class="fas fa-long-arrow-alt-right ms-2"></i>
+                                    </a>
+                                </li>
+
+                    </ul>
+                </nav>
+                <% } %>
+
         </div>
+
     </div>
 
     <script>

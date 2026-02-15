@@ -42,6 +42,10 @@ router.get("/cars/:id", userController.loadCarDetails)
 // Slot Selction 
 router.get("/cars/:carId/available-slots", slotController.getUserSlots);
 
+// Favorites
+router.get("/favourites", authenticateUser, userController.loadFavourites)
+router.post("/toggle-favourite", authenticateUser, userController.toggleFavourite)
+
 //Booking management
 router.get("/bookings/new/:carId", authenticateUser, bookingController.loadBookingDetails);
 router.post("/booking/create", authenticateUser, bookingController.createBooking)
@@ -58,12 +62,17 @@ router.get("/logout", userController.logout)
 //Profile management
 router.get("/profile", authenticateUser, userController.profile)
 router.post("/profile/edit", authenticateUser, userController.editUserProfile)
+
 router.get("/forgot-password", noCache, guestOnly, profileControllers.loadForgotPassPage)
 router.post("/forgot-email-valid", profileControllers.forgotEmailValid)
 router.post("/verify-passForgot-otp", profileControllers.verifyForgotPassOTP)
 router.get("/reset-password", profileControllers.loadResetPassPage)
 router.post("/resend-forget-otp", profileControllers.resendOTP)
 router.post("/reset-password", profileControllers.postNewPassword)
+
+router.get("/change-password", authenticateUser, profileControllers.loadChangePassword);
+router.post("/change-password", authenticateUser, profileControllers.changePassword);
+
 
 
 //Google auth routes

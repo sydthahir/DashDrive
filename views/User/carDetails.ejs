@@ -90,13 +90,21 @@
 
                     <!-- Overview Section -->
                     <section class="overview-section">
-                        <h1 class="car-title">
-                            <%= car.brand.name %>
-                                <%= car.model %> <span
-                                        style="font-size: 1.5rem; color: var(--text-light); font-weight: 400;">
-                                        <%= car.year %>
-                                    </span>
-                        </h1>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="car-title mb-0">
+                                <%= car.brand.name %>
+                                    <%= car.model %> <span
+                                            style="font-size: 1.5rem; color: var(--text-light); font-weight: 400;">
+                                            <%= car.year %>
+                                        </span>
+                            </h1>
+                            <button class="btn btn-link p-0 text-decoration-none"
+                                onclick="toggleDetailsFavorite(this, '<%= car._id %>')"
+                                title="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'Remove from Favorites' : 'Add to Favorites' %>">
+                                <i
+                                    class="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'fas text-danger' : 'far text-secondary' %> fa-heart fa-2x"></i>
+                            </button>
+                        </div>
                         <p class="car-tagline">Experience the ultimate comfort and performance with this premium <%=
                                 car.carType %>.</p>
 
@@ -116,7 +124,7 @@
                             <div class="highlight-card">
                                 <i class="fas fa-cogs highlight-icon"></i> <!-- Fixed icon for transmission -->
                                 <div class="highlight-label">Transmission</div>
-                                <!-- Note: Schema doesn't strictly have transmission, mapping logic or default -->
+
                                 <div class="highlight-value">
                                     <%= car.transmission || 'Automatic' %>
                                 </div>
@@ -429,6 +437,45 @@
 
             <!-- Image Zoom Functionality -->
             <script src="/js/user/user-carDetails.js"></script>
+
+            <script>
+                async function toggleDetailsFavorite(btn, carId) {
+                    try {
+                        const response = await fetch('/toggle-favourite', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ carId })
+                        });
+
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            const icon = btn.querySelector('i');
+                            if (data.action === 'added') {
+                                icon.classList.remove('far', 'text-secondary');
+                                icon.classList.add('fas', 'text-danger');
+                                btn.title = "Remove from Favorites";
+                            } else {
+                                icon.classList.remove('fas', 'text-danger');
+                                icon.classList.add('far', 'text-secondary');
+                                btn.title = "Add to Favorites";
+                            }
+                        } else {
+                            console.error('Failed to toggle favorite:', data.message);
+                        }
+
+                    } catch (error) {
+                        console.error('Error toggling favorite:', error);
+                    }
+                }
+            </script>
 
 
 

@@ -55,6 +55,10 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "bookings"
     },
+    favorites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Car"
+    }],
     resetOTP: String,
     resetOTPExpiry: Date
 },

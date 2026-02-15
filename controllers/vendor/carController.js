@@ -99,17 +99,35 @@ const listCars = async (req, res) => {
   try {
     const vendorId = new mongoose.Types.ObjectId(req.vendor._id);
 
-    // Find cars belonging to this vendor
-    const cars = await car.find({
+    // Pagination Setup
+    const page = parseInt(req.query.page) || 1
+    const limit = 3
+    const skip = (page - 1) * limit;
+
+    // Query object
+    const query = {
       vendorId: vendorId,
       isDeleted: { $ne: true }
-    }).populate('brand').lean();
+    };
+
+    // Find cars belonging to this vendor
+    const cars = await car.find(query)
+    .populate('brand')
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+    // Count total results
+    const totalCars = await car.countDocuments(query)
+    const totalPages = Math.ceil(totalCars / limit)
+
     res.render("vendorCarList", {
       title: "My Cars",
       cars,
-      query: req.query,
       activePage: "cars",
       vendor: req.vendor,
+      currentPage: page,
+      totalPages
     })
   } catch (error) {
     console.error("Error listing cars:", error)
