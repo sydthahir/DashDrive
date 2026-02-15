@@ -44,7 +44,7 @@ const loadBookingDetails = async (req, res) => {
             );
         }
 
-        
+
         const vendorAddress = car.vendorId?.businessAddress || null;
 
 
@@ -83,7 +83,7 @@ const createBooking = async (req, res) => {
 
         console.log("success", req.body);
 
-        //Basic Validation
+        //Validation
         if (!carId || !vendorId || !date || !startTime || !endTime) {
             return res.redirect("/cars");
         }
@@ -108,7 +108,6 @@ const createBooking = async (req, res) => {
         if (!car) {
             return res.redirect("/cars");
         }
-
 
 
         //Create Booking
