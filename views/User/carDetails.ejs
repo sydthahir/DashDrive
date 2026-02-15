@@ -28,7 +28,11 @@
 
 <body>
 
+
+
     <%- include('../partials/user/header.ejs') %>
+
+
 
         <div class="container py-4">
             <!-- Listings Grid -->
@@ -122,7 +126,7 @@
                                 </div>
                             </div>
                             <div class="highlight-card">
-                                <i class="fas fa-cogs highlight-icon"></i> <!-- Fixed icon for transmission -->
+                                <i class="fas fa-cogs highlight-icon"></i>
                                 <div class="highlight-label">Transmission</div>
 
                                 <div class="highlight-value">
@@ -341,143 +345,21 @@
         <%- include('../partials/user/footer.ejs') %>
 
 
+            <!-- Sweetalert  -->
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
+            <!-- Image Zoom Functionality -->
+            <script src="/js/user/image-zoom.js"></script>
 
             <script>
                 const dateInput = document.querySelector('input[name="date"]');
                 const timeSelect = document.getElementById("timeSelect");
                 const carId = "<%= car._id %>";
-
-                // Add ID to date input for better targeting
-                if (!dateInput.id) {
-                    dateInput.id = "dateInput";
-                }
-
-                dateInput.addEventListener("change", async function () {
-                    const selectedDate = this.value;
-
-                    console.log("Date selected:", selectedDate);
-
-                    if (!selectedDate) {
-                        timeSelect.innerHTML = '<option value="">Select time</option>';
-                        return;
-                    }
-
-                    // Show loading state
-                    timeSelect.innerHTML = '<option value="">Loading slots...</option>';
-                    timeSelect.disabled = true;
-
-                    try {
-                        console.log("Fetching slots for car:", carId, "date:", selectedDate);
-
-                        const res = await fetch(`/cars/${carId}/available-slots?date=${selectedDate}`);
-
-                        console.log("Response status:", res.status);
-
-                        if (!res.ok) {
-                            throw new Error(`HTTP error! status: ${res.status}`);
-                        }
-
-                        const slots = await res.json();
-                        console.log("Received slots:", slots);
-
-                        // Reset select
-                        timeSelect.innerHTML = '<option value="">Select time</option>';
-                        timeSelect.disabled = false;
-
-                        // Filter available slots
-                        const availableSlots = slots.filter(s => s.status === "available");
-
-                        console.log("Available slots:", availableSlots);
-
-                        if (availableSlots.length === 0) {
-                            timeSelect.innerHTML = '<option value="">No available slots for this date</option>';
-                            timeSelect.disabled = true;
-
-                            // Show user-friendly message
-                            alert('No available time slots for the selected date. Please choose another date.');
-                            return;
-                        }
-
-                        // Add available slots to dropdown
-                        availableSlots.forEach(slot => {
-                            const option = document.createElement("option");
-                            option.value = `${slot.startTime}-${slot.endTime}`;
-                            option.textContent = formatTime(slot.startTime) + " - " + formatTime(slot.endTime);
-                            timeSelect.appendChild(option);
-                        });
-
-                        console.log("Slots loaded successfully");
-
-                    } catch (err) {
-                        console.error("Error loading slots:", err);
-
-                        timeSelect.innerHTML = '<option value="">Error loading slots</option>';
-                        timeSelect.disabled = true;
-
-                        // Show user-friendly error message
-                        alert('Unable to load available time slots. Please try again or contact support.');
-                    }
-                });
-
-                function formatTime(time) {
-                    const [h, m] = time.split(":");
-                    const hour = parseInt(h);
-                    const ampm = hour >= 12 ? "PM" : "AM";
-                    const display = hour % 12 || 12;
-                    return `${display}:${m} ${ampm}`;
-                }
-
-                // Enable date input on page load
-                console.log("Car details page loaded. Car ID:", carId);
-                console.log("Date input element:", dateInput);
-                console.log("Time select element:", timeSelect);
             </script>
-
-            <!-- Image Zoom Functionality -->
+            
+            <!-- Script file  -->
             <script src="/js/user/user-carDetails.js"></script>
-
-            <script>
-                async function toggleDetailsFavorite(btn, carId) {
-                    try {
-                        const response = await fetch('/toggle-favourite', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ carId })
-                        });
-
-                        if (response.status === 401) {
-                            window.location.href = '/login';
-                            return;
-                        }
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            const icon = btn.querySelector('i');
-                            if (data.action === 'added') {
-                                icon.classList.remove('far', 'text-secondary');
-                                icon.classList.add('fas', 'text-danger');
-                                btn.title = "Remove from Favorites";
-                            } else {
-                                icon.classList.remove('fas', 'text-danger');
-                                icon.classList.add('far', 'text-secondary');
-                                btn.title = "Add to Favorites";
-                            }
-                        } else {
-                            console.error('Failed to toggle favorite:', data.message);
-                        }
-
-                    } catch (error) {
-                        console.error('Error toggling favorite:', error);
-                    }
-                }
-            </script>
-
-
 
 </body>
 

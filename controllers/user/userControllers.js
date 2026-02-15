@@ -720,7 +720,7 @@ const loadListings = async (req, res) => {
   }
 }
 
-//Loading of single car details page
+//Loading of car details page
 const loadCarDetails = async (req, res) => {
   try {
     const Car = require("../../models/carSchema")
@@ -735,7 +735,7 @@ const loadCarDetails = async (req, res) => {
       return res.status(404).render("page-404", { message: "Car not found", error: null })
     }
 
-    // Fetch similar cars (same carType, excluding current car)
+    // Fetch similar cars 
     const similarCars = await Car.find({
       carType: car.carType,
       _id: { $ne: car._id },
@@ -758,7 +758,7 @@ const loadCarDetails = async (req, res) => {
     return res.render("carDetails", { car, similarCars, favorites })
   } catch (error) {
     console.error("Error loading car details:", error)
-    // If invalid ID format or other error
+  
     res.status(500).render("page-404", { message: "Error loading car details", error: null })
   }
 }

@@ -67,10 +67,7 @@ const bookingSchema = new Schema({
 
 }, { timestamps: true });
 
-bookingSchema.index(
-    { slotId: 1, bookingDate: 1 },
-    { unique: true }
-);
+
 
 
 module.exports = mongoose.model("Booking", bookingSchema);

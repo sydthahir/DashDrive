@@ -1,133 +1,134 @@
 <script>
+
   const carId = "<%= car._id %>";
   const isApproved = true;
-</script>
 
+</script>
 
 <!-- Header -->
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <div class="d-flex align-items-center gap-3 mb-1">
-            <a href="/vendor/cars" class="btn btn-outline-secondary btn-sm rounded-circle"
-                style="width:32px;height:32px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h4 class="fw-bold mb-0">Manage Availability</h4>
-        </div>
-        <p class="text-muted ms-5 mb-0">
-            <%= car.model %> (<%= car.registrationNumber %>)
-        </p>
+  <div>
+    <div class="d-flex align-items-center gap-3 mb-1">
+      <a href="/vendor/cars" class="btn btn-outline-secondary btn-sm rounded-circle"
+        style="width:32px;height:32px;display:flex;align-items:center;justify-content:center">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h4 class="fw-bold mb-0">Manage Availability</h4>
     </div>
+    <p class="text-muted ms-5 mb-0">
+      <%= car.model %> (<%= car.registrationNumber %>)
+    </p>
+  </div>
 
-    <span
-        class="badge fs-6 px-3 py-2 bg-<%= car.status === 'approved' ? 'success' : (car.status === 'rejected' ? 'danger' : 'warning text-dark') %>">
-        <%= car.status.charAt(0).toUpperCase() + car.status.slice(1) %>
-    </span>
+  <span
+    class="badge fs-6 px-3 py-2 bg-<%= car.status === 'approved' ? 'success' : (car.status === 'rejected' ? 'danger' : 'warning text-dark') %>">
+    <%= car.status.charAt(0).toUpperCase() + car.status.slice(1) %>
+  </span>
 </div>
 
 <div class="details-container">
 
-    <!-- Left Column: Car Info -->
-    <aside>
-        <div class="car-info-card">
-            <img src="<%= car.images?.[0] || 'https://via.placeholder.com/350x200' %>" class="car-main-image"
-                alt="<%= car.model %>">
+  <!-- Left Column: Car Info -->
+  <aside>
+    <div class="car-info-card">
+      <img src="<%= car.images?.[0] || 'https://via.placeholder.com/350x200' %>" class="car-main-image"
+        alt="<%= car.model %>">
 
-            <div class="car-details-body">
-                <h5 class="fw-bold mb-3">
-                    <%= car.brand?.name %>
-                        <%= car.model %>
-                </h5>
+      <div class="car-details-body">
+        <h5 class="fw-bold mb-3">
+          <%= car.brand?.name %>
+            <%= car.model %>
+        </h5>
 
-                <div class="info-row"><span>Year</span><span>
-                        <%= car.year %>
-                    </span></div>
-                <div class="info-row"><span>Fuel</span><span>
-                        <%= car.fuelType %>
-                    </span></div>
-                <div class="info-row"><span>Type</span><span>
-                        <%= car.carType %>
-                    </span></div>
-                <div class="info-row"><span>Rate / Slot</span>
-                    <span class="text-success">₹<%= car.chargePerSlot %></span>
-                </div>
-                <div class="info-row"><span>Deposit</span>
-                    <span>₹<%= car.securityDeposit %></span>
-                </div>
-
-                <small class="text-muted d-block mt-3">Features</small>
-                <p class="small mb-0">
-                    <%= car.features %>
-                </p>
-            </div>
+        <div class="info-row"><span>Year</span><span>
+            <%= car.year %>
+          </span></div>
+        <div class="info-row"><span>Fuel</span><span>
+            <%= car.fuelType %>
+          </span></div>
+        <div class="info-row"><span>Body Type</span><span>
+            <%= car.carType %>
+          </span></div>
+        <div class="info-row"><span>Rate Per Slot</span>
+          <span class="text-success">₹<%= car.chargePerSlot %></span>
         </div>
-    </aside>
+        <div class="info-row"><span>Deposit</span>
+          <span>₹<%= car.securityDeposit %></span>
+        </div>
 
-    <!-- Right Column: Calendar & Content -->
+        <small class="text-muted d-block mt-3">Features</small>
+        <p class="small mb-0">
+          <%= car.features %>
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Column: Calendar & Content -->
   <main>
     <div class="calendar-card">
 
-      <% if (car.status !== 'approved') { %>
+      <% if (car.status !=='approved' ) { %>
         <div class="alert alert-warning mb-3">
           <i class="fas fa-info-circle me-2"></i>
           Slots can be managed only after car approval.
         </div>
-      <% } else { %>
-        <div class="alert alert-info mb-3">
-          Select a date to manage 2-hour test drive slots (10 AM – 6 PM)
-        </div>
-      <% } %>
-
-      <!-- Calendar header -->
-      <div class="calendar-header">
-        <button class="btn btn-light btn-sm" id="prevMonth">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <h5 class="mb-0 fw-bold" id="currentMonthYear"></h5>
-        <button class="btn btn-light btn-sm" id="nextMonth">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-
-      <!-- Calendar grid -->
-      <div class="calendar-grid">
-        <div class="calendar-day-header">Sun</div>
-        <div class="calendar-day-header">Mon</div>
-        <div class="calendar-day-header">Tue</div>
-        <div class="calendar-day-header">Wed</div>
-        <div class="calendar-day-header">Thu</div>
-        <div class="calendar-day-header">Fri</div>
-        <div class="calendar-day-header">Sat</div>
-        <div id="calendarDays" style="display:contents"></div>
-      </div>
-
-      <!-- Slot panel -->
-      <div id="slotManagementPanel" class="slot-management-panel" style="display:none">
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-          <h6 class="fw-bold mb-0">
-            Slots for <span id="selectedDateDisplay" class="text-primary"></span>
-          </h6>
-
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="dateAvailabilityToggle" checked>
-            <label class="form-check-label small">Date Available</label>
+        <% } else { %>
+          <div class="alert alert-info mb-3">
+            Select a date to manage 2-hour test drive slots (10 AM – 6 PM)
           </div>
-        </div>
+          <% } %>
 
-        <div id="slotsContainer">
-          <div class="slot-list" id="slotsList">
-            <div class="text-center text-muted small py-3">
-              Select a date to view slots
+            <!-- Calendar header -->
+            <div class="calendar-header">
+              <button class="btn btn-light btn-sm" id="prevMonth">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <h5 class="mb-0 fw-bold" id="currentMonthYear"></h5>
+              <button class="btn btn-light btn-sm" id="nextMonth">
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
-          </div>
-        </div>
 
-        <div id="unavailableMessage" class="text-center text-danger py-4" style="display:none">
-          <i class="fas fa-ban mb-2"></i>
-          <p class="mb-0">This date is unavailable.</p>
-        </div>
-      </div>
+            <!-- Calendar grid -->
+            <div class="calendar-grid">
+              <div class="calendar-day-header">Sun</div>
+              <div class="calendar-day-header">Mon</div>
+              <div class="calendar-day-header">Tue</div>
+              <div class="calendar-day-header">Wed</div>
+              <div class="calendar-day-header">Thu</div>
+              <div class="calendar-day-header">Fri</div>
+              <div class="calendar-day-header">Sat</div>
+              <div id="calendarDays" style="display:contents"></div>
+            </div>
+
+            <!-- Slot panel -->
+            <div id="slotManagementPanel" class="slot-management-panel" style="display:none">
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <h6 class="fw-bold mb-0">
+                  Slots for <span id="selectedDateDisplay" class="text-primary"></span>
+                </h6>
+
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="dateAvailabilityToggle" checked>
+                  <label class="form-check-label small">Date Available</label>
+                </div>
+              </div>
+
+              <div id="slotsContainer">
+                <div class="slot-list" id="slotsList">
+                  <div class="text-center text-muted small py-3">
+                    Select a date to view slots
+                  </div>
+                </div>
+              </div>
+
+              <div id="unavailableMessage" class="text-center text-danger py-4" style="display:none">
+                <i class="fas fa-ban mb-2"></i>
+                <p class="mb-0">This date is unavailable.</p>
+              </div>
+            </div>
 
     </div>
   </main>

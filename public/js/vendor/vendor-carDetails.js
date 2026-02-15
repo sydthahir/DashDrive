@@ -1,3 +1,4 @@
+
 let currentDate = new Date();
 let selectedDate = null;
 let isLoading = false;
@@ -162,12 +163,12 @@ async function toggleSlot(slot) {
     const isoDate = `${year}-${month}-${day}`;
 
     if (slot._id) {
-      // Maintenance slot → delete override
+      // Maintenance slot 
       res = await fetch(`/vendor/slots/${slot._id}/toggle`, {
         method: "PATCH"
       });
     } else {
-      // Available slot → create maintenance override
+      // Available slot 
       res = await fetch(`/vendor/slots/create-maintenance`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -228,7 +229,20 @@ function renderSlots(slots) {
     </div>
   `;
 
-    if (slot.status !== "booked") {
+    const expired = isSlotExpired(slot);
+
+    if (expired) {
+      const expiredTag = document.createElement("span");
+      expiredTag.className = "slot-status expired";
+      expiredTag.textContent = "Expired";
+
+      div.querySelector(".d-flex").appendChild(expiredTag);
+
+      list.appendChild(div);
+      return;
+    }
+
+    if (slot.status !== "booked" && !expired) {
       const button = document.createElement("button");
       button.className = `btn btn-sm btn-outline-${slot.status === "available" ? "danger" : "success"}`;
       button.textContent = slot.status === "available" ? "Block" : "Unblock";
@@ -269,25 +283,46 @@ function showError(message) {
   });
 }
 
+// Update slot status 
 function updateUIState(slots) {
   const toggle = document.getElementById("dateAvailabilityToggle");
   const container = document.getElementById("slotsContainer");
   const message = document.getElementById("unavailableMessage");
 
-  // Consider "Available" if there is at least one 'available' slot.
+  // Consider "Available" if there is at least one 'available'.
   const hasAvailable = slots.some(s => s.status === 'available');
   const hasBooked = slots.some(s => s.status === 'booked');
 
-  // Update toggle checked state without triggering 'change' event
   toggle.checked = hasAvailable;
 
-  // Visibility Logic
   if (hasAvailable || hasBooked) {
     container.style.display = "block";
     message.style.display = "none";
   } else {
-    // All maintenance or empty (shouldn't be empty due to defaults)
     container.style.display = "none";
     message.style.display = "block";
   }
 }
+
+//Expired slot
+function isSlotExpired(slot) {
+  if (!selectedDate) return false;
+
+  const now = new Date();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const selected = new Date(selectedDate);
+  selected.setHours(0, 0, 0, 0);
+
+  // Check expiry if selected date is today
+  if (selected.getTime() !== today.getTime()) return false;
+
+  // Convert slot end time to Date object
+  const [hour, minute] = slot.endTime.split(":");
+  const slotEnd = new Date();
+  slotEnd.setHours(parseInt(hour), parseInt(minute), 0, 0);
+
+  return slotEnd <= now;
+}
+

@@ -380,6 +380,14 @@ body {
     border-radius: 3px;
 }
 
+.slot-status.expired {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
     .details-container {

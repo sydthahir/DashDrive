@@ -1,308 +1,201 @@
-// Image Gallery and Zoom Functionality
-class ImageZoom {
-    constructor() {
-        this.currentImageIndex = 0;
-        this.images = [];
-        this.zoomLevel = 1;
-        this.maxZoom = 3;
-        this.minZoom = 1;
-        this.zoomStep = 0.3;
-        this.isPanning = false;
-        this.startX = 0;
-        this.startY = 0;
-        this.translateX = 0;
-        this.translateY = 0;
-
-        this.init();
-    }
-
-    init() {
-        // Collect all car images
-        const thumbItems = document.querySelectorAll('.thumb-item img');
-        this.images = Array.from(thumbItems).map(img => img.src);
-
-        // If no thumbnails, get main image
-        if (this.images.length === 0) {
-            const mainImg = document.getElementById('mainImage');
-            if (mainImg) {
-                this.images = [mainImg.src];
-            }
-        }
-
-        this.createZoomModal();
-        this.attachEventListeners();
-    }
-
-    createZoomModal() {
-        const modal = document.createElement('div');
-        modal.id = 'imageZoomModal';
-        modal.className = 'zoom-modal';
-        modal.innerHTML = `
-            <div class="zoom-modal-overlay"></div>
-            <div class="zoom-modal-content">
-                <button class="zoom-close" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-                
-                <div class="zoom-controls">
-                    <button class="zoom-btn zoom-in" aria-label="Zoom In">
-                        <i class="fas fa-search-plus"></i>
-                    </button>
-                    <span class="zoom-level-display">100%</span>
-                    <button class="zoom-btn zoom-out" aria-label="Zoom Out">
-                        <i class="fas fa-search-minus"></i>
-                    </button>
-                    <button class="zoom-btn zoom-reset" aria-label="Reset Zoom">
-                        <i class="fas fa-compress"></i>
-                    </button>
-                </div>
-                
-                <div class="zoom-image-container">
-                    <img id="zoomedImage" src="" alt="Zoomed view" draggable="false">
-                </div>
-                
-                ${this.images.length > 1 ? `
-                    <button class="zoom-nav zoom-prev" aria-label="Previous Image">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="zoom-nav zoom-next" aria-label="Next Image">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    
-                    <div class="zoom-thumbnails">
-                        ${this.images.map((img, index) => `
-                            <div class="zoom-thumb ${index === 0 ? 'active' : ''}" data-index="${index}">
-                                <img src="${img}" alt="Thumbnail ${index + 1}">
-                            </div>
-                        `).join('')}
-                    </div>
-                ` : ''}
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-    }
-
-    attachEventListeners() {
-        // Main image click to open zoom
-        const mainImage = document.getElementById('mainImage');
-        const zoomContainer = document.querySelector('.zoom-container');
-
-        if (mainImage) {
-            mainImage.addEventListener('click', () => this.openZoom(0));
-        }
-
-        // Thumbnail clicks
-        document.querySelectorAll('.thumb-item').forEach((thumb, index) => {
-            thumb.addEventListener('click', () => {
-                this.currentImageIndex = index;
-            });
-        });
-
-        // Modal controls
-        const modal = document.getElementById('imageZoomModal');
-        const closeBtn = modal.querySelector('.zoom-close');
-        const overlay = modal.querySelector('.zoom-modal-overlay');
-        const zoomInBtn = modal.querySelector('.zoom-in');
-        const zoomOutBtn = modal.querySelector('.zoom-out');
-        const resetBtn = modal.querySelector('.zoom-reset');
-        const prevBtn = modal.querySelector('.zoom-prev');
-        const nextBtn = modal.querySelector('.zoom-next');
-        const zoomedImage = document.getElementById('zoomedImage');
-
-        // Close modal
-        closeBtn.addEventListener('click', () => this.closeZoom());
-        overlay.addEventListener('click', () => this.closeZoom());
-
-        // Zoom controls
-        zoomInBtn.addEventListener('click', () => this.zoom(1));
-        zoomOutBtn.addEventListener('click', () => this.zoom(-1));
-        resetBtn.addEventListener('click', () => this.resetZoom());
-
-        // Navigation
-        if (prevBtn) prevBtn.addEventListener('click', () => this.navigate(-1));
-        if (nextBtn) nextBtn.addEventListener('click', () => this.navigate(1));
-
-        // Thumbnail navigation
-        modal.querySelectorAll('.zoom-thumb').forEach(thumb => {
-            thumb.addEventListener('click', (e) => {
-                const index = parseInt(e.currentTarget.dataset.index);
-                this.showImage(index);
-            });
-        });
-
-        // Mouse wheel zoom
-        zoomedImage.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -1 : 1;
-            this.zoom(delta * 0.5);
-        });
-
-        // Pan functionality
-        zoomedImage.addEventListener('mousedown', (e) => this.startPan(e));
-        zoomedImage.addEventListener('mousemove', (e) => this.pan(e));
-        zoomedImage.addEventListener('mouseup', () => this.endPan());
-        zoomedImage.addEventListener('mouseleave', () => this.endPan());
-
-        // Touch support for mobile
-        zoomedImage.addEventListener('touchstart', (e) => this.startPan(e.touches[0]));
-        zoomedImage.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            this.pan(e.touches[0]);
-        });
-        zoomedImage.addEventListener('touchend', () => this.endPan());
-
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (!modal.classList.contains('active')) return;
-
-            switch (e.key) {
-                case 'Escape':
-                    this.closeZoom();
-                    break;
-                case 'ArrowLeft':
-                    this.navigate(-1);
-                    break;
-                case 'ArrowRight':
-                    this.navigate(1);
-                    break;
-                case '+':
-                case '=':
-                    this.zoom(1);
-                    break;
-                case '-':
-                    this.zoom(-1);
-                    break;
-                case '0':
-                    this.resetZoom();
-                    break;
-            }
-        });
-    }
-
-    openZoom(index = 0) {
-        const modal = document.getElementById('imageZoomModal');
-        this.currentImageIndex = index;
-        this.showImage(index);
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    closeZoom() {
-        const modal = document.getElementById('imageZoomModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-        this.resetZoom();
-    }
-
-    showImage(index) {
-        if (index < 0 || index >= this.images.length) return;
-
-        this.currentImageIndex = index;
-        const zoomedImage = document.getElementById('zoomedImage');
-        zoomedImage.src = this.images[index];
-
-        // Update thumbnail active state
-        document.querySelectorAll('.zoom-thumb').forEach((thumb, i) => {
-            thumb.classList.toggle('active', i === index);
-        });
-
-        this.resetZoom();
-    }
-
-    navigate(direction) {
-        let newIndex = this.currentImageIndex + direction;
-
-        // Wrap around
-        if (newIndex < 0) newIndex = this.images.length - 1;
-        if (newIndex >= this.images.length) newIndex = 0;
-
-        this.showImage(newIndex);
-    }
-
-    zoom(delta) {
-        const newZoom = this.zoomLevel + (delta * this.zoomStep);
-        this.zoomLevel = Math.max(this.minZoom, Math.min(this.maxZoom, newZoom));
-        this.updateZoom();
-    }
-
-    resetZoom() {
-        this.zoomLevel = 1;
-        this.translateX = 0;
-        this.translateY = 0;
-        this.updateZoom();
-    }
-
-    updateZoom() {
-        const zoomedImage = document.getElementById('zoomedImage');
-        const levelDisplay = document.querySelector('.zoom-level-display');
-
-        zoomedImage.style.transform = `scale(${this.zoomLevel}) translate(${this.translateX}px, ${this.translateY}px)`;
-        levelDisplay.textContent = `${Math.round(this.zoomLevel * 100)}%`;
-
-        // Change cursor based on zoom level
-        zoomedImage.style.cursor = this.zoomLevel > 1 ? 'grab' : 'zoom-in';
-    }
-
-    startPan(e) {
-        if (this.zoomLevel <= 1) return;
-
-        this.isPanning = true;
-        this.startX = e.clientX - this.translateX;
-        this.startY = e.clientY - this.translateY;
-
-        const zoomedImage = document.getElementById('zoomedImage');
-        zoomedImage.style.cursor = 'grabbing';
-    }
-
-    pan(e) {
-        if (!this.isPanning) return;
-
-        e.preventDefault();
-        this.translateX = e.clientX - this.startX;
-        this.translateY = e.clientY - this.startY;
-        this.updateZoom();
-    }
-
-    endPan() {
-        this.isPanning = false;
-        const zoomedImage = document.getElementById('zoomedImage');
-        zoomedImage.style.cursor = this.zoomLevel > 1 ? 'grab' : 'zoom-in';
-    }
+// Add ID to date input 
+if (!dateInput.id) {
+    dateInput.id = "dateInput";
 }
 
-// Thumbnail gallery functionality
-function changeImage(element, imageSrc) {
-    const mainImage = document.getElementById('mainImage');
-    mainImage.src = imageSrc;
+dateInput.addEventListener("change", async function () {
+    const selectedDate = this.value;
 
-    // Update active thumbnail
-    document.querySelectorAll('.thumb-item').forEach(thumb => {
-        thumb.classList.remove('active');
-    });
-    element.classList.add('active');
-}
+    console.log("Date selected:", selectedDate);
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize zoom functionality
-    const imageZoom = new ImageZoom();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // Add click hint to main image
-    const mainImage = document.getElementById('mainImage');
-    if (mainImage) {
-        const hint = document.createElement('div');
-        hint.className = 'zoom-hint';
-        hint.innerHTML = '<i class="fas fa-search-plus"></i> Click to zoom';
-        mainImage.parentElement.appendChild(hint);
+     const selected = new Date(selectedDate);
 
-        // Show hint on hover
-        mainImage.parentElement.addEventListener('mouseenter', () => {
-            hint.style.opacity = '1';
+     if (selected < today) {
+        timeSelect.innerHTML = '<option value="">Cannot select past date</option>';
+        timeSelect.disabled = true;
+        return;
+    }
+
+   
+    if (!selectedDate) {
+        timeSelect.innerHTML = '<option value="">Select time</option>';
+        return;
+    }
+
+    // Show loading state
+    timeSelect.innerHTML = '<option value="">Loading slots...</option>';
+    timeSelect.disabled = true;
+
+    try {
+        console.log("Fetching slots for car:", carId, "date:", selectedDate);
+
+        const res = await fetch(`/cars/${carId}/available-slots?date=${selectedDate}`);
+
+        console.log("Response status:", res.status);
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const slots = await res.json();
+        console.log("Received slots:", slots);
+
+        // Reset select
+        timeSelect.innerHTML = '<option value="">Select time</option>';
+        timeSelect.disabled = false;
+
+        //Fetch all slots
+        const allSlots = slots;
+
+
+        console.log("Available slots:", allSlots);
+
+        if (allSlots.length === 0) {
+            timeSelect.innerHTML = '<option value="">No slots avail. for this date</option>';
+            timeSelect.disabled = true;
+
+            // Showing alert 
+            Swal.fire({
+                icon: 'info',
+                title: 'No Slots Available',
+                text: 'No available time slots for the selected date. Please choose another date.',
+                confirmButtonColor: '#0f172a'
+            });
+
+            return;
+        }
+
+        // Add available slots to dropdown
+        allSlots.forEach(slot => {
+            const option = document.createElement("option");
+            option.value = `${slot.startTime}-${slot.endTime}`;
+
+            const formattedTime = formatTime(slot.startTime) + " - " + formatTime(slot.endTime);
+
+            const expired = isSlotExpired(slot, selectedDate);
+
+            if (expired) {
+                option.textContent = formattedTime + " (Expired)";
+                option.disabled = true;
+            }
+
+            else if (slot.status === "available") {
+                option.textContent = formattedTime + " (Available)";
+            }
+
+            else if (slot.status === "booked") {
+                option.textContent = formattedTime + " (Booked)";
+                option.disabled = true;
+            }
+
+            else if (slot.status === "maintenance") {
+                option.textContent = formattedTime + " (Under Maintenance)";
+                option.disabled = true;
+            }
+
+            timeSelect.appendChild(option);
         });
 
-        mainImage.parentElement.addEventListener('mouseleave', () => {
-            hint.style.opacity = '0';
+        console.log("Slots loaded successfully");
+
+    } catch (err) {
+        console.error("Error loading slots:", err);
+
+        timeSelect.innerHTML = '<option value="">Error loading slots</option>';
+        timeSelect.disabled = true;
+
+        // Error alert 
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Unable to load available time slots. Please try again later.',
+            confirmButtonColor: '#ef4444'
         });
+
     }
 });
+
+function formatTime(time) {
+    const [h, m] = time.split(":");
+    const hour = parseInt(h);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const display = hour % 12 || 12;
+    return `${display}:${m} ${ampm}`;
+}
+
+function isSlotExpired(slot, selectedDate) {
+
+    const now = new Date();
+
+    const selected = new Date(selectedDate);
+
+    // Remove time from today 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // If yesterday or prvious days
+    if (selected < today) {
+        return true;
+    }
+
+    // If selected date is after today 
+    if (selected > today) {
+        return false;
+    }
+
+    // If Date today checks time 
+    const [h, m] = slot.endTime.split(":");
+
+    const slotEnd = new Date();
+    slotEnd.setHours(parseInt(h), parseInt(m), 0, 0);
+
+    return slotEnd <= now;
+}
+
+
+// Enable date input on page load
+console.log("Car details page loaded. Car ID:", carId);
+console.log("Date input element:", dateInput);
+console.log("Time select element:", timeSelect);
+
+
+// Favourites Toggle 
+async function toggleDetailsFavorite(btn, carId) {
+    try {
+        const response = await fetch('/toggle-favourite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ carId })
+        });
+
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            const icon = btn.querySelector('i');
+            if (data.action === 'added') {
+                icon.classList.remove('far', 'text-secondary');
+                icon.classList.add('fas', 'text-danger');
+                btn.title = "Remove from Favorites";
+            } else {
+                icon.classList.remove('fas', 'text-danger');
+                icon.classList.add('far', 'text-secondary');
+                btn.title = "Add to Favorites";
+            }
+        } else {
+            console.error('Failed to toggle favorite:', data.message);
+        }
+
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+    }
+}

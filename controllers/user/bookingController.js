@@ -8,7 +8,7 @@ const loadBookingDetails = async (req, res) => {
         const { carId } = req.params;
         const { date, time } = req.query;
 
-        //Basic Validation
+        //Validation
         if (!date || !time) {
             return res.redirect(`/cars/${carId}`);
         }
@@ -44,13 +44,18 @@ const loadBookingDetails = async (req, res) => {
             );
         }
 
+        
+        const vendorAddress = car.vendorId?.businessAddress || null;
+
+
         //render bookingDetails page
         res.render("bookingDetails", {
             car,
             user: req.user,
             selectedDate: date,
             startTime,
-            endTime
+            endTime,
+            vendorAddress
         });
 
     } catch (error) {

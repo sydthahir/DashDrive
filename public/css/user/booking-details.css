@@ -1,10 +1,7 @@
-/* ============================================
-   BOOKING DETAILS PAGE - MINIMALISTIC & MODERN
-   Matching DashDrive Design System
-   ============================================ */
+/* BOOKING DETAILS PAGE */
 
 :root {
-    /* Premium Color Palette - Matching existing design */
+
     --primary: #0f172a;
     --primary-light: #1e293b;
     --accent: #3b82f6;
@@ -52,9 +49,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* ============================================
-   PAGE HEADER - Minimalistic Hero
-   ============================================ */
+/*  PAGE HEADER  */
 
 .booking-hero {
     background: var(--primary);
@@ -110,9 +105,7 @@ body {
     font-weight: 400;
 }
 
-/* ============================================
-   BREADCRUMB - Matching existing style
-   ============================================ */
+/*  BREADCRUMB  */
 
 .breadcrumb-nav {
     margin: 24px 0;
@@ -151,9 +144,7 @@ body {
     font-weight: 600;
 }
 
-/* ============================================
-   CONTAINER & LAYOUT
-   ============================================ */
+/* CONTAINER & LAYOUT */
 
 .booking-container {
     max-width: 1400px;
@@ -170,9 +161,7 @@ body {
     align-items: start;
 }
 
-/* ============================================
-   FORM CARD - Clean and minimal
-   ============================================ */
+/* Form  */
 
 .booking-form-container {
     width: 100%;
@@ -218,9 +207,6 @@ body {
     padding: 32px;
 }
 
-/* ============================================
-   FORM SECTIONS
-   ============================================ */
 
 .form-section {
     margin-bottom: 32px;
@@ -250,9 +236,6 @@ body {
     color: var(--accent);
 }
 
-/* ============================================
-   FORM GROUPS & INPUTS - Minimal & Modern
-   ============================================ */
 
 .form-group {
     margin-bottom: 20px;
@@ -338,9 +321,7 @@ textarea.form-control {
     color: var(--text-light);
 }
 
-/* ============================================
-   CHECKBOX STYLING - Clean minimal design
-   ============================================ */
+/*  CHECKBOX STYLING */
 
 .terms-box {
     background: var(--surface-200);
@@ -375,6 +356,7 @@ textarea.form-control {
     font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.5;
+    margin-left: 10px;
 }
 
 .custom-control-label::before {
@@ -611,9 +593,7 @@ textarea.form-control {
     font-size: 14px;
 }
 
-/* ============================================
-   DIVIDER
-   ============================================ */
+
 
 .divider {
     height: 1px;
