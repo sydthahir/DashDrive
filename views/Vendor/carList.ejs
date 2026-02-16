@@ -279,10 +279,6 @@
 </div>
 
 <!-- Stats Summary -->
-<% let totalCars=cars ? cars.length : 0; let approvedCars=cars ? cars.filter(c=> c.status === 'approved').length : 0;
-    let pendingCars = cars ? cars.filter(c => c.status === 'pending').length : 0;
-    let rejectedCars = cars ? cars.filter(c => c.status === 'rejected').length : 0;
-    %>
     <div class="dashboard-stats">
         <div class="stat-card">
             <div class="stat-icon bg-blue-light">
@@ -298,7 +294,7 @@
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-value">
-                <%= approvedCars %>
+                <%= approvedCount %>
             </div>
             <div class="stat-label">Approved</div>
         </div>
@@ -307,7 +303,7 @@
                 <i class="fas fa-clock"></i>
             </div>
             <div class="stat-value">
-                <%= pendingCars %>
+                <%= pendingCount %>
             </div>
             <div class="stat-label">Pending</div>
         </div>
@@ -316,7 +312,7 @@
                 <i class="fas fa-times-circle"></i>
             </div>
             <div class="stat-value">
-                <%= rejectedCars %>
+                <%= rejectedCount %>
             </div>
             <div class="stat-label">Rejected</div>
         </div>

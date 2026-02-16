@@ -1,15 +1,5 @@
-const nodemailer = require("nodemailer")
 
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: process.env.NODEMAILER_EMAIL,
-    pass: process.env.NODEMAILER_PASSWORD,
-  },
-})
+const transporter = require("../config/nodemailer")
 
 // OTP MAIL
 const sendOtpMail = async (email, otp) => {
@@ -116,10 +106,48 @@ const sendCarRejectionMail = async (email, name, carBrand, carModel) => {
   })
 }
 
+//Send booking confirmation mail
+const sendBookingConfirmationMail = async (user, booking, car) => {
+  try {
+    const mailOptions = {
+      from: process.env.NODEMAILER_EMAIL,
+      to: user.email,
+      subject: "🚗 Your DashDrive Booking is Confirmed!",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding:20px;">
+          <h2>Booking Confirmed ✅</h2>
+          <p>Hi ${user.name},</p>
+          <p>Your test drive has been successfully booked.</p>
+
+          <h3>📋 Booking Details:</h3>
+          <ul>
+           <li><strong>Car:</strong> ${car.brand?.name || ""} ${car.model}</li>
+              <li><strong>Date:</strong> ${booking.bookingDate.toDateString()}</li>
+            <li><strong>Time Slot:</strong> ${booking.startTime} - ${booking.endTime}</li>
+            <li><strong>Booking ID:</strong> ${booking._id}</li>
+          </ul>
+
+          <p>We look forward to seeing you!</p>
+          <br/>
+          <p>– Team DashDrive</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    return true;
+  }catch (error) {
+    console.error("Booking mail error:", error);
+    return false;
+  }
+
+}
+
 module.exports = {
   sendOtpMail,
   sendVendorApprovalMail,
   sendVendorRejectionMail,
   sendCarApprovalMail,
   sendCarRejectionMail,
+  sendBookingConfirmationMail
 }

@@ -321,7 +321,7 @@ const loadBookings = async (req, res) => {
 
     // Pagination
     const page = parseInt(req.query.page) || 1
-    const limit = 2
+    const limit = 3
     const skip = (page - 1) * limit
 
     // Build query

@@ -60,285 +60,320 @@
                 </ol>
             </nav>
 
+            <!-- Error message  -->
+            <% if (error) { %>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        let message = "";
+
+                        switch ("<%= error %>") {
+                            case "slot-unavailable":
+                                message = "This slot is no longer available.";
+                                break;
+                            case "already-booked-another-car":
+                                message = "You already have another booking at this time.";
+                                break;
+                            case "slot-already-booked":
+                                message = "This time slot is already booked.";
+                                break;
+                            default:
+                                message = "Something went wrong.";
+                        }
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Booking Error",
+                            text: message,
+                            confirmButtonColor: "#0f172a"
+                        });
+                    });
+                </script>
+                <% } %>
 
 
 
-            <main class="details-grid">
-                <!-- Left Column: Content -->
-                <div class="details-content">
+                    <main class="details-grid">
+                        <!-- Left Column: Content -->
+                        <div class="details-content">
 
-                    <!-- Gallery Section -->
-                    <section class="gallery-container">
-                        <div class="main-image-wrapper zoom-container">
-                            <div class="overlay-badges">
-                                <% if(car.createdAt> new Date(Date.now() - 30*24*60*60*1000)) { %>
-                                    <span class="badge badge-primary px-3 py-2 rounded-pill">NEW ARRIVAL</span>
-                                    <% } %>
-                            </div>
-                            <img id="mainImage"
-                                src="<%= (car.images && car.images.length > 0) ? car.images[0] : 'https://via.placeholder.com/800x500?text=No+Image' %>"
-                                alt="<%= car.model %>" class="main-image">
-                        </div>
-
-                        <% if (car.images && car.images.length> 1) { %>
-                            <div class="gallery-thumbs">
-                                <% car.images.forEach((img, index)=> { %>
-                                    <div class="thumb-item <%= index === 0 ? 'active' : '' %>"
-                                        onclick="changeImage(this, '<%= img %>')">
-                                        <img src="<%= img %>" alt="Thumbnail" class="thumb-image">
+                            <!-- Gallery Section -->
+                            <section class="gallery-container">
+                                <div class="main-image-wrapper zoom-container">
+                                    <div class="overlay-badges">
+                                        <% if(car.createdAt> new Date(Date.now() - 30*24*60*60*1000)) { %>
+                                            <span class="badge badge-primary px-3 py-2 rounded-pill">NEW ARRIVAL</span>
+                                            <% } %>
                                     </div>
-                                    <% }); %>
-                            </div>
-                            <% } %>
-                    </section>
-
-                    <!-- Overview Section -->
-                    <section class="overview-section">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h1 class="car-title mb-0">
-                                <%= car.brand.name %>
-                                    <%= car.model %> <span
-                                            style="font-size: 1.5rem; color: var(--text-light); font-weight: 400;">
-                                            <%= car.year %>
-                                        </span>
-                            </h1>
-                            <button class="btn btn-link p-0 text-decoration-none"
-                                onclick="toggleDetailsFavorite(this, '<%= car._id %>')"
-                                title="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'Remove from Favorites' : 'Add to Favorites' %>">
-                                <i
-                                    class="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'fas text-danger' : 'far text-secondary' %> fa-heart fa-2x"></i>
-                            </button>
-                        </div>
-                        <p class="car-tagline">Experience the ultimate comfort and performance with this premium <%=
-                                car.carType %>.</p>
-
-                        <div class="rating-badge">
-                            <i class="fas fa-star star-gold"></i> 4.8
-                            <span style="color: var(--text-light); margin-left: 5px;">(12 Test Drives)</span>
-                        </div>
-
-                        <div class="highlights-grid">
-                            <div class="highlight-card">
-                                <i class="fas fa-gas-pump highlight-icon"></i>
-                                <div class="highlight-label">Fuel Type</div>
-                                <div class="highlight-value">
-                                    <%= car.fuelType %>
+                                    <img id="mainImage"
+                                        src="<%= (car.images && car.images.length > 0) ? car.images[0] : 'https://via.placeholder.com/800x500?text=No+Image' %>"
+                                        alt="<%= car.model %>" class="main-image">
                                 </div>
-                            </div>
-                            <div class="highlight-card">
-                                <i class="fas fa-cogs highlight-icon"></i>
-                                <div class="highlight-label">Transmission</div>
 
-                                <div class="highlight-value">
-                                    <%= car.transmission || 'Automatic' %>
-                                </div>
-                            </div>
-                            <div class="highlight-card">
-                                <i class="fas fa-chair highlight-icon"></i>
-                                <div class="highlight-label">Seats</div>
-                                <div class="highlight-value">4 Adults</div>
-                            </div>
-                            <div class="highlight-card">
-                                <i class="fas fa-tachometer-alt highlight-icon"></i>
-                                <div class="highlight-label">Mileage</div>
-                                <div class="highlight-value">
-                                    <%= car.mileage %>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- About Section -->
-                    <section class="content-block">
-                        <h3 class="section-title">About this Car</h3>
-                        <p class="description-text">
-                            <%= car.description || "This verified " + car.brand.name + " " + car.model
-                                + " offers a premium driving experience. Meticulously maintained and fully inspected to ensure safety and comfort. Ideal for both city driving and long-distance journeys, featuring a spacious interior and advanced handling capabilities."
-                                %>
-                        </p>
-                    </section>
-
-                    <!-- Features & Specs -->
-                    <section class="content-block">
-                        <h3 class="section-title">Specifications & Features</h3>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <h5 style="font-weight: 700; margin-bottom: 1rem;">Key Specs</h5>
-                                <table class="specs-table">
-                                    <tr>
-                                        <td class="spec-label">Brand</td>
-                                        <td class="spec-value">
-                                            <%= car.brand.name %>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="spec-label">Model</td>
-                                        <td class="spec-value">
-                                            <%= car.model %>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="spec-label">Year</td>
-                                        <td class="spec-value">
-                                            <%= car.year %>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="spec-label">Color</td>
-                                        <td class="spec-value">
-                                            <%= car.color %>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="spec-label">Registration</td>
-                                        <td class="spec-value">
-                                            <%= car.registrationNumber %>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                            <div class="col-md-6">
-                                <h5 style="font-weight: 700; margin-bottom: 1rem;">Amenities</h5>
-                                <div class="features-grid" style="grid-template-columns: 1fr;">
-                                    <% const featuresList=car.features ? car.features.split(',').map(f=> f.trim()) :
-                                        ['Air Conditioning', 'Power Steering', 'Power Windows', 'ABS', 'Airbags'];
-                                        %>
-                                        <% featuresList.forEach(feature=> { %>
-                                            <div class="feature-item">
-                                                <i class="fas fa-check-circle feature-check"></i>
-                                                <span>
-                                                    <%= feature %>
-                                                </span>
+                                <% if (car.images && car.images.length> 1) { %>
+                                    <div class="gallery-thumbs">
+                                        <% car.images.forEach((img, index)=> { %>
+                                            <div class="thumb-item <%= index === 0 ? 'active' : '' %>"
+                                                onclick="changeImage(this, '<%= img %>')">
+                                                <img src="<%= img %>" alt="Thumbnail" class="thumb-image">
                                             </div>
                                             <% }); %>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                                    </div>
+                                    <% } %>
+                            </section>
 
-                    <!-- Location & Trust -->
-                    <section class="content-block">
-                        <div class="row">
-                            <div class="col-md-6 mb-4 mb-md-0">
-                                <h3 class="section-title">Pickup Location</h3>
-                                <div class="location-preview">
-                                    <div class="location-icon-box">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </div>
-                                    <div>
-                                        <h5 style="font-weight: 700; margin-bottom: 0;">DashDrive Hub - <%= car.vendorId
-                                                && car.vendorId.address ? car.vendorId.address.city : 'City Center' %>
-                                        </h5>
-                                        <p class="text-muted small mb-0">
-                                            <%= car.vendorId && car.vendorId.address ? car.vendorId.address.street
-                                                : 'Main Street' %>
-                                        </p>
-                                        <a href="#"
-                                            style="color: var(--accent); font-size: 0.85rem; font-weight: 600; text-decoration: none;">Get
-                                            Directions</a>
-                                    </div>
+                            <!-- Overview Section -->
+                            <section class="overview-section">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h1 class="car-title mb-0">
+                                        <%= car.brand.name %>
+                                            <%= car.model %> <span
+                                                    style="font-size: 1.5rem; color: var(--text-light); font-weight: 400;">
+                                                    <%= car.year %>
+                                                </span>
+                                    </h1>
+                                    <button class="btn btn-link p-0 text-decoration-none"
+                                        onclick="toggleDetailsFavorite(this, '<%= car._id %>')"
+                                        title="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'Remove from Favorites' : 'Add to Favorites' %>">
+                                        <i
+                                            class="<%= (typeof favorites !== 'undefined' && favorites.includes(car._id.toString())) ? 'fas text-danger' : 'far text-secondary' %> fa-heart fa-2x"></i>
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h3 class="section-title">Booking Promise</h3>
-                                <div class="trust-grid">
-                                    <div class="trust-item">
-                                        <i class="fas fa-shield-alt trust-icon"></i>
-                                        <div class="trust-text">
-                                            <h4>Verified Car</h4>
-                                            <p>Inspected by experts</p>
+                                <p class="car-tagline">Experience the ultimate comfort and performance with this premium
+                                    <%= car.carType %>.
+                                </p>
+
+                                <div class="rating-badge">
+                                    <i class="fas fa-star star-gold"></i> 4.8
+                                    <span style="color: var(--text-light); margin-left: 5px;">(12 Test Drives)</span>
+                                </div>
+
+                                <div class="highlights-grid">
+                                    <div class="highlight-card">
+                                        <i class="fas fa-gas-pump highlight-icon"></i>
+                                        <div class="highlight-label">Fuel Type</div>
+                                        <div class="highlight-value">
+                                            <%= car.fuelType %>
                                         </div>
                                     </div>
-                                    <div class="trust-item">
-                                        <i class="fas fa-lock trust-icon"></i>
-                                        <div class="trust-text">
-                                            <h4>Secure Payment</h4>
-                                            <p>100% safe transaction</p>
+                                    <div class="highlight-card">
+                                        <i class="fas fa-cogs highlight-icon"></i>
+                                        <div class="highlight-label">Transmission</div>
+
+                                        <div class="highlight-value">
+                                            <%= car.transmission || 'Automatic' %>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                </div>
-
-                <!-- Right Column: Sidebar -->
-                <aside class="sidebar-sticky">
-                    <div class="booking-card">
-                        <div class="price-header">
-                            <div class="price-display">
-                                <span class="price-amount">₹<%= car.chargePerSlot %></span>
-                                <span class="price-unit">/ Test Drive</span>
-                            </div>
-                            <p class="text-success font-weight-bold mb-0 mt-2"><i class="fas fa-check"></i> Available
-                                Now</p>
-                        </div>
-
-                        <form action="/bookings/new/<%= car._id %>" method="GET" class="booking-form">
-
-                            <div class="form-group">
-                                <label>Select Date</label>
-                                <input type="date" name="date" class="booking-input" required
-                                    min="<%= new Date().toISOString().split('T')[0] %>">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Preferred Time</label>
-                                <select name="time" id="timeSelect" class="booking-input" required>
-                                    <option value="">Select time</option>
-                                </select>
-
-                            </div>
-
-                            <button type="submit" class="btn-primary-lg">
-                                Book Test Drive
-                            </button>
-                        </form>
-
-                        <div class="secure-note">
-                            <i class="fas fa-info-circle"></i> Free cancellation 2 hours prior
-                        </div>
-                    </div>
-                </aside>
-            </main>
-
-            <!-- Similar Cars Section -->
-            <% if(similarCars && similarCars.length> 0) { %>
-                <section class="similar-section container">
-                    <h3 class="section-title">Similar Vehicles</h3>
-                    <div class="similar-grid">
-                        <% similarCars.forEach(simCar=> { %>
-                            <a href="/cars/<%= simCar._id %>" class="text-decoration-none">
-                                <div class="card border-0 shadow-sm h-100"
-                                    style="border-radius: var(--radius-md); overflow: hidden;">
-                                    <img src="<%= (simCar.images && simCar.images.length > 0) ? simCar.images[0] : 'https://via.placeholder.com/300x200' %>"
-                                        class="card-img-top" alt="<%= simCar.model %>"
-                                        style="height: 180px; object-fit: cover;">
-                                    <div class="card-body">
-                                        <h6 class="card-subtitle mb-2 text-muted text-uppercase"
-                                            style="font-size: 0.75rem;">
-                                            <%= simCar.brand.name %>
-                                        </h6>
-                                        <h5 class="card-title text-dark">
-                                            <%= simCar.model %>
-                                        </h5>
-                                        <div class="d-flex justify-content-between align-items-center mt-3">
-                                            <span class="font-weight-bold text-primary">₹<%= simCar.chargePerSlot %>
-                                            </span>
-                                            <small class="text-muted">
-                                                <%= simCar.fuelType %>
-                                            </small>
+                                    <div class="highlight-card">
+                                        <i class="fas fa-chair highlight-icon"></i>
+                                        <div class="highlight-label">Seats</div>
+                                        <div class="highlight-value">4 Adults</div>
+                                    </div>
+                                    <div class="highlight-card">
+                                        <i class="fas fa-tachometer-alt highlight-icon"></i>
+                                        <div class="highlight-label">Mileage</div>
+                                        <div class="highlight-value">
+                                            <%= car.mileage %>
                                         </div>
                                     </div>
                                 </div>
-                            </a>
-                            <% }); %>
-                    </div>
-                </section>
-                <% } %>
+                            </section>
+
+                            <!-- About Section -->
+                            <section class="content-block">
+                                <h3 class="section-title">About this Car</h3>
+                                <p class="description-text">
+                                    <%= car.description || "This verified " + car.brand.name + " " + car.model
+                                        + " offers a premium driving experience. Meticulously maintained and fully inspected to ensure safety and comfort. Ideal for both city driving and long-distance journeys, featuring a spacious interior and advanced handling capabilities."
+                                        %>
+                                </p>
+                            </section>
+
+                            <!-- Features & Specs -->
+                            <section class="content-block">
+                                <h3 class="section-title">Specifications & Features</h3>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <h5 style="font-weight: 700; margin-bottom: 1rem;">Key Specs</h5>
+                                        <table class="specs-table">
+                                            <tr>
+                                                <td class="spec-label">Brand</td>
+                                                <td class="spec-value">
+                                                    <%= car.brand.name %>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="spec-label">Model</td>
+                                                <td class="spec-value">
+                                                    <%= car.model %>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="spec-label">Year</td>
+                                                <td class="spec-value">
+                                                    <%= car.year %>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="spec-label">Color</td>
+                                                <td class="spec-value">
+                                                    <%= car.color %>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="spec-label">Registration</td>
+                                                <td class="spec-value">
+                                                    <%= car.registrationNumber %>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <h5 style="font-weight: 700; margin-bottom: 1rem;">Amenities</h5>
+                                        <div class="features-grid" style="grid-template-columns: 1fr;">
+                                            <% const featuresList=car.features ? car.features.split(',').map(f=>
+                                                f.trim()) :
+                                                ['Air Conditioning', 'Power Steering', 'Power Windows', 'ABS',
+                                                'Airbags'];
+                                                %>
+                                                <% featuresList.forEach(feature=> { %>
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-check-circle feature-check"></i>
+                                                        <span>
+                                                            <%= feature %>
+                                                        </span>
+                                                    </div>
+                                                    <% }); %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Location & Trust -->
+                            <section class="content-block">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4 mb-md-0">
+                                        <h3 class="section-title">Pickup Location</h3>
+                                        <div class="location-preview">
+                                            <div class="location-icon-box">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </div>
+                                            <div>
+                                                <h5 style="font-weight: 700; margin-bottom: 0;">DashDrive Hub - <%=
+                                                        car.vendorId && car.vendorId.address ? car.vendorId.address.city
+                                                        : 'City Center' %>
+                                                </h5>
+                                                <p class="text-muted small mb-0">
+                                                    <%= car.vendorId && car.vendorId.address ?
+                                                        car.vendorId.address.street : 'Main Street' %>
+                                                </p>
+                                                <a href="#"
+                                                    style="color: var(--accent); font-size: 0.85rem; font-weight: 600; text-decoration: none;">Get
+                                                    Directions</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h3 class="section-title">Booking Promise</h3>
+                                        <div class="trust-grid">
+                                            <div class="trust-item">
+                                                <i class="fas fa-shield-alt trust-icon"></i>
+                                                <div class="trust-text">
+                                                    <h4>Verified Car</h4>
+                                                    <p>Inspected by experts</p>
+                                                </div>
+                                            </div>
+                                            <div class="trust-item">
+                                                <i class="fas fa-lock trust-icon"></i>
+                                                <div class="trust-text">
+                                                    <h4>Secure Payment</h4>
+                                                    <p>100% safe transaction</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                        </div>
+
+                        <!-- Right Column: Sidebar -->
+                        <aside class="sidebar-sticky">
+                            <div class="booking-card">
+                                <div class="price-header">
+                                    <div class="price-display">
+                                        <span class="price-amount">₹<%= car.chargePerSlot %></span>
+                                        <span class="price-unit">/ Test Drive</span>
+                                    </div>
+                                    <p class="text-success font-weight-bold mb-0 mt-2"><i class="fas fa-check"></i>
+                                        Available
+                                        Now</p>
+                                </div>
+
+                                <form action="/bookings/new/<%= car._id %>" method="GET" class="booking-form">
+
+                                    <div class="form-group">
+                                        <label>Select Date</label>
+                                        <input type="date" name="date" class="booking-input" required
+                                            min="<%= new Date().toISOString().split('T')[0] %>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Preferred Time</label>
+                                        <select name="time" id="timeSelect" class="booking-input" required>
+                                            <option value="">Select time</option>
+                                        </select>
+
+                                    </div>
+
+                                    <button type="submit" class="btn-primary-lg">
+                                        Book Test Drive
+                                    </button>
+                                </form>
+
+                                <div class="secure-note">
+                                    <i class="fas fa-info-circle"></i> Free cancellation 2 hours prior
+                                </div>
+                            </div>
+                        </aside>
+                    </main>
+
+                    <!-- Similar Cars Section -->
+                    <% if(similarCars && similarCars.length> 0) { %>
+                        <section class="similar-section container">
+                            <h3 class="section-title">Similar Vehicles</h3>
+                            <div class="similar-grid">
+                                <% similarCars.forEach(simCar=> { %>
+                                    <a href="/cars/<%= simCar._id %>" class="text-decoration-none">
+                                        <div class="card border-0 shadow-sm h-100"
+                                            style="border-radius: var(--radius-md); overflow: hidden;">
+                                            <img src="<%= (simCar.images && simCar.images.length > 0) ? simCar.images[0] : 'https://via.placeholder.com/300x200' %>"
+                                                class="card-img-top" alt="<%= simCar.model %>"
+                                                style="height: 180px; object-fit: cover;">
+                                            <div class="card-body">
+                                                <h6 class="card-subtitle mb-2 text-muted text-uppercase"
+                                                    style="font-size: 0.75rem;">
+                                                    <%= simCar.brand.name %>
+                                                </h6>
+                                                <h5 class="card-title text-dark">
+                                                    <%= simCar.model %>
+                                                </h5>
+                                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                                    <span class="font-weight-bold text-primary">₹<%=
+                                                            simCar.chargePerSlot %>
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        <%= simCar.fuelType %>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <% }); %>
+                            </div>
+                        </section>
+                        <% } %>
 
         </div>
 
@@ -357,7 +392,7 @@
                 const timeSelect = document.getElementById("timeSelect");
                 const carId = "<%= car._id %>";
             </script>
-            
+
             <!-- Script file  -->
             <script src="/js/user/user-carDetails.js"></script>
 

@@ -112,14 +112,18 @@ const listCars = async (req, res) => {
 
     // Find cars belonging to this vendor
     const cars = await car.find(query)
-    .populate('brand')
-    .skip(skip)
-    .limit(limit)
-    .lean();
+      .populate('brand')
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
     // Count total results
     const totalCars = await car.countDocuments(query)
     const totalPages = Math.ceil(totalCars / limit)
+
+    const approvedCount = await car.countDocuments({ ...query, status: 'approved' })
+    const pendingCount = await car.countDocuments({ ...query, status: 'pending' })
+    const rejectedCount = await car.countDocuments({ ...query, status: 'rejected' })
 
     res.render("vendorCarList", {
       title: "My Cars",
@@ -127,7 +131,11 @@ const listCars = async (req, res) => {
       activePage: "cars",
       vendor: req.vendor,
       currentPage: page,
-      totalPages
+      totalPages,
+      totalCars,
+      approvedCount,
+      pendingCount,
+      rejectedCount
     })
   } catch (error) {
     console.error("Error listing cars:", error)

@@ -755,7 +755,9 @@ const loadCarDetails = async (req, res) => {
       }
     }
 
-    return res.render("carDetails", { car, similarCars, favorites })
+    const error = req.query.error || null;
+
+    return res.render("carDetails", { car, similarCars, favorites, error })
   } catch (error) {
     console.error("Error loading car details:", error)
   

@@ -2,6 +2,7 @@ const Car = require("../../models/carSchema");
 const Booking = require("../../models/bookingSchema");
 const Slot = require("../../models/slotSchema")
 const BOOKING_STATUS = require("../../constants/bookingStatus");
+const { sendBookingConfirmationMail } = require("../../utils/mailer");
 
 //Load booking details
 const loadBookingDetails = async (req, res) => {
@@ -82,7 +83,7 @@ const createBooking = async (req, res) => {
             specialRequests,
         } = req.body;
 
-        console.log("success", req.body);
+
 
         //Validation
         if (!carId || !vendorId || !date || !startTime || !endTime) {
@@ -94,7 +95,7 @@ const createBooking = async (req, res) => {
 
         //Prevent Double booking
         const existingBooking = await Booking.findOne({
-            car: carId,
+            carId: carId,
             bookingDate,
             startTime,
             paymentStatus: { $in: ["pending", "paid"] }
@@ -109,6 +110,17 @@ const createBooking = async (req, res) => {
         if (!car) {
             return res.redirect("/cars");
         }
+        const userConflictBooking = await Booking.findOne({
+            userId: req.user._id,
+            bookingDate,
+            startTime,
+            paymentStatus: { $in: ["pending", "paid"] }
+        });
+
+        if (userConflictBooking) {
+            return res.redirect(`/cars/${carId}?error=already-booked-another-car`);
+        }
+
 
 
         //Create Booking
@@ -149,6 +161,13 @@ const createBooking = async (req, res) => {
                 upsert: true
             }
         );
+
+
+        // Send confirmation mail 
+        const bookedCar = await Car.findById(newBooking.carId).populate("brand");
+
+        sendBookingConfirmationMail(req.user, newBooking, bookedCar)
+            .catch(err => console.error("Mail failed:", err));
 
 
         //Redirect to confirmation page
