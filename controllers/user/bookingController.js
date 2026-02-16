@@ -1,6 +1,7 @@
 const Car = require("../../models/carSchema");
 const Booking = require("../../models/bookingSchema");
 const Slot = require("../../models/slotSchema")
+const BOOKING_STATUS = require("../../constants/bookingStatus");
 
 //Load booking details
 const loadBookingDetails = async (req, res) => {
@@ -125,7 +126,7 @@ const createBooking = async (req, res) => {
             pickupLocation,
             specialRequests,
             paymentStatus: "pending",
-            status: "confirmed"
+            status: BOOKING_STATUS.CONFIRMED
         });
 
         console.log("Booking created:", newBooking._id);
